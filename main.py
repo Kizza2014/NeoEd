@@ -1,8 +1,7 @@
-from datetime import datetime
 from typing import Optional, List, Annotated
-from fastapi import FastAPI, Path, Query, HTTPException, Body
-from pydantic import BaseModel, Field, ConfigDict, field_validator
-from pydantic.functional_validators import BeforeValidator, AfterValidator
+from fastapi import FastAPI, Query, HTTPException
+from pydantic import BaseModel, Field, ConfigDict
+from pydantic.functional_validators import BeforeValidator
 from starlette import status
 from pymongo import MongoClient
 from bson import ObjectId
@@ -122,12 +121,14 @@ async def read_book_by_publish_year(published_year: int = Query(gt=0, lt=9999)):
 
 
 
-@app.get("/books/keywords/", status_code=status.HTTP_200_OK, response_model=BooksContainer)
+@app.get("/books/keywords/", status_code=status.HTTP_200_OK, response_model=BooksContainer,
+         description="Type keywords, author's name or categories")
 def read_book_by_keyword(keywords: str = Query(min_length=1)):
     """
     Full-text search base on below text-indexes:
     db.books.createIndex({
                             'title':'text',
+                            'authors':'text',
                             'long_description':'text',
                             'short_description':'text',
                             'long_description':'text',
@@ -136,14 +137,32 @@ def read_book_by_keyword(keywords: str = Query(min_length=1)):
                          {
                             weights:{
                                         'title':10,
+                                        'authors':10,
                                         'long_description':5,
                                         'short_description':5,
                                         'categories':3
                                     }
                          })
     """
-    return BooksContainer(books= BOOKS_COLLECTION.find({'$text': {'$search': keywords}}).to_list())
-    raise HTTPException(status_code=404, detail=f"No results for {keywords}.")
+    keywords_list = keywords.split(',')
+    search = ["\"" + x + "\"" for x in keywords_list]
+    search = ' OR '.join(search)
+    res = BOOKS_COLLECTION.find({'$text': {'$search': search}}).to_list()
+    if len(res) > 0:
+        return BooksContainer(books= res)
+    raise HTTPException(status_code=404, detail=f"No results for \"{keywords}\".")
+
+@app.get("/books/authors/", status_code=status.HTTP_200_OK, response_model=BooksContainer)
+def read_book_by_author(author: str):
+    authors_list = author.split(',')
+    search = ["\"" + x + "\"" for x in authors_list]
+    search = ' OR '.join(search)
+    res = BOOKS_COLLECTION.find({'$text': {'$search': search}}).to_list()
+    if len(res) > 0:
+        return BooksContainer(books= res)
+
+    raise HTTPException(status_code=404, detail=f"No books found for author \"{author}\"")
+
 
 # @app.post("/create-book", status_code=status.HTTP_201_CREATED, response_model=BookModel)
 # async def create_book(book_request: BookRequest):
