@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="book-detail">
+        <h1>{{ book.title }}</h1>
+        <img src="{{ book.thumbnail_url }}" alt="{{ book.title }} thumbnail">
+        <p><strong>ISBN:</strong> {{ book._id }}</p>
+        <p><strong>Published Year:</strong> {{ book.published_year }}</p>
+        <p><strong>Authors:</strong>
+            {% for author in book.authors %}
+                {{ author }}{% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+        <p><strong>Page count:</strong> {{ book.page_count }}</p>
+        <p><strong>Description:</strong> {{ book.long_description }}</p>
+        <p><strong>Categories:</strong>
+            {% for category in book.categories %}
+                {{ category }}{% if not loop.last %}, {% endif %}
+            {% endfor %}</p>
+        <a href="/">Back to search</a>
+    </div>
+</body>
+</html>

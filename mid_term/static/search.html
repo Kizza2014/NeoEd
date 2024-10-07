@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .book {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .book-thumbnail {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .book:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Book Search</h1>
+
+    <h2>Search by Keywords</h2>
+    <input type="text" id="keywords" placeholder="Enter isbn, keywords or author's name (comma-separated)">
+    <button onclick="searchByKeywords()">Search</button>
+
+    <h2>Search by Year</h2>
+    <input type="number" id="year" placeholder="Enter Publish Year">
+    <button onclick="searchByYear()">Search</button>
+
+    <div class="results" id="results"></div>
+</div>
+
+<script>
+    const apiUrl = "http://127.0.0.1:8000"; // FastAPI server URL
+
+    async function searchByYear() {
+        const year = document.getElementById('year').value;
+        const response = await fetch(`${apiUrl}/books/year/?published_year=${year}`);
+        const data = await response.json();
+        displayResults(data.books);
+    }
+
+    async function searchByKeywords() {
+        const keywords = document.getElementById('keywords').value;
+        const response = await fetch(`${apiUrl}/books/keywords/?keywords=${keywords}`);
+        const data = await response.json();
+        displayResults(data.books);
+    }
+
+    function displayResults(books) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ""; // Xóa kết quả trước đó
+            if (books.length === 0) {
+                resultsDiv.innerHTML = "<p>No books found.</p>";
+            } else {
+                books.forEach(book => {
+                    const bookDiv = document.createElement('div');
+                    bookDiv.classList.add('book'); // Thêm lớp 'book' để áp dụng kiểu
+                    bookDiv.innerHTML = `
+                        <img src="/thumbnail/${book._id}.jpg" alt="${book.title} thumbnail" class="book-thumbnail">
+                        <h3><a href="/books/${book._id}">${book.title}</a></h3>
+                        <p><strong>Published Year:</strong> ${book.published_year}</p>
+                        <p><strong>Authors:</strong> ${book.authors.join(', ')}</p>
+                    `;
+                    resultsDiv.appendChild(bookDiv);
+                });
+            }
+        }
+</script>
+
+</body>
+</html>

@@ -1,4 +1,9 @@
 from fastapi import FastAPI, Query, HTTPException, Body
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse
 from starlette import status
 from pymongo import MongoClient
 
@@ -15,6 +20,12 @@ STUDENTS_COLLECTION = DB.get_collection('students')
 
 app = FastAPI()
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount('/thumbnail', StaticFiles(directory="thumbnail"), name="thumbnail")
+
+@app.get("/")
+async def homepage():
+    return FileResponse("static/search.html")
 
 @app.get(
     "/books/",
@@ -26,25 +37,37 @@ app = FastAPI()
 async def read_all_books():
     return BooksContainer(books=BOOKS_COLLECTION.find().to_list())
 
+templates = Jinja2Templates(directory="static")
 
-@app.get(
-    "/books/isbn/",
-    status_code=status.HTTP_200_OK,
-    response_model=BooksContainer
-)
-async def read_book(book_isbn: str = Query(min_length=10)):
-    isbn_list = [x.strip() for x in book_isbn.split(',')]
-    books_list = []
+@app.get("/books/{isbn}", response_class=HTMLResponse)
+async def get_book_detail(request: Request, isbn: str):
+    book = BOOKS_COLLECTION.find_one({"_id": isbn})
+    if book is None:
+        raise HTTPException(status_code=404, detail="Book not found")
 
-    for isbn in isbn_list:
-        book = BOOKS_COLLECTION.find_one({'$text': {'$search': isbn}})
-        if book is not None:
-            books_list.append(book)
+    book["_id"] = str(book["_id"])
+    return templates.TemplateResponse("book_detail.html", {"request": request, "book": book})
 
-    if len(books_list) > 0:
-        return BooksContainer(books=books_list)
 
-    raise HTTPException(status_code=204, detail=f"Book {book_isbn} not found")
+
+# @app.get(
+#     "/books/isbn/",
+#     status_code=status.HTTP_200_OK,
+#     response_model=BooksContainer
+# )
+# async def read_book(book_isbn: str = Query(min_length=10)):
+#     isbn_list = [x.strip() for x in book_isbn.split(',')]
+#     books_list = []
+#
+#     for isbn in isbn_list:
+#         book = BOOKS_COLLECTION.find_one({'$text': {'$search': isbn}})
+#         if book is not None:
+#             books_list.append(book)
+#
+#     if len(books_list) > 0:
+#         return BooksContainer(books=books_list)
+#
+#     raise HTTPException(status_code=204, detail=f"Book {book_isbn} not found")
 
 
 @app.get(
