@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thư Viện Sách</title>
+    <style>
+        /* Thanh điều hướng */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #131A22;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        .option-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .option-link:hover {
+            text-decoration: underline; /* Hiệu ứng khi di chuột qua */
+        }
+
+        .home-button {
+            background-color: #007BFF; /* Màu nền cho nút */
+            color: white; /* Màu chữ */
+            padding: 10px 15px; /* Khoảng cách bên trong nút */
+            border-radius: 5px; /* Bo tròn cho nút */
+            text-decoration: none; /* Bỏ gạch chân */
+            display: flex; /* Sử dụng flexbox để căn chỉnh logo và văn bản */
+            align-items: center; /* Căn giữa theo chiều dọc */
+            transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển màu và chuyển động */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bóng đổ cho nút */
+        }
+
+        .home-button svg {
+            margin-right: 5px; /* Khoảng cách giữa logo và văn bản */
+            width: 20px; /* Chiều rộng của biểu tượng */
+            height: 20px; /* Chiều cao của biểu tượng */
+        }
+
+        .home-button:hover {
+            background-color: #0056b3; /* Màu nền khi hover */
+            transform: translateY(-2px); /* Hiệu ứng nhấc lên khi hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Bóng đổ mạnh hơn khi hover */
+        }
+
+        .home-button:active {
+            transform: translateY(0); /* Trở về vị trí ban đầu khi nhấn */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Quay lại bóng đổ ban đầu khi nhấn */
+        }
+
+        /* Thanh tìm kiếm */
+        .search-bar {
+            display: flex;
+            width: 60%; /* Tăng chiều rộng thành 60% */
+            max-width: 800px;
+            align-items: center; /* Căn giữa các thành phần */
+            border: 1px solid #ddd; /* Đường viền xám nhẹ */
+            border-radius: 30px; /* Bo tròn mạnh hơn */
+            padding: 5px; /* Thêm khoảng cách bên trong */
+            background-color: #fff; /* Nền trắng */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng đậm hơn */
+        }
+
+        .search-bar select {
+            width: 80px; /* Có thể tăng chiều rộng của dropdown nếu muốn */
+            background-color: #f3f3f3;
+        }
+
+        .search-bar input {
+            flex: 2; /* Tăng giá trị flex để ô tìm kiếm chiếm nhiều không gian hơn */
+            padding-left: 10px;
+            border: none; /* Xóa đường viền */
+            outline: none; /* Xóa outline */
+        }
+
+        .search-bar select {
+            padding: 10px; /* Thêm khoảng cách */
+            border-radius: 20px; /* Bo tròn cho dropdown */
+            margin-right: 10px; /* Khoảng cách giữa dropdown và input */
+            background-color: #f3f3f3; /* Nền cho dropdown */
+        }
+
+        .search-bar input {
+            flex: 1; /* Chiếm không gian còn lại */
+            padding: 10px; /* Thêm khoảng cách */
+            border-radius: 20px; /* Bo tròn cho input */
+            font-size: 16px; /* Tăng kích thước chữ */
+            background-color: #f9f9f9; /* Nền cho input */
+        }
+
+        .search-bar button {
+            background-color: #febd69; /* Màu nền cho nút */
+            color: white; /* Màu chữ */
+            border: none; /* Xóa đường viền */
+            padding: 10px 15px; /* Khoảng cách bên trong nút */
+            border-radius: 20px; /* Bo tròn cho nút */
+            cursor: pointer; /* Thay đổi con trỏ khi hover */
+            transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+        }
+
+        .search-bar button:hover {
+            background-color: #f0a500; /* Màu nền khi hover */
+        }
+
+        /* Phần thông tin người dùng và giỏ hàng */
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+        .navbar-right div {
+            margin-left: 20px;
+            text-align: center;
+        }
+
+        .navbar-right div a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .navbar-right div .cart {
+            position: relative;
+        }
+
+        .navbar-right div .cart svg {
+            height: 24px;
+            margin-right: 5px;
+        }
+
+        .navbar-right div .cart span {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #f08804;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        /* CSS cho lưới sách */
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px; /* Khoảng cách giữa các thumbnail */
+        }
+
+        .book-item {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+            padding: 10px;
+            transition: transform 0.2s; /* Hiệu ứng hover */
+        }
+
+        .book-item p {
+            font-size: 12px; /* Giảm kích thước font */
+            color: #777; /* Màu chữ nhẹ nhàng hơn */
+            margin: 4px 0;
+            white-space: nowrap; /* Không xuống dòng, hiển thị hết nội dung */
+            overflow: hidden; /* Ẩn phần dư thừa nếu quá dài */
+            text-overflow: ellipsis; /* Thêm dấu "..." nếu nội dung quá dài */
+        }
+
+        .book-item:hover {
+            transform: scale(1.05); /* Phóng to khi hover */
+        }
+
+        .book-item img {
+            width: 100%; /* Đảm bảo hình ảnh vừa khung */
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .book-item a {
+            text-decoration: none; /* Xóa gạch chân */
+            color: black; /* Màu chữ */
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+
+    <!-- Home button -->
+    <div class="home-button">
+        <a href="/" title="Trang chủ">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white">
+                <path d="M12 3l10 9h-3v8H5v-8H2l10-9z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Thanh tìm kiếm -->
+    <div class="search-bar">
+        <select id="searchCategory">
+            <option value="books">Books</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Type ISBN, keywords, author's name or categories">
+        <button onclick="performSearch()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="black">
+                <path d="M11.293 10.293 16 15l-1 1-4.707-4.707C9.362 12.48 8.202 13 7 13c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5c0 1.202-.52 2.362-1.707 3.293zM7 11c2.209 0 4-1.791 4-4S9.209 3 7 3 3 4.791 3 7s1.791 4 4 4z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Option -->
+        <div class="navbar-right">
+            <div class="navbar-options">
+            <a href="/user" class="option-link">Tài khoản </a>
+        </div>
+
+
+        <div class="cart">
+            <a href="/cart">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white">
+                    <path d="M10 20c-1.11 0-2-.89-2-2s.89-2 2-2 2 .89 2 2-.89 2-2 2zm8 0c-1.11 0-2-.89-2-2s.89-2 2-2 2 .89 2 2-.89 2-2 2zm-15-2h1.11L6.6 5.59l.94-2.34C7.69 2.89 8.25 2.5 9 2.5h9.5v1.5H9.42l-1.26 3.11L10.67 11H17c.83 0 1.54.5 1.85 1.22L21 15.8V18H8v-1.5h10.74l-1.39-3.22H10c-.83 0-1.54-.5-1.85-1.22L7.1 7.5H4.49l-.96 9.5z"/>
+                </svg>
+                <span>0</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<h1>Danh Sách Sách</h1>
+<div class="book-grid">
+    <!-- Giả sử bạn có biến 'books' trong ngữ cảnh của bạn -->
+    {% for book in books %}
+    <div class="book-item">
+        <a href="/book/{{ book._id }}">  <!-- Đường dẫn tới trang thông tin sách -->
+            <img src="/static/thumbnail/{{ book._id }}.jpg" alt="{{ book.title }}">
+            <h3>{{ book.title }}</h3>
+        </a>
+        <p><strong>Tác giả:</strong> {{ ', '.join(book.authors) }}</p>
+        <p><strong>Năm sáng tác:</strong> {{ book.published_year }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function performSearch() {
+        // Lấy giá trị từ ô tìm kiếm
+        var searchInput = document.getElementById("searchInput").value;
+
+        // Điều hướng tới /search/ với tham số tìm kiếm
+        // Sử dụng encodeURIComponent để đảm bảo giá trị được mã hóa đúng cách
+        window.location.href = "/search/?keywords=" + searchInput;
+    }
+</script>
+
+</body>
+</html>

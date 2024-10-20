@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Người Dùng</title>
+    <style>
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #131A22;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        .option-link {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .option-link:hover {
+            text-decoration: underline; /* Hiệu ứng khi di chuột qua */
+        }
+
+        .home-button {
+            background-color: #007BFF; /* Màu nền cho nút */
+            color: white; /* Màu chữ */
+            padding: 10px 15px; /* Khoảng cách bên trong nút */
+            border-radius: 5px; /* Bo tròn cho nút */
+            text-decoration: none; /* Bỏ gạch chân */
+            display: flex; /* Sử dụng flexbox để căn chỉnh logo và văn bản */
+            align-items: center; /* Căn giữa theo chiều dọc */
+            transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển màu và chuyển động */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bóng đổ cho nút */
+        }
+
+        .home-button svg {
+            margin-right: 5px; /* Khoảng cách giữa logo và văn bản */
+            width: 20px; /* Chiều rộng của biểu tượng */
+            height: 20px; /* Chiều cao của biểu tượng */
+        }
+
+        .home-button:hover {
+            background-color: #0056b3; /* Màu nền khi hover */
+            transform: translateY(-2px); /* Hiệu ứng nhấc lên khi hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Bóng đổ mạnh hơn khi hover */
+        }
+
+        .home-button:active {
+            transform: translateY(0); /* Trở về vị trí ban đầu khi nhấn */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Quay lại bóng đổ ban đầu khi nhấn */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .user-info {
+            margin-bottom: 20px;
+        }
+
+        .user-info p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        .book-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 cột */
+            gap: 20px; /* Khoảng cách giữa các mục */
+            max-height: 500px; /* Chiều cao tối đa cho danh sách */
+            overflow-y: auto; /* Thanh cuộn nếu cần */
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .book-title {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .transaction-list {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .transaction-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none; /* Không có đường viền cho mục cuối cùng */
+        }
+
+        .transaction-item h4 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .transaction-item p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+
+    <!-- Home button -->
+    <div class="home-button">
+        <a href="/" title="Trang chủ">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white">
+                <path d="M12 3l10 9h-3v8H5v-8H2l10-9z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Option -->
+        <div class="navbar-right">
+            <div class="navbar-options">
+            <a href="/user" class="option-link">Tài khoản </a>
+        </div>
+
+
+        <div class="cart">
+            <a href="/cart">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white">
+                    <path d="M10 20c-1.11 0-2-.89-2-2s.89-2 2-2 2 .89 2 2-.89 2-2 2zm8 0c-1.11 0-2-.89-2-2s.89-2 2-2 2 .89 2 2-.89 2-2 2zm-15-2h1.11L6.6 5.59l.94-2.34C7.69 2.89 8.25 2.5 9 2.5h9.5v1.5H9.42l-1.26 3.11L10.67 11H17c.83 0 1.54.5 1.85 1.22L21 15.8V18H8v-1.5h10.74l-1.39-3.22H10c-.83 0-1.54-.5-1.85-1.22L7.1 7.5H4.49l-.96 9.5z"/>
+                </svg>
+                <span>0</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Thông Tin Người Dùng</h1>
+
+    <div class="user-info">
+        <p><strong>ID:</strong> {{ user._id }}</p>
+        <p><strong>Tên:</strong> {{ user.name }} </p>
+        <p><strong>Số dư tài khoản:</strong> ${{ user.balance }}</p>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Sách đã mua</h2>
+    <div class="book-list">
+        <!-- Ví dụ các quyển sách -->
+        {% for book in user.bought_books %}
+        <div class="book-item">
+            <a href="/book/{{ book._id }}">  <!-- Đường dẫn tới trang thông tin sách -->
+                <img src="/static/thumbnail/{{ book._id }}.jpg" alt="{{ book.title }}">
+                <h3>{{ book.title }}</h3>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container">
+    <h2>Sách đang mượn</h2>
+    <div class="book-list">
+        <!-- Ví dụ các quyển sách -->
+        {% for book in user.borrowed_books %}
+        <div class="book-item">
+            <a href="/book/{{ book._id }}">  <!-- Đường dẫn tới trang thông tin sách -->
+                <img src="/static/thumbnail/{{ book._id }}.jpg" alt="{{ book.title }}">
+                <h3>{{ book.title }}</h3>
+            </a>
+            <p>Hạn: {{ book.due_date }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container">
+    <h2>Sách quá hạn</h2>
+    <div class="book-list">
+        <!-- Ví dụ các quyển sách -->
+        {% for book in user.expired_books %}
+        <div class="book-item">
+            <a href="/book/{{ book._id }}">  <!-- Đường dẫn tới trang thông tin sách -->
+                <img src="/static/thumbnail/{{ book._id }}.jpg" alt="{{ book.title }}">
+                <h3>{{ book.title }}</h3>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container">
+    <h2>Lịch sử giao dịch</h2>
+    <div class="transaction-list">
+        {% for transaction in user.transaction_history %}
+        <div class="transaction-item">
+            <h4>ID: {{ transaction._id }}</h4>
+            <p><strong>Danh sách items:</strong></p>
+            <ul>
+                {% for item in user.transaction_history.items %}
+                    <li>{{ item.title }}</li> <!-- Giả sử item là tên của sách -->
+                {% endfor %}
+            </ul>
+            <p><strong>Tổng số tiền:</strong> ${{ transaction.total_amount }}</p>
+            <p><strong>Trạng thái:</strong> {{ transaction.status }}</p>
+            <p><strong>Thời gian thực hiện:</strong> {{ transaction.date_created }}</p>
+            <p><strong>Lý do thất bại (nếu có):</strong> {{ transaction.reason }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>

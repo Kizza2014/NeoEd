@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông Tin Sách</title>
+    <style>
+        /* Thanh điều hướng */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #131A22;
+            padding: 10px 20px;
+            color: white;
+        }
+
+        .home-button {
+            background-color: #007BFF; /* Màu nền cho nút */
+            color: white; /* Màu chữ */
+            padding: 10px 15px; /* Khoảng cách bên trong nút */
+            border-radius: 5px; /* Bo tròn cho nút */
+            text-decoration: none; /* Bỏ gạch chân */
+            display: flex; /* Sử dụng flexbox để căn chỉnh logo và văn bản */
+            align-items: center; /* Căn giữa theo chiều dọc */
+            transition: background-color 0.3s, transform 0.2s; /* Hiệu ứng chuyển màu và chuyển động */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bóng đổ cho nút */
+        }
+
+        .home-button svg {
+            margin-right: 5px; /* Khoảng cách giữa logo và văn bản */
+            width: 20px; /* Chiều rộng của biểu tượng */
+            height: 20px; /* Chiều cao của biểu tượng */
+        }
+
+        .home-button:hover {
+            background-color: #0056b3; /* Màu nền khi hover */
+            transform: translateY(-2px); /* Hiệu ứng nhấc lên khi hover */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Bóng đổ mạnh hơn khi hover */
+        }
+
+        .home-button:active {
+            transform: translateY(0); /* Trở về vị trí ban đầu khi nhấn */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Quay lại bóng đổ ban đầu khi nhấn */
+        }
+
+        /* Thanh tìm kiếm */
+        .search-bar {
+            display: flex;
+            width: 60%; /* Tăng chiều rộng thành 60% */
+            max-width: 800px;
+            align-items: center; /* Căn giữa các thành phần */
+            border: 1px solid #ddd; /* Đường viền xám nhẹ */
+            border-radius: 30px; /* Bo tròn mạnh hơn */
+            padding: 5px; /* Thêm khoảng cách bên trong */
+            background-color: #fff; /* Nền trắng */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Đổ bóng đậm hơn */
+        }
+
+        .search-bar select {
+            width: 80px; /* Có thể tăng chiều rộng của dropdown nếu muốn */
+            background-color: #f3f3f3;
+        }
+
+        .search-bar input {
+            flex: 2; /* Tăng giá trị flex để ô tìm kiếm chiếm nhiều không gian hơn */
+            padding-left: 10px;
+            border: none; /* Xóa đường viền */
+            outline: none; /* Xóa outline */
+        }
+
+        .search-bar select {
+            padding: 10px; /* Thêm khoảng cách */
+            border-radius: 20px; /* Bo tròn cho dropdown */
+            margin-right: 10px; /* Khoảng cách giữa dropdown và input */
+            background-color: #f3f3f3; /* Nền cho dropdown */
+        }
+
+        .search-bar input {
+            flex: 1; /* Chiếm không gian còn lại */
+            padding: 10px; /* Thêm khoảng cách */
+            border-radius: 20px; /* Bo tròn cho input */
+            font-size: 16px; /* Tăng kích thước chữ */
+            background-color: #f9f9f9; /* Nền cho input */
+        }
+
+        .search-bar button {
+            background-color: #febd69; /* Màu nền cho nút */
+            color: white; /* Màu chữ */
+            border: none; /* Xóa đường viền */
+            padding: 10px 15px; /* Khoảng cách bên trong nút */
+            border-radius: 20px; /* Bo tròn cho nút */
+            cursor: pointer; /* Thay đổi con trỏ khi hover */
+            transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+        }
+
+        .search-bar button:hover {
+            background-color: #f0a500; /* Màu nền khi hover */
+        }
+
+
+        /* Phần thông tin người dùng và giỏ hàng */
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
+
+        .navbar-right div {
+            margin-left: 20px;
+            text-align: center;
+        }
+
+        .navbar-right div a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .navbar-right div .cart {
+            position: relative;
+        }
+
+        .navbar-right div .cart svg {
+            height: 24px;
+            margin-right: 5px;
+        }
+
+        .navbar-right div .cart span {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #f08804;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .book-detail {
+            flex: 2;
+            display: flex;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .thumbnail {
+            flex: 0 0 150px;
+            margin-right: 20px;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        .book-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .book-info h2 {
+            color: #007BFF;
+            margin-bottom: 10px;
+        }
+
+        .book-info p {
+            margin: 10px 0;
+        }
+
+        .book-ratings {
+            margin-top: 40px;
+            max-width: 800px;
+            margin: auto;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-ratings h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .rating-item {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        .rating-item:last-child {
+            border-bottom: none;
+        }
+
+        .rating-user {
+            font-weight: bold;
+        }
+
+        .rating-score {
+            color: #f39c12;
+        }
+
+        .rating-comment {
+            margin-top: 5px;
+        }
+
+        /* Phần cho chức năng mua và thuê sách */
+        .purchase-rent-section {
+            flex: 1;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-left: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .purchase-rent-section h3 {
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+
+        .price-group {
+            margin-bottom: 20px;
+        }
+
+        .price-group p {
+            margin: 5px 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #218838;
+        }
+
+        /* Cho phần thuê sách */
+        .rent-options, .buy-options {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .rent-options label, .buy-options label {
+            display: block; /* Đặt các tùy chọn trên các dòng khác nhau */
+            margin-bottom: 10px;
+        }
+
+        .rent-options input[type="radio"], .buy-options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .cart-button {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .cart-button:hover {
+            background-color: #e0a800;
+        }
+
+        .quantity-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .quantity-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .quantity-group input {
+            width: 60px;
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .notification {
+            display: none; /* Ẩn thông báo theo mặc định */
+            position: fixed; /* Để thông báo luôn hiện trên cùng */
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%); /* Căn giữa thông báo */
+            background-color: #28a745; /* Màu nền cho thông báo thành công */
+            color: white; /* Màu chữ trắng */
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000; /* Đảm bảo thông báo nằm trên các phần tử khác */
+        }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+
+    <!-- Thanh tìm kiếm -->
+    <div class="search-bar">
+        <select id="searchCategory">
+            <option value="books">Books</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Type ISBN, keywords, author's name or categories">
+        <button onclick="performSearch()">
+            <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="black">
+                <path d="M11.293 10.293 16 15l-1 1-4.707-4.707C9.362 12.48 8.202 13 7 13c-2.761 0-5-2.239-5-5s2.239-5 5-5 5 2.239 5 5c0 1.202-.52 2.362-1.707 3.293zM7 11c2.209 0 4-1.791 4-4S9.209 3 7 3 3 4.791 3 7s1.791 4 4 4z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Home button -->
+    <div class="home-button">
+        <a href="/" title="Trang chủ">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white">
+                <path d="M12 3l10 9h-3v8H5v-8H2l10-9z"/>
+            </svg>
+        </a>
+    </div>
+
+    <!-- Tài khoản và Giỏ hàng -->
+    <div class="navbar-right">
+        <div>
+            <a href="/user">Tài khoản</a>
+        </div>
+
+        <div class="cart">
+            <a href="/cart">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" fill="white">
+                    <path d="M10 20c-1.11 0-2-.89-2-2s.89-2 2-2 2 .89 2 2-.89 2-2 2zm8 0c-1.11 0-2-.89-2-2s.89-2 2-2 2 .89 2 2-.89 2-2 2zm-15-2h1.11L6.6 5.59l.94-2.34C7.69 2.89 8.25 2.5 9 2.5h9.5v1.5H9.42l-1.26 3.11L10.67 11H17c.83 0 1.54.5 1.85 1.22L21 15.8V18H8v-1.5h10.74l-1.39-3.22H10c-.83 0-1.54-.5-1.85-1.22L7.1 7.5H4.49l-.96 9.5z"/>
+                </svg>
+                <span>0</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<h1>Thông Tin Sách</h1>
+
+<div id="notification" class="notification">Sản phẩm đã được thêm vào giỏ hàng!</div>
+
+
+<div class="container">
+    <div class="book-detail">
+        <div class="thumbnail">
+            <img src="/static/thumbnail/{{ book._id }}.jpg" alt="{{ book.title }}">
+        </div>
+        <div class="book-info">
+            <h2>{{ book.title }}</h2>
+            <p><strong>ISBN:</strong> {{ book._id }}</p>
+            <p><strong>Tác giả:</strong> {{ book.authors | join(', ') }}</p>
+            <p><strong>Thể loại:</strong> {{ book.categories | join(', ') }}</p>
+            <p><strong>Trạng thái:</strong> {{ book.status }}</p>
+            <p><strong>Số bản có sẵn:</strong> {{ book.available_copies }}</p>
+<!--            <p><strong>Số bản đã mượn:</strong> {{ book.borrowed_copies }}</p>-->
+            <p><strong>Số trang:</strong> {{ book.page_count }}</p>
+            <p><strong>Năm xuất bản:</strong> {{ book.published_year }}</p>
+            <p><strong>Mô tả ngắn:</strong> {{ book.short_description }}</p>
+            <p><strong>Mô tả dài:</strong> {{ book.long_description }}</p>
+        </div>
+    </div>
+
+    <!-- Phần mua và thuê sách -->
+    <div class="purchase-rent-section">
+        <h3>Mua Sách</h3>
+
+        <div class="buy-options">
+            <h4>Chọn loại bìa:</h4>
+            <label>
+                <input type="radio" name="buy-type" value="hard_cover" checked> Bìa cứng: ${{ book.price.hard_cover }}
+            </label>
+            <label>
+                <input type="radio" name="buy-type" value="soft_cover"> Bìa mềm: ${{ book.price.soft_cover }}
+            </label>
+        </div>
+
+        <div class="quantity-group">
+            <label for="buy-quantity">Số lượng:</label>
+            <input type="number" id="buy-quantity" name="buy-quantity" min="1" value="1">
+        </div>
+
+        <!-- Nút thêm vào giỏ hàng -->
+        <a href="/book/{{ book._id }}" class="button cart-button" onclick="addToCart(event)">Thêm vào giỏ hàng</a>
+
+        <a href="/book/{{ book._id }}" class="button" onclick="purchaseNow(event)">Mua Ngay</a>
+
+        <hr>
+
+        <h3>Thuê Sách</h3>
+
+        <!-- Phần thuê sách với lựa chọn bìa cứng và bìa mềm -->
+        <div class="rent-options">
+            <h4>Chọn loại bìa:</h4>
+            <label>
+                <input type="radio" name="rent-type" value="hard_cover" checked> Bìa cứng: ${{ book.rent_price.hard_cover
+                }}
+            </label>
+            <label>
+                <input type="radio" name="rent-type" value="soft_cover"> Bìa mềm: ${{ book.rent_price.soft_cover }}
+            </label>
+        </div>
+
+        <div class="quantity-group">
+            <label for="rent-quantity">Số lượng:</label>
+            <input type="number" id="rent-quantity" name="rent-quantity" min="1" value="1">
+        </div>
+
+        <a href="#" class="button" onclick="rentNow(event)">Thuê Ngay</a>
+    </div>
+</div>
+
+<div class="book-ratings">
+    <h3>Bình luận về sách</h3>
+    {% if book.ratings and book.ratings|length > 0 %}
+    {% for rating in book.ratings %}
+    <div class="rating-item">
+        <p class="rating-user">Người dùng: {{ rating.user }}</p>
+        <p class="rating-score">Điểm: {{ rating.score }} / 5</p>
+        <p class="rating-comment">{{ rating.comment }}</p>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>Chưa có bình luận nào cho cuốn sách này.</p>
+    {% endif %}
+</div>
+
+<script>
+    function performSearch() {
+        // Lấy giá trị từ ô tìm kiếm
+        var searchInput = document.getElementById("searchInput").value;
+
+        // Điều hướng tới /search/ với tham số tìm kiếm
+        // Sử dụng encodeURIComponent để đảm bảo giá trị được mã hóa đúng cách
+        window.location.href = "/search/?keywords=" + searchInput;
+    }
+
+    function showNotification(message) {
+        var notification = document.getElementById("notification");
+        notification.innerText = message;
+        notification.style.display = 'block';
+
+        // Ẩn thông báo sau 3 giây
+        setTimeout(function() {
+            notification.style.display = 'none';
+        }, 3000);
+    }
+
+    function purchaseNow(event) {
+        event.preventDefault();
+        const userId = 1;
+        const itemId = "{{ book._id | safe }}";
+        const title = "{{ book.title | safe }}";
+
+        const cover = document.querySelector('input[name="buy-type"]:checked').value;
+
+        let price = "{{ book.price }}";
+        price = price.replace(/&#39;/g, "\"");
+        price = JSON.parse(price)
+
+        if (cover == "hard_cover") {
+            price = price.hard_cover;
+        } else {
+            price = price.soft_cover;
+        }
+
+        const quantity = parseInt(document.getElementById("buy-quantity").value);
+
+        let total_amount = price * quantity;
+
+        // Tạo body cho request
+        const requestBody = {
+            user_id: parseInt(userId),
+            items: [{
+                _id: itemId,
+                title: title,
+                cover: cover,
+                quantity: parseInt(quantity),
+                price: parseFloat(price)
+            }],
+            total_amount: parseFloat(total_amount)
+        };
+
+        // Gửi request POST đến API
+        fetch('/transaction/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Có lỗi xảy ra khi mua sản phẩm!');
+            }
+            return response.json();
+        })
+        .then(data => {
+            showNotification("Cảm ơn bạn đã mua sản phẩm!");
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            showNotification("Cảm ơn bạn đã mua sản phẩm!");
+        });
+    }
+
+    function rentNow(event) {
+        event.preventDefault(); // Ngăn chặn hành động mặc định
+        showNotification("Cảm ơn bạn đã thuê sản phẩm!");
+    }
+
+    function addToCart(event) {
+        event.preventDefault(); // Ngăn chặn hành động mặc định
+
+        // Lấy thông tin cần gửi đi
+        const userId = 1;  // Giả sử bạn có user_id
+        const itemId = "{{ book._id }}"; // Lấy từ dữ liệu của sách
+        const title = "{{ book.title }}"; // Lấy tiêu đề sách
+        const cover = document.querySelector('input[name="buy-type"]:checked').value; // Lấy loại bìa
+        const quantity = document.getElementById("buy-quantity").value; // Lấy số lượng
+
+        // Tạo body cho request
+        const requestBody = {
+            user_id: userId,
+            item_id: itemId,
+            title: title,
+            cover: cover,
+            quantity: parseInt(quantity) // Chuyển quantity thành số nguyên
+        };
+
+        // Gửi request POST đến API
+        fetch('/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng.');
+            }
+            return response.json(); // Chuyển đổi response thành JSON
+        })
+        .then(data => {
+            console.log('Thêm vào giỏ hàng thành công:', data);
+            showNotification("Sản phẩm đã được thêm vào giỏ hàng!"); // Hiển thị thông báo
+        })
+        .catch(error => {
+            console.error('Lỗi:', error);
+            showNotification("Có lỗi xảy ra khi thêm vào giỏ hàng!");
+        });
+    }
+
+</script>
+
+</body>
+</html>
