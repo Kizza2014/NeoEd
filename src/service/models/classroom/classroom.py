@@ -4,9 +4,11 @@ from datetime import datetime
 
 
 class Classroom(BaseModel):
-    classroom_id: str
+    id: str
     class_name: str
-    schedules: Dict[str, str]
-    textbooks: List[str]
+    semester: str
+    room_id: str
+    subject_name: str
+    class_schedule: str
     created_at: datetime
     updated_at: datetime

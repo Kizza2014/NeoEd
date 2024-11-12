@@ -1,14 +1,18 @@
-from abc import ABC, abstractmethod
-from pydantic import BaseModel
-from datetime import datetime
+from abc import ABC
+from pydantic import BaseModel, Field
+from typing import Optional
+from datetime import date, datetime
 
 
 class BaseUser(ABC, BaseModel):
-    user_id: str
-    username: str
-    password: str
-    email: str
-    role: str = None
+    id: str
+    user_name: str
+    gender: str
+    birthdate: Optional[date] = None
+    user_role: str
+    address: Optional[str] = None
+    email: Optional[str] = None
+    user_passwd: str
+    joined_at: Optional[datetime] = None
     is_online: bool = False
-    created_at: datetime
-    updated_at: datetime
+
