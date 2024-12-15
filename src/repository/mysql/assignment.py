@@ -1,6 +1,6 @@
 from src.repository.mysql.mysql_repository_interface import MysqlRepositoryInterface
 from src.service.models import Assignment
-from src.configs.utils import fetch_as_dict, fetch_one_as_dict
+from src.configs.utils import fetch_all_as_dict, fetch_one_as_dict
 from mysql.connector import Error
 
 
@@ -8,7 +8,7 @@ class AssignmentRepository(MysqlRepositoryInterface):
     def get_all(self):
         cursor = self.conn.cursor()
         cursor.execute("SELECT * FROM assignments")
-        res = fetch_as_dict(cursor)
+        res = fetch_all_as_dict(cursor)
         return res
 
 
