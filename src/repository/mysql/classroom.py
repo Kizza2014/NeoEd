@@ -1,81 +1,117 @@
 from src.repository.mysql.mysql_repository_interface import MysqlRepositoryInterface
-from src.configs.utils import fetch_all_as_dict, fetch_one_as_dict
-from src.service.models import Classroom
-from mysql.connector import Error
+from src.service.models.classroom import ClassroomCreate, ClassroomUpdate
+from src.configs.security import get_password_hash
+from typing import List
+from datetime import datetime
 
 
-class ClassroomRepository(MysqlRepositoryInterface):
-    def get_all(self):
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM classes")
-        res = fetch_all_as_dict(cursor)
+class MySQLClassroomRepository(MysqlRepositoryInterface):
+    async def get_all(self) -> list[dict]:
+        self.cursor.execute("""SELECT id, class_name, subject_name, owner, class_schedule, created_at, updated_at 
+                               FROM classes""")
+        return self.cursor.fetchall()
+
+
+    async def get_by_id(self, class_id: str) -> dict | None:
+        self.cursor.execute("""SELECT id, class_name, subject_name, owner, class_schedule, created_at, updated_at 
+                          FROM classes 
+                          WHERE id LIKE %s""",
+                       (class_id,))
+        return self.cursor.fetchone()
+
+
+    async def update_by_id(self, class_id: str, new_info: ClassroomUpdate) -> bool:
+        current_time = datetime.now()
+        time_mysql_format = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        self.cursor.execute("""
+                                UPDATE classes
+                                SET
+                                    class_name = %s,
+                                    subject_name = %s,
+                                    class_schedule = %S,
+                                    updated_at = %s,
+                                WHERE id LIKE %s
+                                """,
+                       (
+                           new_info.class_name,
+                           new_info.subject_name,
+                           new_info.class_schedule,
+                           time_mysql_format,
+                           class_id,
+                       )
+        )
+        if self.auto_commit:
+            self.connection.commit()
+        return self.cursor.rowcount() > 0
+
+
+    async def delete_by_id(self, class_id: str) -> bool:
+        self.cursor.execute("DELETE FROM users_classes WHERE class_id LIKE %s", (class_id,))
+        self.cursor.execute("DELETE FROM classes WHERE id LIKE %s", (class_id,))
+        if self.auto_commit:
+            self.connection.commit()
+        return self.cursor.rowcount > 0
+
+
+    async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:
+        current_time = datetime.now()
+        time_mysql_format = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        hashed_password = get_password_hash(new_classroom.password)
+
+        self.cursor.execute("""INSERT INTO classes(id, class_name, subject_name, class_schedule, created_at, updated_at, owner, hashed_password)
+                          VALUE(%s, %s, %s, %s, %s, %s, %s, %s)""",
+                       (
+                           new_classroom.id,
+                           new_classroom.class_name,
+                           new_classroom.subject_name,
+                           new_classroom.class_schedule,
+                           time_mysql_format,
+                           time_mysql_format,
+                           new_classroom.owner,
+                           hashed_password
+                       )
+        )
+
+        if self.auto_commit:
+            self.connection.commit()
+        return self.cursor.rowcount > 0
+
+
+
+# Participants
+    async def get_all_participants(self, class_id: str) -> List[dict]:
+        self.cursor.execute("""
+                        SELECT username, joined_at
+                        FROM users_classes
+                        WHERE class_id LIKE %s
+                        """,
+                       (class_id,)
+        )
+        res = self.cursor.fetchall()
         return res
 
 
-    def get_by_id(self, item_id: str):
-        cursor = self.conn.cursor()
-        cursor.execute("SELECT * FROM classes WHERE id LIKE %s", (item_id,))
-        res = fetch_one_as_dict(cursor)
-        return res
+    async def add_participant(self, username: str, class_id: str) -> bool:
+        current_time = datetime.now()
+        time_mysql_format = current_time.strftime('%Y-%m-%d %H:%M:%S')
+
+        self.cursor.execute("""INSERT INTO users_classes 
+                          VALUE (%s, %s, %s)
+                        """,
+                       (username, class_id, time_mysql_format)
+        )
+        if self.auto_commit:
+            self.connection.commit()
+        return self.cursor.rowcount > 0
 
 
-    def update_by_id(self, item_id: str, new_item: Classroom):
-        cursor = self.conn.cursor()
-        try:
-            cursor.execute("""
-                                    UPDATE classes 
-                                    SET
-                                        id = %s,
-                                        class_name = %s,
-                                        semester = %s,
-                                        room_id = %s,
-                                        subject_name = %s,
-                                        class_schedule = %S,
-                                        created_at = %s,
-                                        updated_at = %s,
-                                    WHERE id LIKE %s
-                                    """,
-                           (
-                               new_item.id,
-                               new_item.class_name,
-                               new_item.semester,
-                               new_item.room_id,
-                               new_item.subject_name,
-                               new_item.class_schedule,
-                               new_item.created_at,
-                               new_item.updated_at,
-                               item_id,
-                           )
-                           )
-        except Error:
-            return False
-        self.conn.commit()
-        return cursor.rowcount() > 0
-
-
-    def delete_by_id(self, item_id: str):
-        cursor = self.conn.cursor()
-        cursor.execute("DELETE from classes WHERE id LIKE %s", (item_id,))
-        self.conn.commit()
-        return cursor.rowcount() > 0
-
-
-    def insert(self, item: Classroom):
-        cursor = self.conn.cursor()
-        try:
-            cursor.execute("INSERT INTO classes VALUE(%s, %s, %s, %s, %s, %s, %s, %s)",
-                           (
-                               item.id,
-                               item.class_name,
-                               item.semester,
-                               item.room_id,
-                               item.subject_name,
-                               item.class_schedule,
-                               item.created_at,
-                               item.updated_at,
-                           )
-            )
-        except Error:
-            return False
-        self.conn.commit()
-        return cursor.rowcount() > 0
+    async def remove_participant(self, username: str, class_id: str) -> bool:
+        self.cursor.execute("""
+                                DELETE FROM users_classes
+                                WHERE username LIKE %s AND class_id LIKE %s
+                            """,
+                            (username, class_id,)
+        )
+        if self.auto_commit:
+            self.connection.commit()
+        return self.cursor.rowcount > 0

@@ -2,14 +2,14 @@ create database if not exists neoed;
 use neoed;
 
 create table if not exists users (
-    id varchar(50) primary key,
-    user_name varchar(100) not null,
+    username varchar(50) collate utf8mb4_bin primary key,
+    fullname varchar(100) not null,
     gender enum('Male', 'Female', 'Other'),
 	birthdate date,
-    user_role enum('Teacher', 'Student', 'Admin'),
+    role enum('Teacher', 'Student', 'Admin'),
     email varchar(200),
     address varchar(200),
-    user_passwd varchar(255),
+    hashed_password varchar(255),
     joined_at datetime
 );
 
@@ -30,14 +30,15 @@ create table if not exists users_permissions (
 
 
 create table if not exists classes (
-	id varchar(255) primary key,
+	id bigint primary key auto_increment,
     class_name varchar(100) not null,
-	semester varchar(50),
-    room_id varchar(50),
     subject_name varchar(100),
     class_schedule varchar(100),
     created_at datetime,
-    updated_at datetime
+    updated_at datetime,
+    owner varchar(50) collate utf8mb4_bin not null,
+    hashed_password varchar(255)
+    constraint fk_classes_to_users foreign key (owner) references users(username)
 );
 
 

@@ -6,21 +6,21 @@ from mysql.connector import Error
 
 class PostRepository(MysqlRepositoryInterface):
     def get_all(self):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM posts")
         res = fetch_all_as_dict(cursor)
         return res
 
 
     def get_by_id(self, item_id: str):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM posts WHERE id LIKE %s", (item_id,))
         res = fetch_one_as_dict(cursor)
         return res
 
 
     def update_by_id(self, item_id: str, new_item: Post):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         try:
             cursor.execute("""
                                     UPDATE posts
@@ -47,18 +47,18 @@ class PostRepository(MysqlRepositoryInterface):
             )
         except Error:
             return False
-        self.conn.commit()
+        self.connection.commit()
         return cursor.rowcount() > 0
 
     def delete_by_id(self, item_id: str):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         cursor.execute("DELETE from posts WHERE id LIKE %s", (item_id,))
-        self.conn.commit()
+        self.connection.commit()
         return cursor.rowcount() > 0
 
 
     def insert(self, item: Post):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         try:
             cursor.execute("INSERT INTO posts VALUE(%s, %s, %s, %s, %s, %s, %s)",
                            (
@@ -73,5 +73,5 @@ class PostRepository(MysqlRepositoryInterface):
             )
         except Error:
             return False
-        self.conn.commit()
+        self.connection.commit()
         return cursor.rowcount() > 0

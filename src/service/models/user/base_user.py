@@ -16,7 +16,7 @@ class BaseUser(ABC, BaseModel):
     joined_at: Optional[datetime] = None
     is_online: bool = False
 
-class UserInfo(BaseModel):
+class UserResponse(BaseModel):
     id: str
     user_name: str
     gender: str

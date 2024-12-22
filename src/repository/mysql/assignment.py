@@ -6,21 +6,21 @@ from mysql.connector import Error
 
 class AssignmentRepository(MysqlRepositoryInterface):
     def get_all(self):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM assignments")
         res = fetch_all_as_dict(cursor)
         return res
 
 
     def get_by_id(self, item_id: str):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM assignments WHERE id LIKE %s", (item_id,))
         res = fetch_one_as_dict(cursor)
         return res
 
 
     def update_by_id(self, item_id: str, new_item: Assignment):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         try:
             cursor.execute("""
                                     UPDATE assignments 
@@ -51,19 +51,19 @@ class AssignmentRepository(MysqlRepositoryInterface):
             )
         except Error:
             return False
-        self.conn.commit()
+        self.connection.commit()
         return cursor.rowcount() > 0
 
 
     def delete_by_id(self, item_id: str):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         cursor.execute("DELETE from users WHERE id LIKE %s", (item_id,))
-        self.conn.commit()
+        self.connection.commit()
         return cursor.rowcount() > 0
 
 
     def insert(self, new_item: Assignment):
-        cursor = self.conn.cursor()
+        cursor = self.connection.cursor()
         try:
             cursor.execute("INSERT INTO assignments VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
                            (
@@ -80,5 +80,5 @@ class AssignmentRepository(MysqlRepositoryInterface):
             )
         except Error:
             return False
-        self.conn.commit()
+        self.connection.commit()
         return cursor.rowcount() > 0

@@ -1,31 +1,79 @@
 import os
-
-from mysql.connector import pooling
+from typing import Generator
+from mysql.connector import pooling, Error as MySQLError
 from dotenv import load_dotenv
 
+# Load environment variables and verify file exists
+env_path = 'src/.env'
+if not os.path.exists(env_path):
+    raise FileNotFoundError(f"Environment file not found at {env_path}")
+load_dotenv(env_path)
 
-load_dotenv('src/.env')
+
+# Validate and get environment variables with default values
+def get_env_var(var_name: str, default: str = None) -> str:
+    value = os.getenv(var_name)
+    if value is None:
+        if default is None:
+            raise ValueError(f"Required environment variable '{var_name}' is not set")
+        return default
+    return value
 
 
-HOST = os.getenv('MYSQL_HOST')
-PORT = os.getenv('MYSQL_PORT')
-USER = os.getenv('MYSQL_USER')
-PASSWORD = os.getenv('MYSQL_PASS')
-DATABASE = os.getenv('MYSQL_DB')
+# Configure database connection settings
+DB_CONFIG = {
+    'host': get_env_var('MYSQL_HOST', 'localhost'),
+    'port': int(get_env_var('MYSQL_PORT', '3306')),
+    'user': get_env_var('MYSQL_USER'),
+    'password': get_env_var('MYSQL_PASS'),
+    'database': get_env_var('MYSQL_DB'),
+}
 
-CONNECTION_POOL = pooling.MySQLConnectionPool(
-    pool_name="neoed_pool",
-    pool_size=20,
-    host=HOST,
-    port=PORT,
-    user=USER,
-    password=PASSWORD,
-    database=DATABASE
-)
+# Create connection pool with error handling
+try:
+    CONNECTION_POOL = pooling.MySQLConnectionPool(
+        pool_name="neoed_pool",
+        pool_size=20,
+        **DB_CONFIG
+    )
+except MySQLError as e:
+    raise RuntimeError(f"Failed to create connection pool: {e}")
 
-def get_connection():
-    conn = CONNECTION_POOL.get_connection()
-    try:
-        yield conn
-    finally:
-        conn.close()
+
+class MySQLConnection:
+    def __init__(self):
+        self.conn = None
+        self.cursor = None
+
+    def __enter__(self):
+        self.conn = CONNECTION_POOL.get_connection()
+        self.cursor = self.conn.cursor(dictionary=True)  # Use dictionary cursor for named columns
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.cursor:
+            self.cursor.close()
+        if self.conn:
+            self.conn.close()
+
+
+    def commit(self):
+        self.conn.commit()
+
+
+    def rollback(self):
+        self.conn.rollback()
+
+
+def get_mysql_connection() -> Generator[MySQLConnection, None, None]:
+    """
+    Database dependency for FastAPI.
+    Usage:
+        @app.get("/")
+        async def root(db: DatabaseConnection = Depends(get_db)):
+            with db as connection:
+                connection.cursor.execute("SELECT * FROM table")
+                return connection.cursor.fetchall()
+    """
+    with MySQLConnection() as db:
+        yield db
