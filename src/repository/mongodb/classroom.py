@@ -1,16 +1,16 @@
 from pymongo.errors import PyMongoError
-
+from src.repository.mongodb.mongodb_repository import MongoDBRepositoryInterface
 from src.service.models.classroom import ClassroomCreate
 from typing import List
 
 
-class MongoClassroomRepository:
+class MongoClassroomRepository(MongoDBRepositoryInterface):
     def __init__(self, connection):
-        self.connection = connection
+        super().__init__(connection)
         self.collection = self.connection.get_collection("classes")
 
-    async def get_by_id(self, classroom_id):
-        pass
+    async def get_by_id(self, class_id: str) -> dict | None:
+        return self.collection.find_one({'_id': class_id})
 
 
     async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:

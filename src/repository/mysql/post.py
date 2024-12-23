@@ -1,11 +1,11 @@
 from src.repository.mysql.mysql_repository_interface import MysqlRepositoryInterface
 from src.configs.utils import fetch_all_as_dict, fetch_one_as_dict
-from src.service.models import Post
+from src.service.models import PostBase
 from mysql.connector import Error
 
 
 class PostRepository(MysqlRepositoryInterface):
-    def get_all(self):
+    def get_posts_in_class(self, class_id: str):
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM posts")
         res = fetch_all_as_dict(cursor)
@@ -19,7 +19,7 @@ class PostRepository(MysqlRepositoryInterface):
         return res
 
 
-    def update_by_id(self, item_id: str, new_item: Post):
+    def update_by_id(self, item_id: str, new_item: PostBase):
         cursor = self.connection.cursor()
         try:
             cursor.execute("""
@@ -57,7 +57,7 @@ class PostRepository(MysqlRepositoryInterface):
         return cursor.rowcount() > 0
 
 
-    def insert(self, item: Post):
+    def insert(self, item: PostBase):
         cursor = self.connection.cursor()
         try:
             cursor.execute("INSERT INTO posts VALUE(%s, %s, %s, %s, %s, %s, %s)",

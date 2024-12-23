@@ -43,20 +43,8 @@ class UserUpdate(BaseModel):
     address: Optional[str] = None
 
 
-class UserUpdateResponse(BaseModel):
-    message: str
-    username: str
-    new_info: dict
-
-
-
 class UserResponse(UserBase):
     joined_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
-
-
-class UserDeleteResponse(BaseModel):
-    message: str
-    username: str

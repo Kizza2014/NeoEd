@@ -86,7 +86,8 @@ class UserRepository(MysqlRepositoryInterface):
 
 
     async def delete_by_username(self, username: str) -> bool:
-        self.cursor.execute("DELETE from users WHERE username LIKE %s", (username,))
+        self.cursor.execute("DELETE FROM users_classes WHERE username LIKE %s", (username,))
+        self.cursor.execute("DELETE FROM users WHERE username LIKE %s", (username,))
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0

@@ -22,7 +22,6 @@ class ClassroomUpdate(BaseModel):
     class_name: Optional[str] = None
     subject_name: Optional[str] = None
     class_schedule: Optional[str] = None
-    owner: Optional[str] = None
 
 
 class ClassroomUpdateResponse(BaseModel):
