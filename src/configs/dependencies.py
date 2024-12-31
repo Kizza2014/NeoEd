@@ -2,11 +2,11 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.repository.mysql import UserRepository
-from src.configs.connections.mysql import get_mysql_conn
+from src.configs.connections.mysql import get_mysql_connection
 from src.configs.logging import get_logger
 from src.configs.security import decode_access_token, http_bearer
 from src.configs.settings import get_settings
-from src.service.models.user import UserInfo
+from src.service.models.user import UserResponse
 
 logger = get_logger(__name__)
 
@@ -14,8 +14,8 @@ settings = get_settings()
 
 async def get_current_user(
     token: HTTPAuthorizationCredentials = Depends(http_bearer),
-    conn = Depends(get_mysql_conn),
-) -> UserInfo:
+    conn = Depends(get_mysql_connection),
+) -> UserResponse:
     payload = decode_access_token(token.credentials)
     if payload is None:
         raise HTTPException(

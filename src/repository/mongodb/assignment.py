@@ -1,84 +1,67 @@
-from src.repository.mysql.mysql_repository_interface import MysqlRepositoryInterface
-from src.service.models import Assignment
-from src.configs.utils import fetch_all_as_dict, fetch_one_as_dict
-from mysql.connector import Error
+from src.repository.mongodb import MongoDBRepositoryInterface
+from src.service.models import AssignmentUpdate, AssignmentCreate
+from typing import List
+from datetime import datetime
 
 
-class AssignmentRepository(MysqlRepositoryInterface):
-    def get_all(self):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM assignments")
-        res = fetch_all_as_dict(cursor)
-        return res
+class AssignmentRepository(MongoDBRepositoryInterface):
+    def __init__(self, connection):
+        super().__init__(connection)
+        self.collection = self.connection.get_collection("classes")
 
 
-    def get_by_id(self, item_id: str):
-        cursor = self.connection.cursor()
-        cursor.execute("SELECT * FROM assignments WHERE id LIKE %s", (item_id,))
-        res = fetch_one_as_dict(cursor)
-        return res
+    async def get_all(self, class_id: str) -> List[dict]:
+        db_classroom = self.collection.find_one({'_id': class_id})
+        return db_classroom['assignments']
 
 
-    def update_by_id(self, item_id: str, new_item: Assignment):
-        cursor = self.connection.cursor()
-        try:
-            cursor.execute("""
-                                    UPDATE assignments 
-                                    SET
-                                        id = %s,
-                                        title = %s,
-                                        class_id = %s,
-                                        author = %s,
-                                        descriptions = %s,
-                                        created_at = %S,
-                                        updated_at = %s,
-                                        start_at = %s,
-                                        end_at = %s
-                                    WHERE id LIKE %s
-                                    """,
-                           (
-                               new_item.id,
-                               new_item.title,
-                               new_item.class_id,
-                               new_item.author,
-                               new_item.descriptions,
-                               new_item.created_at,
-                               new_item.updated_at,
-                               new_item.start_at,
-                               new_item.end_at,
-                               item_id,
-                           )
-            )
-        except Error:
-            return False
-        self.connection.commit()
-        return cursor.rowcount() > 0
+    async def get_by_id(self, class_id: str, assgn_id: str) -> dict | None:
+        db_classroom = self.collection.find_one({'_id': class_id})
+        if db_classroom is not None:
+            for assignment in db_classroom['assignments']:
+                if assignment['id'] == assgn_id:
+                    return assignment
+        return None
 
 
-    def delete_by_id(self, item_id: str):
-        cursor = self.connection.cursor()
-        cursor.execute("DELETE from users WHERE id LIKE %s", (item_id,))
-        self.connection.commit()
-        return cursor.rowcount() > 0
+    async def create_assignment(self, class_id: str, new_assgn: AssignmentCreate) -> bool:
+        assgn_info = new_assgn.model_dump()
+        created_at = datetime.now()
+        assgn_info['id'] = '_'.join([new_assgn.author, created_at.strftime('%Y-%m-%d_%H:%M:%S')])
+        assgn_info['created_at'] = created_at
+        assgn_info['updated_at'] = created_at
+
+        filters = {'_id': class_id}
+        updates = {
+            '$push': {
+                'assignments': assgn_info
+            }
+        }
+
+        res = self.collection.update_one(filters, updates)
+        return res.modified_count > 0
 
 
-    def insert(self, new_item: Assignment):
-        cursor = self.connection.cursor()
-        try:
-            cursor.execute("INSERT INTO assignments VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                           (
-                               new_item.id,
-                               new_item.title,
-                               new_item.class_id,
-                               new_item.author,
-                               new_item.descriptions,
-                               new_item.created_at,
-                               new_item.updated_at,
-                               new_item.start_at,
-                               new_item.end_at,
-                           )
-            )
-        except Error:
-            return False
-        self.connection.commit()
-        return cursor.rowcount() > 0
+    async def update_by_id(self, class_id: str, assgn_id: str, new_info: AssignmentUpdate) -> bool:
+        update_info = new_info.model_dump(exclude_unset=True)
+        filters = {'_id': class_id, 'assignments.id': assgn_id}
+        updates = {
+            '$set': {}
+        }
+        set_op = updates['$set']
+        for key, value in update_info.items():
+            set_op['assignments.$.' + key] = value
+
+        result = self.collection.update_one(filters, updates)
+        return result.modified_count > 0
+
+
+    async def delete_by_id(self, class_id: str, assgn_id: str) -> bool:
+        filters = {'_id': class_id}
+        updates = {
+            '$pull': {
+                'assignments': {'id': assgn_id}
+            }
+        }
+        result = self.collection.update_one(filters, updates)
+        return result.modified_count > 0

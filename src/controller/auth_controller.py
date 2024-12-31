@@ -1,42 +1,57 @@
 from src.repository.mysql import UserRepository
 from fastapi import APIRouter, Depends, Response, status, Cookie
-from src.configs.connections.mysql import get_mysql_conn
-from src.service.models.authentication import TokenResponse, UserLogin, RegisterResponse, UserCreate
+from src.configs.connections.mysql import get_mysql_connection
+from src.service.models.authentication import TokenResponse, UserLogin
+from src.service.models.user_model import RegisterResponse, UserCreate
+from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError
 from fastapi import HTTPException
 from src.configs.security import verify_password, create_refresh_token, create_access_token, decode_refresh_token
+from mysql.connector import Error as MySQLError
 
 
 AUTH_CONTROLLER = APIRouter()
 
 
 @AUTH_CONTROLLER.post("/register", response_model=RegisterResponse)
-async def register(user: UserCreate, conn=Depends(get_mysql_conn)):
-    user_repo = UserRepository(conn)
+async def register(new_user: UserCreate, connection=Depends(get_mysql_connection)):
+    try:
+        user_repo = UserRepository(connection)
 
-    # Kiểm tra id tồn tại hay chưa
-    existing_user = user_repo.get_by_id(user.id)
-    if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered",
+        # Kiểm tra id tồn tại hay chưa
+        existing_user = await user_repo.get_by_username(new_user.username)
+        if existing_user is not None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Username already existed",
+            )
+
+        # Tạo user mới
+        if not await user_repo.create_user(new_user):
+            raise HTTPException(
+                status_code=500,
+                detail="Unexpected error occurred. Cannot create user",
+            )
+
+        return RegisterResponse(
+            message="User registered successfully",
+            username=new_user.username,
         )
-
-    # Tạo user mới
-    finish_status = user_repo.insert(user)
-    if not finish_status:
-        raise HTTPException(status_code=400, detail="Unexpected error.")
-
-    return RegisterResponse(
-        message="User registered successfully",
-        user_id=user.id,
-    )
+    except MySQLError as e:
+        connection.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+    except PasswordValidationError:
+        raise HTTPException(status_code=400,
+                            detail="Password must be at least 8 characters long and include at least one number.")
+    except UsernameValidationError:
+        raise HTTPException(status_code=400,
+                            detail="Username must not exceed 50 characters and can only include alphanumeric characters.")
 
 
 @AUTH_CONTROLLER.post("/login", response_model=TokenResponse)
 async def signin(
     user: UserLogin,
     response: Response,
-    conn=Depends(get_mysql_conn),
+    conn=Depends(get_mysql_connection),
 ):
     user_repo = UserRepository(conn)
 
@@ -72,7 +87,7 @@ async def signin(
 @AUTH_CONTROLLER.post("/refresh-token", response_model=TokenResponse)
 async def refresh_token_(
     response: Response,
-    conn=Depends(get_mysql_conn),
+    conn=Depends(get_mysql_connection),
     refresh_token: str = Cookie(None),
 ):
     if not refresh_token:

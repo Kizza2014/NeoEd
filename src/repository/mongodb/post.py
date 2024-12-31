@@ -27,20 +27,32 @@ class PostRepository(MongoDBRepositoryInterface):
         post_info = new_post.model_dump()
         created_at = datetime.now()
         post_id = '_'.join([new_post.author, created_at.strftime('%Y-%m-%d_%H:%M:%S')])
+
         post_info['id'] = post_id
         post_info['created_at'] = created_at
         post_info['updated_at'] = created_at
-        result = self.collection.update_one({'_id': class_id}, {'$push': {'posts': post_info}})
+
+        filters = {'_id': class_id}
+        updates = {
+            '$push': {
+                'posts': post_info
+            }
+        }
+
+        result = self.collection.update_one(filters, updates)
         return result.modified_count > 0
 
 
     async def update_post_by_id(self, class_id, post_id, update_data: PostUpdate) -> bool:
         update_data = update_data.model_dump(exclude_unset=True)
         update_fields = {f'posts.$.{k}': v for k, v in update_data.items()}
-        result = self.collection.update_one(
-            {'_id': class_id, 'posts.id': post_id},
-            {'$set': update_fields}
-        )
+
+        filters = {'_id': class_id, 'posts.id': post_id}
+        updates = {
+            '$set': update_fields
+        }
+
+        result = self.collection.update_one(filters, updates)
         return result.modified_count > 0
 
 
