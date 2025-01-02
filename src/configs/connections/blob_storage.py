@@ -79,6 +79,7 @@ class SupabaseStorage:
             }
         except Exception as e:
             # Return failure status with error message
+            print(f"Error: {e}")
             return {
                 'file': file.filename,
                 'status': 'failed',

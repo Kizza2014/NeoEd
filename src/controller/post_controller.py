@@ -1,4 +1,4 @@
-from src.repository.mongodb.post import  PostRepository
+from src.repository.mongodb.post import PostRepository
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from src.configs.connections import get_mongo_connection
 from typing import List
@@ -6,7 +6,6 @@ from src.service.models.classroom import PostResponse, PostCreate, PostUpdate
 from pymongo.errors import PyMongoError
 from src.configs.connections.blob_storage import SupabaseStorage
 import os
-
 
 BUCKET = 'posts'
 POST_CONTROLLER = APIRouter()
@@ -63,16 +62,16 @@ async def create_post(
             "content": content if content else None,
             "attachments": [file.filename for file in attachments] if attachments else None
         }
-        post_dict = {k:v for k, v in post_dict.items() if v is not None}
+        post_dict = {k: v for k, v in post_dict.items() if v is not None}
         new_post = PostCreate(**post_dict, author=author)
         newpost_id = await repo.create_post(class_id=class_id, new_post=new_post)
         if not newpost_id:
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Create post failed')
 
-
         # upload attachments to storage
         storage = SupabaseStorage()
-        post_folder = os.path.join(class_id, newpost_id)
+        # TODO: fix for Windows
+        post_folder = class_id + "/" + newpost_id
         upload_results = await storage.bulk_upload(
             bucket_name=BUCKET,
             files=attachments if attachments else [],
@@ -116,7 +115,6 @@ async def update_post(
         if not status:
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Update post failed')
 
-
         # upload and remove attachments
         storage = SupabaseStorage()
         upload_results = await storage.bulk_upload(
@@ -128,7 +126,7 @@ async def update_post(
         remove_results = await storage.remove_files(
             bucket_name=BUCKET,
             file_locations=[os.path.join(post_folder, filename) for filename in removal_attachments]
-                                                                            if removal_attachments else []
+            if removal_attachments else []
         )
 
         return {
