@@ -1,5 +1,5 @@
-from src.service.models.user_model import UserResponse, UserUpdate
-from src.repository.mysql import UserRepository
+from src.service.models.user import UserResponse, UserUpdate
+from src.repository.mysql.user import UserRepository
 from fastapi import APIRouter, Depends
 from src.configs.connections.mysql import get_mysql_connection
 from typing import List

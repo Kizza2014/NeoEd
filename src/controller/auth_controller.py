@@ -1,8 +1,8 @@
-from src.repository.mysql import UserRepository
+from src.repository.mysql.user import UserRepository
 from fastapi import APIRouter, Depends, Response, status, Cookie
 from src.configs.connections.mysql import get_mysql_connection
 from src.service.models.authentication import TokenResponse, UserLogin
-from src.service.models.user_model import RegisterResponse, UserCreate
+from src.service.models.user.user_model import RegisterResponse, UserCreate
 from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError
 from fastapi import HTTPException
 from src.configs.security import verify_password, create_refresh_token, create_access_token, decode_refresh_token

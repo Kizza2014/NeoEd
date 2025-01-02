@@ -1,4 +1,4 @@
-from src.configs.connections.mongodb import MongoDBConnection
+from src.configs.connections import MongoDBConnection
 
 
 class MongoDBRepositoryInterface:

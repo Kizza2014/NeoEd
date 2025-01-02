@@ -1,4 +1,4 @@
-from src.repository.mysql.mysql_repository_interface import MysqlRepositoryInterface
+from src.repository.mysql import MysqlRepositoryInterface
 
 
 class NotificationRepository(MysqlRepositoryInterface):

@@ -1,8 +1,8 @@
-from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError
+from src.service.models.exceptions import PasswordValidationError, UsernameValidationError
 from src.configs.security import get_password_hash
-from src.repository.mysql.mysql_repository_interface import MysqlRepositoryInterface
+from src.repository.mysql import MysqlRepositoryInterface
 from typing import List
-from src.service.models.user_model import UserCreate, UserUpdate
+from src.service.models.user import UserCreate, UserUpdate
 from datetime import datetime
 
 
