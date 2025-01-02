@@ -1,0 +1,68 @@
+.request-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 30px;
+    margin-bottom: 100px;
+    padding: 10px;
+    background-color: #FFFAFA;
+
+}
+
+.request-form-container{
+    display:flex;
+    flex-direction: column;
+    border: 2px solid black;
+    border-radius: 7px;
+    width: 713px;
+    height: 273px;
+    margin: 10px;
+    margin-right: 50px;
+    background-color: #ADA6A6;
+}
+
+.request-name{
+    background-color: inherit;
+    border-radius: 10px;
+    border: none;
+    border-bottom: 1px solid black;
+    border: none;
+    outline: none;
+    padding: 5px;
+    padding-left: 5px;
+}
+
+.request-content{
+    background-color: inherit;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    padding: 5px;
+    padding-left: 5px;
+}
+
+.separator {
+    height: 2px;
+    background-color: black;
+}
+
+.list-request-container{
+    margin: 20px;
+}
+
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin-top: 10px;
+    border: 2px solid #000000;
+}
+
+.requests-table th {
+    background-color: #ADA6A6; 
+}
+
+.requests-table th, .requests-table td {
+    padding: 5px;
+    border: 1px solid #000000;
+}

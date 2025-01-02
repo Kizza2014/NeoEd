@@ -1,0 +1,33 @@
+.button-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.button-list a {
+    text-decoration: none; 
+    color: black;     
+    font-weight: bold;  
+    transition: color 0.3s ease;
+  }
+  
+  .button-list a:hover {
+    text-decoration: underline; /* Underline when hovered */
+  }
+  
+  .button-list a.active_class_link {
+    color: #9A7331;
+  }
+.logo {
+    width: 180px;
+    height: auto;
+    align-self: center;
+    margin-bottom: 13%;
+    object-fit: contain;
+}
+
+.slide button {
+    font-size: 20px;
+}
+  
+

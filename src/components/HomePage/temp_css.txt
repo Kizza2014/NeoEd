@@ -1,0 +1,2678 @@
+/* trang_chu */
+
+position: relative;
+width: 1440px;
+height: 1024px;
+overflow-y: scroll;
+
+background: #EAE9E9;
+
+
+/* Rectangle 22 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 47px;
+left: 294px;
+top: 353px;
+
+background: #D9D9D9;
+border: 1px solid #000000;
+
+
+/* Rectangle 23 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 141px;
+height: 22px;
+left: 586px;
+top: 364px;
+
+background: #D9D9D9;
+border: 1px solid #000000;
+
+
+/* Tìm kiếm */
+
+position: absolute;
+width: 66px;
+height: 18px;
+left: calc(50% - 66px/2 - 63.5px);
+top: 365.5px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Tên khóa học */
+
+position: absolute;
+width: 110px;
+height: 16px;
+left: 302px;
+top: 369px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #B6A5A5;
+
+
+
+/* Rectangle 13 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 146px;
+left: 292px;
+top: 465px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Rectangle 30 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 146px;
+left: 292px;
+top: 653px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Rectangle 24 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 146px;
+left: 584px;
+top: 466px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Rectangle 31 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 146px;
+left: 584px;
+top: 654px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Rectangle 26 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 146px;
+left: 876px;
+top: 467px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Rectangle 32 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 146px;
+left: 876px;
+top: 655px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Rectangle 28 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 146px;
+left: 1168px;
+top: 467px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Rectangle 33 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 272px;
+height: 146px;
+left: 1168px;
+top: 655px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Rectangle 1 */
+
+position: absolute;
+left: 33.12%;
+right: 66.04%;
+top: 51.56%;
+bottom: 47.36%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Rectangle 34 */
+
+position: absolute;
+left: 33.12%;
+right: 66.04%;
+top: 69.92%;
+bottom: 29%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Rectangle 25 */
+
+position: absolute;
+left: 53.4%;
+right: 45.76%;
+top: 51.66%;
+bottom: 47.27%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Rectangle 35 */
+
+position: absolute;
+left: 53.4%;
+right: 45.76%;
+top: 70.02%;
+bottom: 28.91%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Rectangle 27 */
+
+position: absolute;
+left: 73.68%;
+right: 25.49%;
+top: 51.76%;
+bottom: 47.17%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Rectangle 36 */
+
+position: absolute;
+left: 73.68%;
+right: 25.49%;
+top: 70.12%;
+bottom: 28.81%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Rectangle 29 */
+
+position: absolute;
+left: 93.96%;
+right: 5.21%;
+top: 51.76%;
+bottom: 47.17%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Rectangle 37 */
+
+position: absolute;
+left: 93.96%;
+right: 5.21%;
+top: 70.12%;
+bottom: 28.81%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 107 */
+
+position: absolute;
+left: 33.61%;
+right: 66.04%;
+top: 51.56%;
+bottom: 47.95%;
+
+/* Line_icon */
+background: #33363F;
+
+
+/* Vector 457 */
+
+position: absolute;
+left: 33.61%;
+right: 66.04%;
+top: 69.92%;
+bottom: 29.59%;
+
+/* Line_icon */
+background: #33363F;
+
+
+/* Vector 445 */
+
+position: absolute;
+left: 53.89%;
+right: 45.76%;
+top: 51.66%;
+bottom: 47.85%;
+
+/* Line_icon */
+background: #33363F;
+
+
+/* Vector 458 */
+
+position: absolute;
+left: 53.89%;
+right: 45.76%;
+top: 70.02%;
+bottom: 29.49%;
+
+/* Line_icon */
+background: #33363F;
+
+
+/* Vector 449 */
+
+position: absolute;
+left: 74.17%;
+right: 25.49%;
+top: 51.76%;
+bottom: 47.75%;
+
+/* Line_icon */
+background: #33363F;
+
+
+/* Vector 459 */
+
+position: absolute;
+left: 74.17%;
+right: 25.49%;
+top: 70.12%;
+bottom: 29.39%;
+
+/* Line_icon */
+background: #33363F;
+
+
+/* Vector 453 */
+
+position: absolute;
+left: 94.44%;
+right: 5.21%;
+top: 51.76%;
+bottom: 47.75%;
+
+/* Line_icon */
+background: #33363F;
+
+
+/* Vector 460 */
+
+position: absolute;
+left: 94.44%;
+right: 5.21%;
+top: 70.12%;
+bottom: 29.39%;
+
+/* Line_icon */
+background: #33363F;
+
+
+/* Vector 57 */
+
+position: absolute;
+left: 33.06%;
+right: 65.97%;
+top: 48.73%;
+bottom: 49.71%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 461 */
+
+position: absolute;
+left: 33.06%;
+right: 65.97%;
+top: 67.09%;
+bottom: 31.35%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 446 */
+
+position: absolute;
+left: 53.33%;
+right: 45.69%;
+top: 48.83%;
+bottom: 49.61%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 462 */
+
+position: absolute;
+left: 53.33%;
+right: 45.69%;
+top: 67.19%;
+bottom: 31.25%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 450 */
+
+position: absolute;
+left: 73.61%;
+right: 25.42%;
+top: 48.93%;
+bottom: 49.51%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 463 */
+
+position: absolute;
+left: 73.61%;
+right: 25.42%;
+top: 67.29%;
+bottom: 31.15%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 454 */
+
+position: absolute;
+left: 93.89%;
+right: 5.14%;
+top: 48.93%;
+bottom: 49.51%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 464 */
+
+position: absolute;
+left: 93.89%;
+right: 5.14%;
+top: 67.29%;
+bottom: 31.15%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+
+
+/* Vector 55 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 33.33%;
+right: 66.25%;
+top: 49.22%;
+bottom: 50.78%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+border-radius: 2px;
+
+
+/* Vector 465 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 33.33%;
+right: 66.25%;
+top: 67.58%;
+bottom: 32.42%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+border-radius: 2px;
+
+
+/* Vector 447 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 53.61%;
+right: 45.97%;
+top: 49.32%;
+bottom: 50.68%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+border-radius: 2px;
+
+
+/* Vector 466 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 53.61%;
+right: 45.97%;
+top: 67.68%;
+bottom: 32.32%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+border-radius: 2px;
+
+
+/* Vector 451 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 73.89%;
+right: 25.69%;
+top: 49.41%;
+bottom: 50.59%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+border-radius: 2px;
+
+
+/* Vector 467 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 73.89%;
+right: 25.69%;
+top: 67.77%;
+bottom: 32.23%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+border-radius: 2px;
+
+
+/* Vector 455 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 94.17%;
+right: 5.42%;
+top: 49.41%;
+bottom: 50.59%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+border-radius: 2px;
+
+
+/* Vector 468 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 94.17%;
+right: 5.42%;
+top: 67.77%;
+bottom: 32.23%;
+
+/* Line_icon */
+border: 2px solid #33363F;
+border-radius: 2px;
+
+
+/* Vector 444 */
+
+position: absolute;
+width: 78px;
+height: 0px;
+left: 460px;
+top: 572px;
+
+border: 1px solid #000000;
+transform: rotate(-90deg);
+
+
+/* Vector 469 */
+
+position: absolute;
+width: 78px;
+height: 0px;
+left: 460px;
+top: 761px;
+
+border: 1px solid #000000;
+transform: rotate(-90deg);
+
+
+/* Vector 448 */
+
+position: absolute;
+width: 78px;
+height: 0px;
+left: 752px;
+top: 569px;
+
+border: 1px solid #000000;
+transform: rotate(-90deg);
+
+
+/* Vector 470 */
+
+position: absolute;
+width: 78px;
+height: 0px;
+left: 752px;
+top: 765px;
+
+border: 1px solid #000000;
+transform: rotate(-90deg);
+
+
+/* Vector 452 */
+
+position: absolute;
+width: 78px;
+height: 0px;
+left: 1044px;
+top: 579px;
+
+border: 1px solid #000000;
+transform: rotate(-90deg);
+
+
+/* Vector 471 */
+
+position: absolute;
+width: 78px;
+height: 0px;
+left: 1044px;
+top: 765px;
+
+border: 1px solid #000000;
+transform: rotate(-90deg);
+
+
+/* Vector 456 */
+
+position: absolute;
+width: 78px;
+height: 0px;
+left: 1336px;
+top: 580px;
+
+border: 1px solid #000000;
+transform: rotate(-90deg);
+
+
+/* Vector 472 */
+
+position: absolute;
+width: 78px;
+height: 0px;
+left: 1336px;
+top: 765px;
+
+border: 1px solid #000000;
+transform: rotate(-90deg);
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 97px;
+height: 16px;
+left: 297px;
+top: 474px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 97px;
+height: 16px;
+left: 297px;
+top: 662px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 97px;
+height: 16px;
+left: 589px;
+top: 475px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 97px;
+height: 16px;
+left: 589px;
+top: 663px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 97px;
+height: 16px;
+left: 881px;
+top: 476px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 97px;
+height: 16px;
+left: 881px;
+top: 664px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 97px;
+height: 16px;
+left: 1173px;
+top: 476px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 97px;
+height: 16px;
+left: 1173px;
+top: 664px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Học liệu */
+
+position: absolute;
+width: 50px;
+height: 10px;
+left: 496px;
+top: 502px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Học liệu */
+
+position: absolute;
+width: 50px;
+height: 10px;
+left: 496px;
+top: 690px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Học liệu */
+
+position: absolute;
+width: 50px;
+height: 10px;
+left: 788px;
+top: 503px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Học liệu */
+
+position: absolute;
+width: 50px;
+height: 10px;
+left: 788px;
+top: 691px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Học liệu */
+
+position: absolute;
+width: 50px;
+height: 10px;
+left: 1080px;
+top: 504px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Học liệu */
+
+position: absolute;
+width: 50px;
+height: 10px;
+left: 1080px;
+top: 692px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Học liệu */
+
+position: absolute;
+width: 50px;
+height: 10px;
+left: 1377px;
+top: 504px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Học liệu */
+
+position: absolute;
+width: 50px;
+height: 10px;
+left: 1377px;
+top: 692px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập */
+
+position: absolute;
+width: 43px;
+height: 10px;
+left: 496px;
+top: 529px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập */
+
+position: absolute;
+width: 43px;
+height: 10px;
+left: 496px;
+top: 717px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập */
+
+position: absolute;
+width: 43px;
+height: 10px;
+left: 788px;
+top: 530px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập */
+
+position: absolute;
+width: 43px;
+height: 10px;
+left: 788px;
+top: 718px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập */
+
+position: absolute;
+width: 43px;
+height: 10px;
+left: 1080px;
+top: 531px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập */
+
+position: absolute;
+width: 43px;
+height: 10px;
+left: 1080px;
+top: 719px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập */
+
+position: absolute;
+width: 43px;
+height: 10px;
+left: 1377px;
+top: 531px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập */
+
+position: absolute;
+width: 43px;
+height: 10px;
+left: 1377px;
+top: 719px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Thứ 4, 9h-12h */
+
+position: absolute;
+width: 86px;
+height: 11px;
+left: 297px;
+top: 499px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Thứ 4, 9h-12h */
+
+position: absolute;
+width: 86px;
+height: 11px;
+left: 297px;
+top: 687px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Thứ 4, 9h-12h */
+
+position: absolute;
+width: 86px;
+height: 11px;
+left: 589px;
+top: 500px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Thứ 4, 9h-12h */
+
+position: absolute;
+width: 86px;
+height: 11px;
+left: 589px;
+top: 688px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Thứ 4, 9h-12h */
+
+position: absolute;
+width: 86px;
+height: 11px;
+left: 881px;
+top: 501px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Thứ 4, 9h-12h */
+
+position: absolute;
+width: 86px;
+height: 11px;
+left: 881px;
+top: 689px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Thứ 4, 9h-12h */
+
+position: absolute;
+width: 86px;
+height: 11px;
+left: 1173px;
+top: 501px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Thứ 4, 9h-12h */
+
+position: absolute;
+width: 86px;
+height: 11px;
+left: 1173px;
+top: 689px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Giáo viên : Nguyễn Văn A */
+
+position: absolute;
+width: 151px;
+height: 13px;
+left: 294px;
+top: 542px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Giáo viên : Nguyễn Văn A */
+
+position: absolute;
+width: 151px;
+height: 13px;
+left: 294px;
+top: 730px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Giáo viên : Nguyễn Văn A */
+
+position: absolute;
+width: 151px;
+height: 13px;
+left: 586px;
+top: 543px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Giáo viên : Nguyễn Văn A */
+
+position: absolute;
+width: 151px;
+height: 13px;
+left: 586px;
+top: 731px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Giáo viên : Nguyễn Văn A */
+
+position: absolute;
+width: 151px;
+height: 13px;
+left: 878px;
+top: 544px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Giáo viên : Nguyễn Văn A */
+
+position: absolute;
+width: 151px;
+height: 13px;
+left: 878px;
+top: 732px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Giáo viên : Nguyễn Văn A */
+
+position: absolute;
+width: 151px;
+height: 13px;
+left: 1170px;
+top: 544px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Giáo viên : Nguyễn Văn A */
+
+position: absolute;
+width: 151px;
+height: 13px;
+left: 1170px;
+top: 732px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Phòng học: 503T5 */
+
+position: absolute;
+width: 109px;
+height: 11px;
+left: 297px;
+top: 564px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Phòng học: 503T5 */
+
+position: absolute;
+width: 109px;
+height: 11px;
+left: 297px;
+top: 752px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Phòng học: 503T5 */
+
+position: absolute;
+width: 109px;
+height: 11px;
+left: 589px;
+top: 565px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Phòng học: 503T5 */
+
+position: absolute;
+width: 109px;
+height: 11px;
+left: 589px;
+top: 753px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Phòng học: 503T5 */
+
+position: absolute;
+width: 109px;
+height: 11px;
+left: 881px;
+top: 566px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Phòng học: 503T5 */
+
+position: absolute;
+width: 109px;
+height: 11px;
+left: 881px;
+top: 754px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Phòng học: 503T5 */
+
+position: absolute;
+width: 109px;
+height: 11px;
+left: 1173px;
+top: 566px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Phòng học: 503T5 */
+
+position: absolute;
+width: 109px;
+height: 11px;
+left: 1173px;
+top: 754px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+
+/* Lớp học */
+
+position: absolute;
+width: 196px;
+height: 37px;
+left: 254px;
+top: 305px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 32px;
+line-height: 39px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Hiện tại */
+
+position: absolute;
+width: 97px;
+height: 31px;
+left: 294px;
+top: 416px;
+
+
+
+/* Hiện tại */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 19px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Vector 473 */
+
+position: absolute;
+left: 19.49%;
+right: 19.49%;
+top: 82.26%;
+bottom: 17.74%;
+
+border: 1px solid #000000;
+
+
+/* Hiện tại */
+
+position: absolute;
+width: 118px;
+height: 31px;
+left: 391px;
+top: 416px;
+
+
+
+/* Hiện tại */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 19px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #2353F0;
+
+
+
+/* Rectangle 4021 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 435px;
+height: 204px;
+left: 292px;
+top: 88px;
+
+background: #FFFFFF;
+border: 1px solid #000000;
+
+
+/* Công việc cần làm */
+
+position: absolute;
+width: 154px;
+height: 29px;
+left: 292px;
+top: 88px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Ngày đến hạn */
+
+position: absolute;
+width: 154px;
+height: 29px;
+left: 561px;
+top: 132px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* 3 công việc */
+
+position: absolute;
+width: 100px;
+height: 25px;
+left: 294px;
+top: 111px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Rectangle 4022 */
+
+position: absolute;
+width: 380px;
+height: 30px;
+left: 318px;
+top: 161px;
+
+background: #FFAAAB;
+
+
+/* Rectangle 4023 */
+
+position: absolute;
+width: 380px;
+height: 30px;
+left: 318px;
+top: 190px;
+
+background: #FFF0B9;
+
+
+/* Rectangle 4024 */
+
+position: absolute;
+width: 380px;
+height: 30px;
+left: 318px;
+top: 220px;
+
+background: #FFFFFF;
+
+
+/* Rectangle 4025 */
+
+position: absolute;
+width: 380px;
+height: 30px;
+left: 318px;
+top: 250px;
+
+background: #FFFFFF;
+
+
+/* Bài tập: Giải tích 3 */
+
+position: absolute;
+width: 139px;
+height: 11px;
+left: 341px;
+top: 172px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* 26/11/2024 */
+
+position: absolute;
+width: 88px;
+height: 11px;
+left: 594px;
+top: 171px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* 28/11/2024 */
+
+position: absolute;
+width: 88px;
+height: 11px;
+left: 594px;
+top: 200px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* 26/12/2024 */
+
+position: absolute;
+width: 88px;
+height: 11px;
+left: 594px;
+top: 230px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* 26/12/2024 */
+
+position: absolute;
+width: 88px;
+height: 11px;
+left: 594px;
+top: 261px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tâp: Cơ sở dữ liệu */
+
+position: absolute;
+width: 156px;
+height: 11px;
+left: 342px;
+top: 200px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Nhiệm vụ: Tìm hiểu MongoDB */
+
+position: absolute;
+width: 214px;
+height: 11px;
+left: 342px;
+top: 228px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập lập trình cho khoa học */
+
+position: absolute;
+width: 214px;
+height: 11px;
+left: 341px;
+top: 260px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Rectangle 4169 */
+
+position: absolute;
+width: 1168px;
+height: 56px;
+left: 272px;
+top: 0px;
+
+background: #D9D8D8;
+
+
+/* Group 15 */
+
+position: absolute;
+width: 119px;
+height: 35px;
+left: 1310px;
+top: 11px;
+
+
+
+/* logout */
+
+position: absolute;
+left: 96.81%;
+right: 0.76%;
+top: 1.07%;
+bottom: 95.51%;
+
+
+
+/* vuesax/bold/logout */
+
+position: absolute;
+width: 35px;
+height: 35px;
+left: 0px;
+top: 0px;
+
+
+
+/* logout */
+
+position: absolute;
+width: 35px;
+height: 35px;
+left: 0px;
+top: 0px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 37.5%;
+right: 8.37%;
+top: 8.33%;
+bottom: 8.33%;
+
+background: #171717;
+
+
+/* Vector */
+
+position: absolute;
+left: 8.34%;
+right: 62.5%;
+top: 32.93%;
+bottom: 32.93%;
+
+background: #171717;
+
+
+/* Vector */
+
+position: absolute;
+left: 100%;
+right: -100%;
+top: 100%;
+bottom: -100%;
+
+opacity: 0;
+transform: rotate(-180deg);
+
+
+/* Đăng suất */
+
+position: absolute;
+left: 90.97%;
+right: 0.76%;
+top: 1.27%;
+bottom: 95.8%;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+
+color: #000000;
+
+
+
+/* Component 3 */
+
+position: absolute;
+width: 272px;
+height: 1020px;
+left: 0px;
+top: 4px;
+overflow-y: scroll;
+
+
+
+/* Rectangle 11 */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: -0.29%;
+bottom: 0.29%;
+
+background: #D4CECE;
+
+
+/* Việc cần làm */
+
+position: absolute;
+width: 99px;
+height: 19px;
+left: 23px;
+top: 288px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 19px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Các dự án hiện tại */
+
+position: absolute;
+width: 139px;
+height: 19px;
+left: 23px;
+top: 433px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 19px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập: Cơ sở dữ liệu */
+
+position: absolute;
+width: 140px;
+height: 17px;
+left: 51px;
+top: 324px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Cơ sở dữ liệu */
+
+position: absolute;
+width: 87px;
+height: 17px;
+left: 51px;
+top: 179px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Lập trình cho khoa học dữ liệu */
+
+position: absolute;
+width: 200px;
+height: 17px;
+left: 51px;
+top: 229px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Tính toán song song */
+
+position: absolute;
+width: 135px;
+height: 17px;
+left: 51px;
+top: 254px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Giải tích số */
+
+position: absolute;
+width: 74px;
+height: 17px;
+left: 51px;
+top: 204px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Dự án : Cuối kì Lập trình Web */
+
+position: absolute;
+width: 191px;
+height: 17px;
+left: 51px;
+top: 469px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Dự án : Giữa kì CNXHKH */
+
+position: absolute;
+width: 160px;
+height: 17px;
+left: 51px;
+top: 499px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập: Lập trình cho khoa học... */
+
+position: absolute;
+width: 217px;
+height: 17px;
+left: 51px;
+top: 374px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Bài tập: Giải tích 3 */
+
+position: absolute;
+width: 121px;
+height: 17px;
+left: 51px;
+top: 349px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Nhiệm vụ: Tìm hiểu Reactjs */
+
+position: absolute;
+width: 179px;
+height: 17px;
+left: 51px;
+top: 399px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 17px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Group 7 */
+
+position: absolute;
+width: 168px;
+height: 18px;
+left: 23px;
+top: 110px;
+
+
+
+/* Lớp học đã lưu trữ */
+
+position: absolute;
+width: 140px;
+height: 12px;
+left: 51px;
+top: 113px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 19px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Subtract */
+
+position: absolute;
+width: 18px;
+height: 18px;
+left: 23px;
+top: 110px;
+
+/* fill_icon */
+background: #222222;
+
+
+/* Union */
+
+position: absolute;
+width: 18px;
+height: 18px;
+left: 23px;
+top: 110px;
+
+/* fill_icon */
+background: #222222;
+
+
+/* Rectangle 4020 */
+
+position: absolute;
+left: 9.56%;
+right: 86.03%;
+top: 10.78%;
+bottom: 87.84%;
+
+/* fill_icon */
+background: #222222;
+border-radius: 2px;
+
+
+/* Union */
+
+position: absolute;
+width: 18px;
+height: 12px;
+left: 23px;
+top: 116px;
+
+/* fill_icon */
+background: #222222;
+
+
+/* Rectangle 4019 */
+
+position: absolute;
+left: 8.46%;
+right: 84.93%;
+top: 11.67%;
+bottom: 87.45%;
+
+/* fill_icon */
+background: #222222;
+
+
+/* Rectangle 4018 */
+
+position: absolute;
+left: 8.46%;
+right: 87.87%;
+top: 11.37%;
+bottom: 88.33%;
+
+/* fill_icon */
+background: #222222;
+
+
+/* Vector 233 */
+
+position: absolute;
+left: 9.19%;
+right: 84.74%;
+top: 11.27%;
+bottom: 88.43%;
+
+border: 2px solid #1E1E1E;
+border-radius: 2px;
+
+
+/* Group 8 */
+
+position: absolute;
+width: 112px;
+height: 19px;
+left: 22px;
+top: 144px;
+
+
+
+/* Thông báo */
+
+position: absolute;
+width: 83px;
+height: 19px;
+left: 51px;
+top: 144px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 19px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+
+
+/* Rectangle 1 */
+
+position: absolute;
+left: 8.09%;
+right: 84.56%;
+top: 14.12%;
+bottom: 84.31%;
+
+/* fill_icon */
+background: #222222;
+
+
+/* Ellipse 45 */
+
+position: absolute;
+left: 12.5%;
+right: 86.03%;
+top: 15.98%;
+bottom: 83.92%;
+
+/* fill_icon */
+border: 2px solid #222222;
+transform: rotate(180deg);
+
+
+/* Group 6 */
+
+position: absolute;
+width: 145px;
+height: 54.79px;
+left: 58px;
+top: 2px;
+
+
+
+/* Screenshot_2024-11-11_142214-removebg-preview 1 */
+
+position: absolute;
+width: 109px;
+height: 24px;
+left: 94px;
+top: 21px;
+
+background: url(Screenshot_2024-11-11_142214-removebg-preview.png);
+
+
+/* Screenshot_2024-11-11_142214-removebg-preview 2 */
+
+position: absolute;
+width: 50px;
+height: 54.79px;
+left: 58px;
+top: 2px;
+
+background: url(Screenshot_2024-11-11_142214-removebg-preview.png);

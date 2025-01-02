@@ -1,0 +1,30 @@
+.breadcrumb {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item {
+    margin-right: 0.5rem;
+}
+
+.breadcrumb-item a {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    margin-right: 0.5rem;
+    font-weight: normal;
+}
+
+.breadcrumb-item.active {
+    font-weight: bold;
+}

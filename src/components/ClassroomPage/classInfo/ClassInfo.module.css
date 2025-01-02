@@ -1,0 +1,31 @@
+.container {
+  display: flex;
+  max-width: 435px;
+  margin: 20px;
+  flex-direction: column;
+  color: #000;
+  font: 400 15px Inter, sans-serif;
+}
+
+.infoCard {
+  background-color: #fff;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: start;
+  padding: 8px 33px 18px 14px;
+  border: 1px solid #000;
+}
+
+.title {
+  font-weight: 600;
+  text-align: center;
+}
+
+.curriculum {
+  background-color: #fff;
+  z-index: 10;
+  width: 380px;
+  max-width: 100%;
+  padding: 9px 24px;
+}

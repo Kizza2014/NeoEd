@@ -1,0 +1,14 @@
+.row {
+  background-color: #fff;
+  display: flex;
+  gap: 40px 100px;
+  padding: 8px 24px;
+}
+
+.label {
+  font-weight: 400;
+}
+
+.value {
+  text-align: center;
+}
