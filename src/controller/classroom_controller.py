@@ -1,9 +1,9 @@
-from src.repository.mysql import MySQLClassroomRepository
-from src.repository.mongodb import MongoClassroomRepository
+from src.repository.mysql.classroom import MySQLClassroomRepository
+from src.repository.mongodb.classroom import MongoClassroomRepository
 from fastapi import APIRouter, Depends
 from src.configs.connections.mysql import get_mysql_connection
 from src.configs.connections.mongodb import get_mongo_connection
-from src.service.models import (
+from src.service.models.classroom import (
     ClassroomCreate, ClassroomResponse,
     ClassroomUpdate
 )
@@ -52,7 +52,7 @@ async def create_classroom(
         mongo_repo = MongoClassroomRepository(mongo_connection)
 
         current_time = datetime.now()
-        formated_time = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        formated_time = current_time.strftime('%Y_%m_%d_%H_%M_%S')
         new_classroom.id = '_'.join([new_classroom.owner, formated_time])
 
         status1 = await mysql_repo.create_classroom(new_classroom)

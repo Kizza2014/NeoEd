@@ -1,4 +1,3 @@
-from .user import UserRepository
-from .classroom import MySQLClassroomRepository
-from .post import PostRepository
-from .notification import NotificationRepository
+from src.repository.mysql.classroom import *
+from src.repository.mysql.user import *
+from src.repository.mysql.mysql_repository_interface import *

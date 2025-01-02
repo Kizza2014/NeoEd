@@ -1,3 +1,1 @@
-from .base_user import *
-from .student import *
-from .teacher import *
+from src.service.models.user.user_model import *

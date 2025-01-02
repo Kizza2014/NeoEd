@@ -1,1 +1,1 @@
-from .mysql_utils import *
+from src.configs.utils.utils import *

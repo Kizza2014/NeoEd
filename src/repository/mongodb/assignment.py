@@ -1,5 +1,5 @@
 from src.repository.mongodb import MongoDBRepositoryInterface
-from src.service.models import AssignmentUpdate, AssignmentCreate
+from src.service.models.classroom import AssignmentUpdate, AssignmentCreate
 from typing import List
 from datetime import datetime
 
@@ -27,7 +27,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
     async def create_assignment(self, class_id: str, new_assgn: AssignmentCreate) -> bool:
         assgn_info = new_assgn.model_dump()
         created_at = datetime.now()
-        assgn_info['id'] = '_'.join([new_assgn.author, created_at.strftime('%Y-%m-%d_%H:%M:%S')])
+        assgn_info['id'] = '_'.join([new_assgn.author, created_at.strftime('%Y_%m_%d_%H_%M_%S')])
         assgn_info['created_at'] = created_at
         assgn_info['updated_at'] = created_at
 
@@ -39,10 +39,14 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         }
 
         res = self.collection.update_one(filters, updates)
-        return res.modified_count > 0
+        if res.modified_count > 0:
+            return assgn_info['id']
+        return None
 
 
     async def update_by_id(self, class_id: str, assgn_id: str, new_info: AssignmentUpdate) -> bool:
+        current_time = datetime.now()
+
         update_info = new_info.model_dump(exclude_unset=True)
         filters = {'_id': class_id, 'assignments.id': assgn_id}
         updates = {
@@ -51,6 +55,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         set_op = updates['$set']
         for key, value in update_info.items():
             set_op['assignments.$.' + key] = value
+        set_op['assignments.$.updated_at'] = current_time
 
         result = self.collection.update_one(filters, updates)
         return result.modified_count > 0
