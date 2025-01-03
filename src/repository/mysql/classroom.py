@@ -1,59 +1,69 @@
 from src.repository.mysql.mysql_repository_interface import MysqlRepositoryInterface
 from src.service.models.classroom import ClassroomCreate, ClassroomUpdate
-from src.configs.security import get_password_hash
+from src.configs.security import get_password_hash, verify_password
 from typing import List
 from datetime import datetime
+from mysql.connector import Error as MySQLError
 
 
 class MySQLClassroomRepository(MysqlRepositoryInterface):
 
     # GET
     async def get_all(self) -> list[dict]:
-        self.cursor.execute("""SELECT id, class_name, subject_name, owner, class_schedule, created_at, updated_at 
+        self.cursor.execute("""SELECT id, class_name, subject_name, owner_id, class_schedule, created_at, updated_at 
                                FROM classes""")
         return self.cursor.fetchall()
 
 
-    async def get_classes_of_users(self, username: str) -> List[dict]:
+    async def get_all_classroom_of_user(self, user_id: str) -> List[dict]:
         self.cursor.execute(
             """
-            SELECT c.id, c.class_name, c.subject_name, c.owner, c.class_schedule, c.created_at, c.updated_at
+            SELECT c.id, c.class_name, c.subject_name, c.owner_id, c.class_schedule, 
+                            c.description, c.created_at, c.updated_at, c.require_password
             FROM (SELECT *
                   FROM users_classes
                   WHERE username LIKE %s  
                  ) AS uc JOIN classes AS c ON uc.class_id LIKE c.id
             """,
-            (username,)
+            (user_id,)
         )
         return self.cursor.fetchall()
 
 
     async def get_by_id(self, class_id: str) -> dict | None:
-        self.cursor.execute("""SELECT id, class_name, subject_name, owner, class_schedule, created_at, updated_at 
+        self.cursor.execute("""SELECT id, class_name, subject_name, owner_id, class_schedule, 
+                                        description, created_at, updated_at, require_password 
                           FROM classes 
                           WHERE id LIKE %s""",
                        (class_id,))
         return self.cursor.fetchone()
 
 
+    async def get_owner_id(self, class_id: str) -> str:
+        self.cursor.execute("SELECT owner_id FROM classes WHERE id LIKE %s", (class_id,))
+        owner = self.cursor.fetchone()
+        if not owner:
+            raise MySQLError('Classroom not found')
+        return owner['owner_id']
+
+
     # CREATE
     async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:
-        current_time = datetime.now()
-        time_mysql_format = current_time.strftime('%Y-%m-%d %H:%M:%S')
-        hashed_password = get_password_hash(new_classroom.password)
+        hashed_password = get_password_hash(new_classroom.password) if new_classroom.password else None
 
-        self.cursor.execute("""INSERT INTO classes(id, class_name, subject_name, class_schedule, created_at, updated_at, owner, hashed_password)
-                          VALUE(%s, %s, %s, %s, %s, %s, %s, %s)""",
-                       (
-                           new_classroom.id,
-                           new_classroom.class_name,
-                           new_classroom.subject_name,
-                           new_classroom.class_schedule,
-                           time_mysql_format,
-                           time_mysql_format,
-                           new_classroom.owner,
-                           hashed_password
-                       )
+        self.cursor.execute("""INSERT INTO classes(id, class_name, subject_name, class_schedule, description, 
+                                                    created_at, updated_at, owner_id, hashed_password, require_password)
+                              VALUE(%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, %s)""",
+                                (
+                                    new_classroom.id,
+                                    new_classroom.class_name,
+                                    new_classroom.subject_name,
+                                    new_classroom.class_schedule,
+                                    new_classroom.description,
+                                    new_classroom.owner_id,
+                                    hashed_password,
+                                    new_classroom.require_password
+                                )
         )
 
         if self.auto_commit:
@@ -96,7 +106,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         return self.cursor.rowcount > 0
 
 
-# Participants
+    # Participants
     async def get_all_participants(self, class_id: str) -> List[dict]:
         self.cursor.execute("""
                         SELECT username, joined_at
@@ -109,14 +119,11 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         return res
 
 
-    async def add_participant(self, username: str, class_id: str) -> bool:
-        current_time = datetime.now()
-        time_mysql_format = current_time.strftime('%Y-%m-%d %H:%M:%S')
-
+    async def add_participant(self, user_id: str, class_id: str) -> bool:
         self.cursor.execute("""INSERT INTO users_classes 
-                          VALUE (%s, %s, %s)
+                          VALUE (%s, %s, NOW())
                         """,
-                       (username, class_id, time_mysql_format)
+                       (user_id, class_id)
         )
         if self.auto_commit:
             self.connection.commit()
@@ -133,3 +140,16 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0
+
+
+    # SECURITY
+    async def verify_password(self, class_id: str, password: str) -> bool:
+        self.cursor.execute("""SELECT hashed_password, require_password 
+                               FROM classes 
+                               WHERE id LIKE %s""",
+                            (class_id,)
+        )
+        security_infor = self.cursor.fetchone()
+        if not security_infor['require_password']:
+            return True
+        return verify_password(password, security_infor['hashed_password'])
