@@ -10,11 +10,28 @@ import os
 BUCKET = 'posts'
 POST_CONTROLLER = APIRouter()
 
+# TODO: replace with user from token
+current_user = {
+    'id': 'user-ffe17039-f1e6-41dd-87f4-659489c4cd0d',
+    'username': 'robinblake',
+    'fullname': 'robinblake',
+    'gender': 'Other',
+    'role': 'Teacher'
+}
+
 
 @POST_CONTROLLER.get("/classroom/{class_id}/post/all", response_model=List[PostResponse])
 async def get_all_posts(class_id: str, connection=Depends(get_mongo_connection)):
     try:
+        # TODO: replace with user from token
+        # ensure user is logged in
+        if not current_user:
+            raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
+
+        # ensure user is a participant of the class
         repo = PostRepository(connection)
+        participants = await repo.get_participants(class_id)
+
         posts = await repo.get_posts_in_class(class_id)
         return [PostResponse(**post) for post in posts]
     except PyMongoError as e:

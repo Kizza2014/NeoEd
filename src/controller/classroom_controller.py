@@ -34,10 +34,8 @@ async def get_my_classrooms(connection=Depends(get_mysql_connection)):
         if not current_user:
             raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
 
-
         repo = MySQLClassroomRepository(connection)
         query_result = await repo.get_all_classroom_of_user(current_user['id'])
-
 
         return [ClassroomResponse(**classroom) for classroom in query_result]
     except MySQLError as e:
@@ -132,6 +130,8 @@ async def update_classroom_by_id(
         subject_name: str = Form(None),
         class_schedule: str = Form(None),
         description: str = Form(None),
+        password: str = Form(None),
+        require_password: bool = Form(None),
         connection=Depends(get_mysql_connection)
 ):
     try:
@@ -139,10 +139,10 @@ async def update_classroom_by_id(
         if not current_user:
             raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
 
-        repo = MySQLClassroomRepository(connection)
+        mysql_repo = MySQLClassroomRepository(connection)
 
         # ensure user is classroom's owner
-        class_owner_id = await repo.get_owner_id(class_id)
+        class_owner_id = await mysql_repo.get_owner_id(class_id)
         if current_user['id'] != class_owner_id:
             raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
 
@@ -153,11 +153,13 @@ async def update_classroom_by_id(
             'subject_name': subject_name if subject_name else None,
             'class_schedule': class_schedule if class_schedule else None,
             'description': description if description else None,
+            'password': password if password else None,
+            'require_password': require_password if require_password is not None else None
         }
         information = {k:v for k, v in information.items() if v is not None}
         update_info = ClassroomUpdate(**information)
 
-        if not await repo.update_by_id(class_id, update_info):
+        if not await mysql_repo.update_by_id(class_id, update_info):
             raise HTTPException(status_code=500,
                                 detail=f'Unexpected error occurred. Update classroom {class_id} failed')
 
@@ -197,7 +199,7 @@ async def delete_classroom_by_id(
         mongo_repo = MongoClassroomRepository(mongo_connection)
 
         status1 = await mysql_repo.delete_by_id(class_id)
-        status2 =await mongo_repo.delete_by_id(class_id)
+        status2 = await mongo_repo.delete_by_id(class_id)
 
         # transaction-like operation
         if not all([status1, status2]):

@@ -22,6 +22,8 @@ class ClassroomUpdate(BaseModel):
     subject_name: Optional[str] = None
     class_schedule: Optional[str] = None
     description: Optional[str] = None
+    password: Optional[str] = None
+    require_password: Optional[bool] = None
 
 
 class ClassroomResponse(ClassroomBase):
