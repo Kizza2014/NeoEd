@@ -34,7 +34,7 @@ def create_access_token(user_id: str):
         "user_id": user_id,
         "iat": datetime.now(timezone.utc),
         "exp": datetime.now(timezone.utc)
-        + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+               + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
         "token_type": "access",
     }
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
