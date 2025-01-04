@@ -5,11 +5,11 @@ from src.service.models.authentication import TokenResponse, UserLogin
 from src.service.models.user.user_model import RegisterResponse, UserCreate
 from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError
 from fastapi import HTTPException
-from src.configs.security import verify_password, create_refresh_token, create_access_token, decode_refresh_token
+from src.service.authentication.utils import *
 from mysql.connector import Error as MySQLError
 
 
-AUTH_CONTROLLER = APIRouter()
+AUTH_CONTROLLER = APIRouter(tags=['Authentication'])
 
 
 @AUTH_CONTROLLER.post("/register", response_model=RegisterResponse)

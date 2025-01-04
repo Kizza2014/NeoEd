@@ -1,5 +1,5 @@
 from src.service.models.exceptions import PasswordValidationError, UsernameValidationError
-from src.configs.security import get_password_hash
+from src.service.authentication.utils import get_password_hash
 from src.repository.mysql import MysqlRepositoryInterface
 from typing import List
 from src.service.models.user import UserCreate, UserUpdate
@@ -21,7 +21,6 @@ class UserRepository(MysqlRepositoryInterface):
                         """, (username,))
         return self.cursor.fetchone()
 
-
     async def create_user(self, new_user: UserCreate) -> bool:
         current_time = datetime.now()
         time_mysql_format = current_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -34,23 +33,21 @@ class UserRepository(MysqlRepositoryInterface):
         password_hash = get_password_hash(new_user.password)
 
         self.cursor.execute("INSERT INTO users VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                       (
-                           new_user.username,
-                           new_user.fullname,
-                           new_user.gender,
-                           new_user.birthdate,
-                           new_user.role,
-                           new_user.email,
-                           new_user.address,
-                           password_hash,
-                           time_mysql_format,
-                       )
-        )
+                            (
+                                new_user.username,
+                                new_user.fullname,
+                                new_user.gender,
+                                new_user.birthdate,
+                                new_user.role,
+                                new_user.email,
+                                new_user.address,
+                                password_hash,
+                                time_mysql_format,
+                            )
+                            )
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0
-
-
 
     async def update_by_username(self, username: str, new_info: UserUpdate) -> bool:
         update_fields = []
@@ -84,14 +81,12 @@ class UserRepository(MysqlRepositoryInterface):
             self.connection.commit()
         return self.cursor.rowcount > 0
 
-
     async def delete_by_username(self, username: str) -> bool:
         self.cursor.execute("DELETE FROM users_classes WHERE username LIKE %s", (username,))
         self.cursor.execute("DELETE FROM users WHERE username LIKE %s", (username,))
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0
-
 
     # def change_user_password(self, user_id: str, new_password: str):
     #     cursor = self.connection.cursor
