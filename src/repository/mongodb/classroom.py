@@ -15,13 +15,12 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
 
 
     async def create_classroom(self, new_classroom: ClassroomCreate, owner_username: str) -> bool:
-        class_info = new_classroom.model_dump()
-        class_info['_id'] = class_info['id']
-        class_info.pop('id')
-
-        class_info['posts'] = []
-        class_info['assignments'] = []
-        class_info['participants'] = [{'user_id': new_classroom.owner_id, 'username': owner_username}]
+        class_info = {
+            '_id': new_classroom.id,
+            'posts': [],
+            'assignments': [],
+            'participants': [{'user_id': new_classroom.owner_id, 'username': owner_username}]
+        }
 
         res = self.collection.insert_one(class_info)
         return res.acknowledged

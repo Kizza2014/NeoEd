@@ -4,9 +4,9 @@ from fastapi import HTTPException, status
 from fastapi.security import HTTPBearer
 from jose import ExpiredSignatureError, JWTError, jwt
 from passlib.context import CryptContext
-
 from src.configs.logging import get_logger
 from src.configs.settings import get_settings
+
 
 load_dotenv()
 logger = get_logger(__name__)

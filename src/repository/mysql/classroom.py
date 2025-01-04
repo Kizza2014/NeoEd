@@ -21,7 +21,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                             c.description, c.created_at, c.updated_at, c.require_password
             FROM (SELECT *
                   FROM users_classes
-                  WHERE username LIKE %s  
+                  WHERE user_id LIKE %s  
                  ) AS uc JOIN classes AS c ON uc.class_id LIKE c.id
             """,
             (user_id,)
@@ -72,8 +72,12 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         query_params = []
         query_values = []
         for k, v in new_info.items():
-            query_params.append(f"{k} = %s")
-            query_values.append(v)
+            if k == 'password':
+                query_params.append('hashed_password = %s')
+                query_values.append(get_password_hash(v))
+            else:
+                query_params.append(f"{k} = %s")
+                query_values.append(v)
 
         current_time = datetime.now()
         time_mysql_format = current_time.strftime('%Y-%m-%d %H:%M:%S')
