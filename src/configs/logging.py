@@ -24,21 +24,15 @@ LOGGING_CONFIG = {
             "class": "logging.StreamHandler",
             "formatter": "colored",
         },
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "formatter": "standard",
-            "filename": "app.log",
-        },
     },
     "loggers": {
         "app": {
             "level": "DEBUG",
-            "handlers": ["console", "file"],
+            "handlers": ["console"],
             "propagate": False,
         },
-        "mysql.connector": {  # Logger cho mysql.connector
-            "level": "INFO",  # Hoặc DEBUG để kiểm tra chi tiết kết nối
+        "mysql.connector": {
+            "level": "INFO",
             "handlers": ["console"],
             "propagate": False,
         },
@@ -55,7 +49,7 @@ LOGGING_CONFIG = {
     },
     "root": {
         "level": "DEBUG",
-        "handlers": ["console", "file"],
+        "handlers": ["console"],
     },
 }
 
