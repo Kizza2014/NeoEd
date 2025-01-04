@@ -1,3 +1,4 @@
+from src.configs.connections.mysql import get_mysql_connection
 from src.repository.mongodb.assignment import AssignmentRepository
 from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
 from src.configs.connections.mongodb import get_mongo_connection
@@ -5,6 +6,7 @@ from pymongo.errors import PyMongoError
 from typing import List
 from src.service.models.classroom.assignment import Assignment, AssignmentCreate, AssignmentUpdate
 from src.configs.connections import SupabaseStorage
+from src.service.notification.notification_service import NotificationService
 import os
 
 
@@ -43,7 +45,8 @@ async def create_assignment(
         start_at: str = Form(None),
         end_at: str = Form(None),
         attachments: List[UploadFile] = File(None),
-        connection=Depends(get_mongo_connection)
+        connection=Depends(get_mongo_connection),
+        mysql_cnx=Depends(get_mysql_connection)
 ):
     try:
         # create assignment in database
@@ -70,6 +73,13 @@ async def create_assignment(
             bucket_name=BUCKET,
             files=attachments if attachments else [],
             dest_folder=assgn_folder
+        )
+
+        notification_service = NotificationService(class_id, mysql_cnx)
+        notification_service.create_new_notification_for_students(
+            title=author + " has created new assignment.",
+            content=title,
+            direct_url=f"/classroom/{class_id}/assignment/{newassgn_id}/detail"
         )
 
         return {
