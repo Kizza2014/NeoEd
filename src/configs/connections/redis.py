@@ -12,6 +12,6 @@ CONNECTION_POOL = ConnectionPool(
 def get_redis():
     try:
         redis = Redis(connection_pool=CONNECTION_POOL)
-        yield redis
+        return redis
     except ConnectionError:
         pass

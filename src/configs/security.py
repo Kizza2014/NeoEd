@@ -78,12 +78,6 @@ def decode_access_token(token: str):
 def decode_refresh_token(token: str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        if payload["token_type"] != "refresh":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token type",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
         return payload
     except ExpiredSignatureError:
         raise HTTPException(

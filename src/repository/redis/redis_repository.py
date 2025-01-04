@@ -23,7 +23,7 @@ class RedisRepository:
                            refresh_token: str):
         redis_client = get_redis()
         try:
-            redis_client.set(f"access_token:{self.user_id}", refresh_token, ex=self.refresh_exp_days * 24 * 60 * 60)
+            redis_client.set(f"refresh_token:{self.user_id}", refresh_token, ex=self.refresh_exp_days * 24 * 60 * 60)
         except Exception as e:
             raise e
         finally:
@@ -32,7 +32,7 @@ class RedisRepository:
     def get_access_token(self) -> str:
         redis_client = get_redis()
         try:
-            return redis_client.get(f"access_token:{self.user_id}").decode()
+            return redis_client.get(f"access_token:{self.user_id}")
         except Exception as e:
             raise e
         finally:
@@ -41,7 +41,7 @@ class RedisRepository:
     def get_refresh_token(self) -> str:
         redis_client = get_redis()
         try:
-            return redis_client.get(f"refresh_token:{self.user_id}").decode()
+            return redis_client.get(f"refresh_token:{self.user_id}")
         except Exception as e:
             raise e
         finally:

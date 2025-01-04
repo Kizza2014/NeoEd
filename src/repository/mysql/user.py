@@ -7,6 +7,14 @@ from datetime import datetime
 
 
 class UserRepository(MysqlRepositoryInterface):
+    async def get_by_id(self, user_id: str):
+        query = """
+        SELECT * FROM users WHERE id = %s
+        """
+        self.cursor.execute(query, (user_id, ))
+        row = self.cursor.fetchone()
+        return row
+
     async def get_all(self) -> List[dict]:
         self.cursor.execute("""SELECT username, fullname, gender, birthdate, role, email, address, joined_at 
                           FROM users
@@ -15,7 +23,8 @@ class UserRepository(MysqlRepositoryInterface):
         return query_result
 
     async def get_by_username(self, username: str) -> dict | None:
-        self.cursor.execute("""SELECT username, fullname, gender, birthdate, role, email, address, joined_at
+        self.cursor.execute("""SELECT id, username, fullname, gender, birthdate, 
+                            role, email, address, joined_at, hashed_password
                           FROM users 
                           WHERE username LIKE %s
                         """, (username,))

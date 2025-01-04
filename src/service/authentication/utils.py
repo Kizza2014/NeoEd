@@ -1,6 +1,8 @@
 import jwt
+from jwt import ExpiredSignatureError, InvalidTokenError
 import datetime
 
+from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
@@ -26,9 +28,37 @@ def create_access_token(data, expires_in=15) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def create_refresh_token(data, expires_in=7) -> str:
-    payload = {
-        "data": data,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(days=expires_in)
-    }
+def create_refresh_token(data, exp=None, expires_in=7) -> str:
+    if exp:
+        payload = {
+            "data": data,
+            "exp": exp
+        }
+    else:
+        payload = {
+            "data": data,
+            "exp": datetime.datetime.now() + datetime.timedelta(days=expires_in)
+        }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def decode_refresh_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        return payload
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=401,
+            detail="Refresh token has expired",
+        )
+    except InvalidTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid refresh token",
+        )
+    except Exception as e:
+        # Bắt tất cả các lỗi khác
+        raise HTTPException(
+            status_code=500,
+            detail=f"An unexpected error occurred: {str(e)}",
+        )

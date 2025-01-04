@@ -56,10 +56,8 @@ class MySQLConnection:
         if self.conn:
             self.conn.close()
 
-
     def commit(self):
         self.conn.commit()
-
 
     def rollback(self):
         self.conn.rollback()

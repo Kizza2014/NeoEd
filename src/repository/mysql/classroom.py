@@ -14,7 +14,6 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                                FROM classes""")
         return self.cursor.fetchall()
 
-
     async def get_all_classroom_of_user(self, user_id: str) -> List[dict]:
         self.cursor.execute(
             """
@@ -29,15 +28,13 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         )
         return self.cursor.fetchall()
 
-
     async def get_by_id(self, class_id: str) -> dict | None:
         self.cursor.execute("""SELECT id, class_name, subject_name, owner_id, class_schedule, 
                                         description, created_at, updated_at, require_password 
                           FROM classes 
                           WHERE id LIKE %s""",
-                       (class_id,))
+                            (class_id,))
         return self.cursor.fetchone()
-
 
     async def get_owner_id(self, class_id: str) -> str:
         self.cursor.execute("SELECT owner_id FROM classes WHERE id LIKE %s", (class_id,))
@@ -46,7 +43,6 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
             raise MySQLError('Classroom not found')
         return owner['owner_id']
 
-
     # CREATE
     async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:
         hashed_password = get_password_hash(new_classroom.password) if new_classroom.password else None
@@ -54,22 +50,21 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         self.cursor.execute("""INSERT INTO classes(id, class_name, subject_name, class_schedule, description, 
                                                     created_at, updated_at, owner_id, hashed_password, require_password)
                               VALUE(%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, %s)""",
-                                (
-                                    new_classroom.id,
-                                    new_classroom.class_name,
-                                    new_classroom.subject_name,
-                                    new_classroom.class_schedule,
-                                    new_classroom.description,
-                                    new_classroom.owner_id,
-                                    hashed_password,
-                                    new_classroom.require_password
-                                )
-        )
+                            (
+                                new_classroom.id,
+                                new_classroom.class_name,
+                                new_classroom.subject_name,
+                                new_classroom.class_schedule,
+                                new_classroom.description,
+                                new_classroom.owner_id,
+                                hashed_password,
+                                new_classroom.require_password
+                            )
+                            )
 
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0
-
 
     # UPDATE
     async def update_by_id(self, class_id: str, new_info: ClassroomUpdate) -> bool:
@@ -96,7 +91,6 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
             self.connection.commit()
         return self.cursor.rowcount > 0
 
-
     # DELETE
     async def delete_by_id(self, class_id: str) -> bool:
         self.cursor.execute("DELETE FROM users_classes WHERE class_id LIKE %s", (class_id,))
@@ -105,7 +99,6 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
             self.connection.commit()
         return self.cursor.rowcount > 0
 
-
     # Participants
     async def get_all_participants(self, class_id: str) -> List[dict]:
         self.cursor.execute("""
@@ -113,22 +106,20 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                         FROM users_classes
                         WHERE class_id LIKE %s
                         """,
-                       (class_id,)
-        )
+                            (class_id,)
+                            )
         res = self.cursor.fetchall()
         return res
-
 
     async def add_participant(self, user_id: str, class_id: str) -> bool:
         self.cursor.execute("""INSERT INTO users_classes 
                           VALUE (%s, %s, NOW())
                         """,
-                       (user_id, class_id)
-        )
+                            (user_id, class_id)
+                            )
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0
-
 
     async def remove_participant(self, username: str, class_id: str) -> bool:
         self.cursor.execute("""
@@ -136,11 +127,10 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                                 WHERE username LIKE %s AND class_id LIKE %s
                             """,
                             (username, class_id,)
-        )
+                            )
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0
-
 
     # SECURITY
     async def verify_password(self, class_id: str, password: str) -> bool:
@@ -148,7 +138,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                                FROM classes 
                                WHERE id LIKE %s""",
                             (class_id,)
-        )
+                            )
         security_infor = self.cursor.fetchone()
         if not security_infor['require_password']:
             return True

@@ -1,6 +1,7 @@
 from src.repository.mysql.user import UserRepository
 from fastapi import APIRouter, Depends, Response, status, Cookie
 from src.configs.connections.mysql import get_mysql_connection
+from src.repository.redis.redis_repository import RedisRepository
 from src.service.models.authentication import TokenResponse, UserLogin
 from src.service.models.user.user_model import RegisterResponse, UserCreate
 from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError
@@ -17,7 +18,6 @@ async def register(new_user: UserCreate, connection=Depends(get_mysql_connection
     try:
         user_repo = UserRepository(connection)
 
-        # Kiểm tra id tồn tại hay chưa
         existing_user = await user_repo.get_by_username(new_user.username)
         if existing_user is not None:
             raise HTTPException(
@@ -56,16 +56,21 @@ async def signin(
     user_repo = UserRepository(conn)
 
     # Kiểm tra email và password
-    user_db = user_repo.get_by_id(user.id)
-    if not user_db or not verify_password(user.password, user_db.user_passwd):
+    user_db = await user_repo.get_by_username(user.username)
+    user_id = user_db['id']
+    user_pwd = user_db['hashed_password']
+    if not user_db or not verify_password(user.password, user_pwd):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
         )
 
     # Tạo tokens
-    access_token = create_access_token(user_db.id)
-    refresh_token = create_refresh_token(user_db.id)
+    access_token = create_access_token(user_id)
+    refresh_token = create_refresh_token(user_id)
+
+    redis = RedisRepository(user_id)
+    redis.save_refresh_token(refresh_token)
 
     # Set refresh token cookie
     response.set_cookie(
@@ -79,7 +84,7 @@ async def signin(
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
-        user_id=user_db.id,
+        user_id=user_id,
         roles=["user", "admin"],
     )
 
@@ -99,21 +104,30 @@ async def refresh_token_(
     user_repo = UserRepository(conn)
 
     payload = decode_refresh_token(refresh_token)
-    if not payload or not payload.get("user_id"):
+    if not payload or not payload.get("data"):
         raise HTTPException(
             status_code=401,
             detail="Invalid token",
         )
 
-    user = await user_repo.get_by_id(payload["user_id"])
+    user = await user_repo.get_by_id(payload["data"])
     if not user:
         raise HTTPException(
             status_code=404,
             detail="User not found",
         )
 
-    access_token = create_access_token(user.user_id)
-    new_refresh_token = create_refresh_token(user.user_id, exp=payload.get("exp"))
+    redis = RedisRepository(user['id'])
+    redis_rt = redis.get_refresh_token()
+
+    if refresh_token != redis_rt:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized"
+        )
+
+    access_token = create_access_token(user['id'])
+    new_refresh_token = create_refresh_token(user['id'], exp=payload.get("exp"))
 
     response.set_cookie(
         key="refresh_token",
@@ -126,14 +140,14 @@ async def refresh_token_(
     return TokenResponse(
         access_token=access_token,
         refresh_token=new_refresh_token,
-        user_id=user.user_id,
+        user_id=user['id'],
         roles=["user", "admin"],
     )
 
 
 @AUTH_CONTROLLER.post("/logout")
-async def logout(response: Response):
-    response.delete_cookie(key="refresh_token")
+async def logout(user_id: str):
+
     return {
         "message": "Logout successful",
     }

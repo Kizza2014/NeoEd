@@ -1,15 +1,14 @@
+import uuid
 from typing import List
 from abc import ABC
 from pydantic import BaseModel
+from datetime import datetime
 
 
 class BaseNotification(ABC, BaseModel):
-    notification_id: str
+    notification_id: str = 'noti-' + str(uuid.uuid4())
     title: str = None
     content: str = None
-    created_at: str
-    updated_at: str
-    sender_id: str
-    receiver_ids: List[str]
-    is_read: bool = False
-    
+    direct_url: str = None
+    class_id: str
+    created_at: datetime = datetime.now()

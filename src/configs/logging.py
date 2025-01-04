@@ -61,6 +61,7 @@ LOGGING_CONFIG = {
 
 logging.config.dictConfig(LOGGING_CONFIG)
 
+
 def get_logger(name=None):
     if name is None:
         import inspect

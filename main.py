@@ -3,7 +3,8 @@ from src.controller import (
     CLASSROOM_CONTROLLER,
     POST_CONTROLLER,
     ASSIGNMENT_CONTROLLER,
-    AUTH_CONTROLLER
+    AUTH_CONTROLLER,
+    NOTIFICATION_CONTROLLER
 )
 from fastapi import FastAPI
 
@@ -16,3 +17,4 @@ app.include_router(CLASSROOM_CONTROLLER)
 app.include_router(POST_CONTROLLER)
 app.include_router(ASSIGNMENT_CONTROLLER)
 app.include_router(AUTH_CONTROLLER)
+app.include_router(NOTIFICATION_CONTROLLER)
