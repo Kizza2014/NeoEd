@@ -79,7 +79,7 @@ async def create_assignment(
         notification_service.create_new_notification_for_students(
             title=author + " has created new assignment.",
             content=title,
-            direct_url=f"/classroom/{class_id}/assignment/{newassgn_id}/detail"
+            direct_url=f"/c/{class_id}/a/{newassgn_id}"
         )
 
         return {

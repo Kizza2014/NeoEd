@@ -85,7 +85,7 @@ async def create_post(
         notification_service.create_new_notification_for_students(
             title=author + " has created a new post.",
             content=title,
-            direct_url=f"/classroom/{class_id}/post/{newpost_id}/detail"
+            direct_url=f"/c/{class_id}/p/{newpost_id}"
         )
 
         return {

@@ -8,9 +8,16 @@ from src.controller import (
 )
 from fastapi import FastAPI
 
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Replace with your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  #
+)
 
 app.include_router(USER_CONTROLLER)
 app.include_router(CLASSROOM_CONTROLLER)

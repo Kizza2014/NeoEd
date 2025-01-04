@@ -129,6 +129,8 @@ async def refresh_token_(
     access_token = create_access_token(user['id'])
     new_refresh_token = create_refresh_token(user['id'], exp=payload.get("exp"))
 
+    redis.save_refresh_token(new_refresh_token)
+
     response.set_cookie(
         key="refresh_token",
         value=new_refresh_token,
