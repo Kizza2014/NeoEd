@@ -72,14 +72,29 @@ class NotificationRepository(MysqlRepositoryInterface):
 
     def get_notifications_of_user(self, user_id: str):
         query = """
-        SELECT `users_notifications_status`.`user_id`,
-        `users_notifications_status`.`notification_id`,
-        `users_notifications_status`.`read_status`
+        SELECT notifications.*, users_notifications_status.read_status
         FROM `users_notifications_status`
+        JOIN notifications
+        ON `users_notifications_status`.`notification_id` = notifications.notification_id
         WHERE 
-        `users_notifications_status`.`user_id` = %s
+        `users_notifications_status`.`user_id` = %s;
         """
 
-        self.cursor.execute(query, (user_id, ))
+        self.cursor.execute(query, (user_id,))
         rows = self.cursor.fetchall()
         return rows
+
+    def set_read_status(self, user_id: str, notification_id: str, status: bool):
+        query = """
+        UPDATE `users_notifications_status`
+        SET
+        `read_status` = %s
+        WHERE `user_id` = %s AND `notification_id` = %s
+
+        """
+        try:
+            self.cursor.execute(query, (status, user_id, notification_id))
+            self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            raise e

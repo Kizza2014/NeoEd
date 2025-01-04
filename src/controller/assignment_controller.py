@@ -8,7 +8,7 @@ from src.configs.connections import SupabaseStorage
 import os
 
 
-ASSIGNMENT_CONTROLLER = APIRouter()
+ASSIGNMENT_CONTROLLER = APIRouter(tags=['Assignments'])
 BUCKET = 'assignments'
 
 

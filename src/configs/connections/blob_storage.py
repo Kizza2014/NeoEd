@@ -59,7 +59,7 @@ class SupabaseStorage:
         try:
             # Define file location in the bucket
             if dest_folder:
-                file_location = os.path.join(dest_folder, file.filename)
+                file_location = dest_folder + "/" + file.filename
             else:
                 file_location = file.filename
 

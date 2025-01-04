@@ -1,3 +1,5 @@
+from src.configs.connections.mysql import get_mysql_connection
+from src.service.notification.notification_service import NotificationService
 from src.repository.mongodb.post import PostRepository
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from src.configs.connections import get_mongo_connection
@@ -8,7 +10,7 @@ from src.configs.connections.blob_storage import SupabaseStorage
 import os
 
 BUCKET = 'posts'
-POST_CONTROLLER = APIRouter()
+POST_CONTROLLER = APIRouter(tags=['Post'])
 
 
 @POST_CONTROLLER.get("/classroom/{class_id}/post/all", response_model=List[PostResponse])
@@ -50,7 +52,8 @@ async def create_post(
         title: str = Form(...),
         content: str = Form(...),
         attachments: List[UploadFile] = File(None),
-        connection=Depends(get_mongo_connection)
+        connection=Depends(get_mongo_connection),
+        mysql_cnx=Depends(get_mysql_connection)
 ):
     author = 'hoangkimgiap'  # temporary author, will be replaced by username from token
 
@@ -76,6 +79,13 @@ async def create_post(
             bucket_name=BUCKET,
             files=attachments if attachments else [],
             dest_folder=post_folder
+        )
+
+        notification_service = NotificationService(class_id, mysql_cnx)
+        notification_service.create_new_notification_for_students(
+            title=author + " has created a new post.",
+            content=title,
+            direct_url=f"/classroom/{class_id}/post/{newpost_id}/detail"
         )
 
         return {

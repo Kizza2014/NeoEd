@@ -13,7 +13,7 @@ from fastapi import HTTPException, UploadFile, File, Form
 from typing import List
 import uuid
 
-CLASSROOM_CONTROLLER = APIRouter()
+CLASSROOM_CONTROLLER = APIRouter(tags=['Classroom'])
 
 # TODO: replace with user from token
 current_user = {

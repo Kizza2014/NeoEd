@@ -31,4 +31,3 @@ class NotificationService:
             raise e
 
 
-

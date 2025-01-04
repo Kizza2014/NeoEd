@@ -37,3 +37,13 @@ def get_notification_of_user_(user_id: str,
     notification_repo = NotificationRepository(cnx)
     return notification_repo.get_notifications_of_user(user_id)
 
+
+@NOTIFICATION_CONTROLLER.patch("/notifications/set-read")
+def set_read_(user_id: str, notification_id: str, read_status: bool,
+              cnx=Depends(get_mysql_connection)):
+    notification_repo = NotificationRepository(cnx)
+    try:
+        notification_repo.set_read_status(user_id, notification_id, read_status)
+        return True
+    except Exception as e:
+        return False

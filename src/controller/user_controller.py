@@ -9,7 +9,7 @@ from src.configs.logging import get_logger
 from mysql.connector import Error as MySQLError
 
 
-USER_CONTROLLER = APIRouter()
+USER_CONTROLLER = APIRouter(tags=['User'])
 logger = get_logger(__name__)
 
 
