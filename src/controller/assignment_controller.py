@@ -68,7 +68,7 @@ async def create_assignment(
 
         # upload attachments to storage
         storage = SupabaseStorage()
-        assgn_folder = os.path.join(class_id, newassgn_id)
+        assgn_folder = class_id + "/" + newassgn_id
         upload_results = await storage.bulk_upload(
             bucket_name=BUCKET,
             files=attachments if attachments else [],
