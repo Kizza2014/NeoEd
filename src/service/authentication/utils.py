@@ -1,5 +1,5 @@
 import jwt
-from jwt import ExpiredSignatureError, InvalidTokenError
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 import datetime
 
 from fastapi import HTTPException

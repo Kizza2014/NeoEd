@@ -33,7 +33,16 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         return True
 
 
-    async def get_all_participants(self, class_id: str) -> List[str]:
+    async def get_all_participants(self, class_id: str) -> List[dict]:
+        """
+        returns: [
+                    {
+                        'user_id': 'user-xxxxx-xxxxxx-xxxx-xxx',
+                        'username': 'username'
+                    },
+                    ...
+                ]
+        """
         db_class = self.collection.find_one({'_id': class_id})
         if not db_class:
             raise PyMongoError("Classroom not found")
@@ -51,6 +60,13 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         if res is None:
             raise PyMongoError("Classroom not found")
         return True
+
+
+    async def find_participant_in_class(self, user_id: str, class_id: str) -> bool:
+        db_class = self.collection.find_one({'_id': class_id})
+        if not db_class:
+            raise PyMongoError("Classroom not found")
+        return any(participant['user_id'] == user_id for participant in db_class['participants'])
 
 
     async def remove_participant(self, user_id: str, class_id: str) -> bool:

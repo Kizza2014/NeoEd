@@ -9,7 +9,7 @@ class PostBase(BaseModel):
     created_at: datetime
     updated_at: datetime
     content: str
-    attachments: Optional[List[dict]] = None
+    attachments: Optional[List[str]] = None
 
 
 class PostResponse(PostBase):
@@ -17,6 +17,7 @@ class PostResponse(PostBase):
 
 
 class PostCreate(BaseModel):
+    id: str
     title: str
     author: str
     content: str

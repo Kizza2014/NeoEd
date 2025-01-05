@@ -127,7 +127,7 @@ class SupabaseStorage:
         try:
             response = self.client.storage.from_(bucket_name).remove(file_locations)
             for file, status in zip(file_locations, response):
-                if status.get("message") == "Success":
+                if status:
                     remove_results.append({'file': file, 'status': 'success'})
                 else:
                     remove_results.append({'file': file, 'status': 'failed', 'error': status.get("message")})
@@ -153,7 +153,7 @@ class SupabaseStorage:
         try:
             # List all files in the folder
             response = self.client.storage.from_(bucket_name).list(folder_path, {'limit': None})
-            file_paths = [file['name'] for file in response]
+            file_paths = [folder_path + '/' + file['name'] for file in response]
 
             # Remove all files in the folder
             if file_paths:
@@ -204,7 +204,7 @@ class SupabaseStorage:
         for file_location in file_locations:
             try:
                 response = self.client.storage.from_(bucket_name).create_signed_url(file_location, expires_in)
-                signed_urls.append({'file': file_location, 'url': response['signedURL']})
+                signed_urls.append(response['signedURL'])
             except Exception as e:
                 signed_urls.append({'file': file_location, 'url': None, 'error': str(e)})
         return signed_urls

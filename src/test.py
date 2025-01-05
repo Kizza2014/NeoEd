@@ -15,4 +15,6 @@ class SupabaseStorage:
 
 storage = SupabaseStorage()
 
-storage.client.storage.empty_bucket('assignments')
+response = storage.client.storage.from_('test').remove(['test_folder/Screenshot from 2024-10-19 15-05-52.png'])
+if response:
+    print(response)

@@ -1,3 +1,5 @@
+from pymongo.errors import PyMongoError
+
 from src.repository.mongodb import MongoDBRepositoryInterface
 from src.service.models.classroom import PostCreate, PostUpdate
 from typing import List
@@ -12,6 +14,8 @@ class PostRepository(MongoDBRepositoryInterface):
 
     async def get_posts_in_class(self, class_id: str) -> List[dict]:
         db_class = self.collection.find_one({'_id': class_id})
+        if not db_class:
+            raise PyMongoError("Class not found.")
         return db_class['posts']
 
 
@@ -23,12 +27,10 @@ class PostRepository(MongoDBRepositoryInterface):
                 return post
         return None
 
-    async def create_post(self, class_id, new_post: PostCreate):
+    async def create_post(self, class_id, new_post: PostCreate) -> bool:
         post_info = new_post.model_dump()
         created_at = datetime.now()
-        post_id = '_'.join([new_post.author, created_at.strftime('%Y_%m_%d_%H_%M_%S')])
 
-        post_info['id'] = post_id
         post_info['created_at'] = created_at
         post_info['updated_at'] = created_at
         if new_post.attachments is not None:
@@ -44,9 +46,7 @@ class PostRepository(MongoDBRepositoryInterface):
         }
 
         result = self.collection.update_one(filters, updates)
-        if result.modified_count > 0:
-            return post_id
-        return None
+        return result.modified_count > 0
 
 
     async def update_post_by_id(self, class_id, post_id, update_data: PostUpdate) -> bool:

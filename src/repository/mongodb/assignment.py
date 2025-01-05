@@ -2,6 +2,7 @@ from src.repository.mongodb import MongoDBRepositoryInterface
 from src.service.models.classroom import AssignmentUpdate, AssignmentCreate
 from typing import List
 from datetime import datetime
+from src.service.models.classroom.submission import Submission
 
 
 class AssignmentRepository(MongoDBRepositoryInterface):
@@ -27,7 +28,6 @@ class AssignmentRepository(MongoDBRepositoryInterface):
     async def create_assignment(self, class_id: str, new_assgn: AssignmentCreate) -> bool:
         assgn_info = new_assgn.model_dump()
         created_at = datetime.now()
-        assgn_info['id'] = '_'.join([new_assgn.author, created_at.strftime('%Y_%m_%d_%H_%M_%S')])
         assgn_info['created_at'] = created_at
         assgn_info['updated_at'] = created_at
 
@@ -39,27 +39,41 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         }
 
         res = self.collection.update_one(filters, updates)
-        if res.modified_count > 0:
-            return assgn_info['id']
-        return None
+        return res.modified_count > 0
 
 
     async def update_by_id(self, class_id: str, assgn_id: str, new_info: AssignmentUpdate) -> bool:
-        current_time = datetime.now()
+        update_data = new_info.model_dump(exclude_unset=True)
 
-        update_info = new_info.model_dump(exclude_unset=True)
+        # Prepare additional and removal attachments
+        additional_attachments = update_data.pop('additional_attachments', [])
+        removal_attachments = update_data.pop('removal_attachments', [])
+
         filters = {'_id': class_id, 'assignments.id': assgn_id}
-        updates = {
-            '$set': {}
-        }
-        set_op = updates['$set']
-        for key, value in update_info.items():
-            set_op['assignments.$.' + key] = value
-        set_op['assignments.$.updated_at'] = current_time
 
-        result = self.collection.update_one(filters, updates)
+        # remove the specified attachments
+        if removal_attachments:
+            self.collection.update_one(
+                filters,
+                {'$pull': {'assignments.$.attachments': {'$in': removal_attachments}}}
+            )
+
+        # add the new attachments
+        if additional_attachments:
+            self.collection.update_one(
+                filters,
+                {'$addToSet': {'assignments.$.attachments': {'$each': additional_attachments}}}
+            )
+
+        # update other fields
+        update_fields = {f'assignments.$.{k}': v for k, v in update_data.items()}
+        update_fields['assignments.$.updated_at'] = datetime.now()
+        result = self.collection.update_one(
+            filters,
+            {'$set': update_fields}
+        )
+
         return result.modified_count > 0
-
 
     async def delete_by_id(self, class_id: str, assgn_id: str) -> bool:
         filters = {'_id': class_id}
@@ -70,3 +84,45 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         }
         result = self.collection.update_one(filters, updates)
         return result.modified_count > 0
+
+
+# SUBMIT
+    async def submit(self, class_id, assgn_id, submission: Submission) -> bool:
+        submission_info = submission.model_dump(exclude_unset=True)
+        submission_info['submitted_at'] = datetime.now()
+        submission_info['grade'] = None
+
+        filters = {'_id': class_id, 'assignments.id': assgn_id}
+        updates = {
+            '$addToSet': {
+                'assignments.$.submissions': submission_info
+            }
+        }
+
+        response = self.collection.update_one(filters, updates)
+        return response.modified_count > 0
+
+
+    async def grade(self, class_id: str, assgn_id: str, student_id: str, grade: float):
+        filters = {'_id': class_id, 'assignments.id': assgn_id, 'assignments.submissions.student_id': student_id}
+        updates = {
+            '$set': {
+                'assignments.$.submissions.$[submission].grade': grade
+            }
+        }
+        array_filters = [{'submission.student_id': student_id}]
+        response = self.collection.update_one(filters, updates, array_filters=array_filters)
+        return response.modified_count > 0
+
+
+    async def get_all_submission(self, class_id: str, assgn_id: str) -> List[dict]:
+        response = self.collection.find_one({'_id': class_id, 'assignments.id': assgn_id}, {'assignments.$': 1})
+        return response['assignments'][0]['submissions'] if response else []
+
+
+
+    async def get_submission(self, class_id: str, assgn_id: str, student_id: str) -> dict | None:
+        response = self.collection.find_one(
+            {'_id': class_id, 'assignments.id': assgn_id, 'assignments.submissions.student_id': student_id},
+            {'assignments.submissions.$': 1})
+        return response['assignments'][0]['submissions'][0] if response else None
