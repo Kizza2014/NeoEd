@@ -2,7 +2,7 @@ from src.repository.mongodb import MongoDBRepositoryInterface
 from src.service.models.classroom import AssignmentUpdate, AssignmentCreate
 from typing import List
 from datetime import datetime
-from src.service.models.classroom.submission import Submission
+from src.service.models.classroom.submission import Submission, Resubmission
 
 
 class AssignmentRepository(MongoDBRepositoryInterface):
@@ -101,6 +101,44 @@ class AssignmentRepository(MongoDBRepositoryInterface):
 
         response = self.collection.update_one(filters, updates)
         return response.modified_count > 0
+
+
+    async def resubmit(self, class_id: str, assgn_id: str, resubmission: Resubmission) -> bool:
+        resubmission_info = resubmission.model_dump(exclude_unset=True)
+        resubmission_info['submitted_at'] = datetime.now()
+
+        additional_attachments = resubmission_info.pop('additional_attachments', [])
+        removal_attachments = resubmission_info.pop('removal_attachments', [])
+
+        filters = {
+            '_id': class_id,
+            'assignments.id': assgn_id,
+            'assignments.submissions.student_id': resubmission_info['student_id']
+        }
+
+        # remove the specified attachments
+        ok = True
+        if removal_attachments:
+            response = self.collection.update_one(
+                filters,
+                {'$pull': {'assignments.$.submissions.$[submission].attachments': {'$in': removal_attachments}}},
+                array_filters=[{'submission.student_id': resubmission_info['student_id']}]
+            )
+            if response.modified_count == 0:
+                ok = False
+
+        # add the new attachments
+        if additional_attachments:
+            response = self.collection.update_one(
+                filters,
+                {'$addToSet': {
+                    'assignments.$.submissions.$[submission].attachments': {'$each': additional_attachments}}},
+                array_filters=[{'submission.student_id': resubmission_info['student_id']}]
+            )
+            if response.modified_count == 0:
+                ok = False
+
+        return ok
 
 
     async def grade(self, class_id: str, assgn_id: str, student_id: str, grade: float):

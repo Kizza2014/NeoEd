@@ -73,7 +73,7 @@ class UserRepository(MysqlRepositoryInterface):
             self.connection.commit()
         return self.cursor.rowcount > 0
 
-    async def update_by_username(self, username: str, new_info: UserUpdate) -> bool:
+    async def update_by_id(self, user_id: str, new_info: UserUpdate) -> bool:
         update_fields = []
         update_values = []
 
@@ -96,9 +96,9 @@ class UserRepository(MysqlRepositoryInterface):
         update_query = f"""
                         UPDATE users 
                         SET {', '.join(update_fields)}
-                        WHERE username LIKE %s
+                        WHERE id LIKE %s
                        """
-        update_values.append(username)
+        update_values.append(user_id)
         self.cursor.execute(update_query, tuple(update_values))
 
         if self.auto_commit:

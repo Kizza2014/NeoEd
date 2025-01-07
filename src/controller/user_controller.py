@@ -39,7 +39,7 @@ async def update_user_info(
         user_repo = UserRepository(connection)
         current_user = await user_repo.get_by_username('hoangkimgiap') # temporary, will be replaced by username from token
 
-        status = await user_repo.update_by_username(current_user['username'], user_data)
+        status = await user_repo.update_by_id(current_user['id'], user_data)
 
         if not status:
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Update user failed")
@@ -52,21 +52,17 @@ async def update_user_info(
         raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
 
 
-@USER_CONTROLLER.get("/user/{username}/detail", response_model=UserResponse)
-async def get_by_username(username: str, connection=Depends(get_mysql_connection)):
+@USER_CONTROLLER.get("/user/{user_id}/detail", response_model=UserResponse)
+async def get_by_id(user_id: str, connection=Depends(get_mysql_connection)):
     try:
         repo = UserRepository(connection)
-        user = await repo.get_by_username(username)
+        user = await repo.get_by_id(user_id)
         if not user:
-            logger.error(f"User {username} not found")
             raise HTTPException(status_code=404, detail="User not found")
-
         return UserResponse(**user)
     except MySQLError as e:
         raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
 
-
-# TEST API
 
 @USER_CONTROLLER.get("/user/all", response_model=List[UserResponse])
 async def get_all(connection=Depends(get_mysql_connection)):
@@ -78,24 +74,24 @@ async def get_all(connection=Depends(get_mysql_connection)):
         raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
 
 
-@USER_CONTROLLER.put("/user/{username}/update")
-async def update_by_username(username: str, update_info: UserUpdate, connection=Depends(get_mysql_connection)):
+@USER_CONTROLLER.put("/user/{user_id}/update")
+async def update_by_id(user_id: str, update_info: UserUpdate, connection=Depends(get_mysql_connection)):
     try:
         repo = UserRepository(connection)
         new_info = update_info.model_dump(exclude_unset=True)
         if len(new_info.keys()) == 0:
             return {
-                'message': f"No update info provided for user {username}",
-                'username': username,
+                'message': f"No update info provided for user {user_id}",
+                'username': user_id,
                 'new_info': new_info,
             }
 
-        if not await repo.update_by_username(username, update_info):
-            raise HTTPException(status_code=400, detail=f"Unexpected error occurred. Update user {username} failed")
+        if not await repo.update_by_id(user_id, update_info):
+            raise HTTPException(status_code=400, detail=f"Unexpected error occurred. Update user {user_id} failed")
 
         return {
-            'message': f"Updated user {username} successfully",
-            'username': username,
+            'message': f"Updated user {user_id} successfully",
+            'username': user_id,
             'new_info': new_info,
         }
     except MySQLError as e:
