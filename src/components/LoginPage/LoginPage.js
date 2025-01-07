@@ -1,37 +1,103 @@
-import React from "react";
+import React, {useState} from "react";
 import styles from "./LoginPage.css";
 import logo from './logo.png';
 import facebook from './facebook.png'
 import google from './google.png'
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
+import { FadeLoader } from "react-spinners";
 
-function LoginButton() {
+function LoginButton({userName,password}) {
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const handleLogin = () => {
+        setLoading(true);
+        axios.post('http://localhost:8000/login', { username: userName, password: password})
+        .then(response => {
+            var info = response.data;
+            console.log('Login successful:', response.data);
+            sessionStorage.setItem('access_token', info.access_token);
+            localStorage.setItem('user_id', info.user_id);
+            localStorage.setItem('refresh_token', info.refresh_token);
+            setLoading(false);
+            navigate('/Classroom');
+        })
+        .catch(error => {
+            alert(`Login failed: Check your email or password`);
+            setLoading(false);
+        });
+    };
+
+    if (loading) {
+        return(
+            <>
+                <button 
+                className="login-button" 
+                onClick={handleLogin}
+            >
+                    Login
+                </button>
+                <div className="login-loading">
+                    <FadeLoader
+                    color="#ffb800"
+                    height={50}
+                    margin={60}
+                    radius={3}
+                    width={15}
+                    />
+                </div>
+            </>
+        )
+    }
+
     return (
         <button 
             className="login-button" 
-            onClick={() => navigate('/Classroom')}
-            >
+            onClick={handleLogin}
+        >
             Login
         </button>
     );
 }
 
 function LoginPage() {
+    const [userName, setUserName] = useState("scottdavis");
+    const [password, setPassword] = useState("1");
+    const handleEmailChange = (event) => {
+        setUserName(event.target.value);
+    };
+
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
+    };
+
     return (
         <div className="container">
             <div className="left-div"></div>
             <div className="right-div">
-                <img src={logo} className="logo" alt="Description" loading="lazy" />
+                <img src={logo} className="logo" alt="Description" loading="lazy"/>
                 <div className="form-container">
                     <div className="input-container">
                         <label htmlFor="email">Địa chỉ email</label>
-                        <input type="email" className="input" required/>
+                        <input
+                            value={userName}
+                            onChange={handleEmailChange}
+                            type="email"
+                            className="input"
+                            required
+                        />
                     </div>
 
                     <div className="input-container">
                         <label htmlFor="password">Mật khẩu</label>
-                        <input type="password" className="input" required />
+                        <label htmlFor="password">Mật khẩu</label>
+                        <input
+                            value={password}
+                            onChange={handlePasswordChange}
+                            type="password"
+                            className="input"
+                            required
+                        />
                     </div>
                 </div>
                 <div className='check-box'>
@@ -43,7 +109,7 @@ function LoginPage() {
                         Quên mật khảu?
                     </button>
                 </div>
-                <LoginButton/>
+                <LoginButton userName={userName} password={password} />
                 <div className="divider">
                     <span className="line"></span>
                     <span className="dividerText">Hoặc</span>

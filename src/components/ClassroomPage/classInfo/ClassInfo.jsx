@@ -21,12 +21,12 @@ export function ClassInfo() {
         const adaptedDetails = [
           { label: "Tên lớp", value: data.class_name },    
           { label: "Mã lớp", value: data.subject_name },  
-          { label: "Giáo viên", value: data.owner },     
+          { label: "Giáo viên", value: data.owner_id },     
           { label: "Phòng học", value: "Chưa xác định" }
         ];
 
         setClassDetails(adaptedDetails);
-        setParticipants(participantsResponse.data);
+        setParticipants(participantsResponse.data[0]);
 
       } catch (err) {
         console.error("Error fetching class information:", err);

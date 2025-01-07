@@ -20,7 +20,11 @@
     padding: 5px;
     padding-left: 20px;
     padding-right: 20px;
-    background-color: #ADA6A6;
+}
+
+.notification-header:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .notification-author {
@@ -37,3 +41,12 @@
     background-color: #C2BFBF;
 }
 
+.file-uploader{
+    margin-top: 30px;
+}
+
+.create-notification{
+    position: fixed;
+    bottom: 50px;
+    right: 50px
+}

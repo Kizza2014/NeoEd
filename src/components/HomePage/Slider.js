@@ -3,10 +3,9 @@ import axios from "axios";
 import "./Slider.css";
 import { CourseCard } from "./courseCard/CourseCard";
 import logo from '../Utilities/logined_logo.png'
-import exit from './exit_button.png'
 import { useNavigate } from 'react-router-dom';
 import TopBar from "../Utilities/Top_bar";
-import { ClipLoader, PacmanLoader } from "react-spinners";
+import { PacmanLoader } from "react-spinners";
 
 function ExtendBlock({ name, components }) {
   const [clicked, setClicked] = useState(false);
@@ -230,7 +229,11 @@ const CourseGrid = () => {
   }
 
   if (error) {
-    return <div> Error </div>;
+    return (
+      <div style={{ display: "flex", padding: "30px" }}>
+        {error}
+      </div>
+    );
   }
 
   // return (

@@ -17,3 +17,10 @@ html {
   font-size: 20px;
 }
 
+svg.react-icons {
+  font-size: 24px;
+  color: blue;
+}
+.svg-inline--fa {
+  margin-right: 10px;
+}

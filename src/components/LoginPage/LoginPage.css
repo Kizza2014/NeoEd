@@ -178,3 +178,16 @@ margin-left: 8px;
     width: 75%;
     justify-content: space-between;
 }
+
+.login-loading{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with fade effect */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 9999; /* Ensure it stays on top of other content */
+}

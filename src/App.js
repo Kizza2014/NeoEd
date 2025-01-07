@@ -2,12 +2,13 @@ import React from 'react';
 import Slider from './components/HomePage/Slider.js';
 import LoginPage from './components/LoginPage/LoginPage.js';
 import { ClassInfo } from './components/ClassroomPage/classInfo/ClassInfo.jsx';
-import Notifications from './components/ClassroomPage/notification/Notifications.js';
+import Notification_page from './components/ClassroomPage/notification/Notifications.js';
 import { CourseContent } from './components/ClassroomPage/courseContent/CourseContent.jsx';
 import Request from './components/ClassroomPage/Requests/Request.js';
 import Exercise from './components/ClassroomPage/Exercise/Exercise.js';
 import ClassroomPage from './components/ClassroomPage/ClassroomPage.js';
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
+import TeacherHomePage from './components/Teacher/teacher_home/TeacherHomePage.js';
 
 const files = [
   "Assignment1.ipynb",
@@ -46,13 +47,12 @@ export default function MyApp() {
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route path="/Classroom" element={<Slider />} />
+      <Route path="/Classroom" element={<TeacherHomePage />} />
       <Route path="/Classroom/:classId" element={<ClassroomPage />}>
-        {/* Define child routes */}
         <Route path="" element={<ClassInfo/>} />
-        <Route path="notifications" element={<Notifications notifications={notifications} />} />
-        <Route path="content" element={<CourseContent />} />
-        <Route path="assignment" element={<Exercise exerciseData={exerciseData} />} />
+        <Route path="notifications" element={<Notification_page files={files} />} />
+        <Route path="posts" element={<CourseContent />} />
+        <Route path="assignment" element={<Exercise files={files} />} />
         <Route path="requests" element={<Request />} />
       </Route>
     </Routes>

@@ -36,7 +36,7 @@ const Breadcrumbs = () => {
     return (
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb">
-          {error && <li className="breadcrumb-item text-danger">{error}</li>}
+          {error && <li className="breadcrumb-item text-danger">{Error}</li>}
           {pathnames.map((value, index) => {
             const to = `/${pathnames.slice(0, index + 1).join('/')}`;
             const isLast = index === pathnames.length - 1;

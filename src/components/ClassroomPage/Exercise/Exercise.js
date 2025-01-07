@@ -1,7 +1,13 @@
 import ChildHeader from "../ChildHeader";
 import FileUploader from "../Attached_files/Attached_files";
 import './Exercise.css';
-import React, { useState } from "react";
+import React, { Suspense, useState, useEffect } from "react";
+import axios from "axios";
+import { useParams } from 'react-router-dom';
+import { PuffLoader } from "react-spinners";
+
+import { FilePond, registerPlugin } from 'react-filepond';
+import 'filepond/dist/filepond.min.css';
 
 function File_container({ file_name }) {
     return (
@@ -16,23 +22,81 @@ function File_container({ file_name }) {
     );
 }
 
-const notifications = [
-    {
-        author: "Admin",
-        date: new Date(),
-        content: "Your assignment has been graded.",
-    },
-    {
-        author: "System",
-        date: new Date(),
-        content: "The server will be down for maintenance at midnight.",
-    },
-    {
-        author: "Teacher",
-        date: new Date(),
-        content: "Class has been rescheduled to tomorrow at 9 AM.",
-    },
-];
+function PostForm({handleClick}) {
+    const [files, setFiles] = useState([]);
+
+    const handleUpload = () => {
+        if (files.length === 0) {
+            alert("No files to upload!");
+            handleClick();
+            return;
+        } else {
+            alert("Files Uploaded");
+            setFiles([]);
+            handleClick();
+        }
+    }
+    return (
+        <div className="newClassDiv">
+          <div style={{ backgroundColor: "#F4A481", textAlign: "center" }}>
+            <h2 style={{ justifySelf: "center" }}>Create post</h2>
+          </div>
+          <div className="informationDiv">
+            <h2 className="informationTitle">Informations</h2>
+          </div>
+          <div className="informationForm">
+            <label>
+              Post name
+              <textarea 
+               rows="1" 
+               style={{ resize: "none"}}
+               placeholder="null"></textarea>
+            </label>
+            <label>
+              Post content
+              <textarea
+                placeholder="washedup n_g_a ngo"
+                rows="5" 
+                style={{ resize: "vertical" }}
+                ></textarea>
+            </label>
+          </div>
+          <div className="file-uploader">
+            <FilePond
+                files={files}
+                onupdatefiles={setFiles}
+                allowMultiple={true}
+                maxFiles={3}
+                instantUpload={false}
+                name="files"
+                labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
+                />
+            </div>
+          <div className="buttonContainer">
+            <button className="cancelButton" onClick={handleClick}>
+              Cancel
+            </button>
+            <button className="createButton" onClick={handleUpload}>
+              Upload post
+            </button>
+          </div>
+        </div>
+      );
+}
+function AddPost() {
+    const [showDiv, setShowDiv] = useState(false);
+    const handleClick = () => {
+      setShowDiv(!showDiv);
+    };
+    return (
+      <div className="createClassContainer">
+        <button className="buttonWrapper" onClick={handleClick}>
+          <span> + Tạo post</span>
+        </button>
+        {showDiv && <PostForm handleClick={handleClick}/>}
+      </div>
+    );
+}
 
 function Notification({ author, date, content, onClick }) {
     return (
@@ -59,7 +123,7 @@ function Notifications({ notifications, onNotificationClick }) {
                         author={notification.author}
                         date={notification.date}
                         content={notification.content}
-                        onClick={onNotificationClick}
+                        onClick={() => onNotificationClick(notification.assignmentId)}
                     />
                 ))}
             </div>
@@ -67,13 +131,13 @@ function Notifications({ notifications, onNotificationClick }) {
     );
 }
 
-function Exercise_description({ exercise_name, date, exercise_note, files,onBack}) {
+function Exercise_description({ exercise_name, date, exercise_note, files, onBack }) {
     return (
         <div className="exercise_description">
             <div>
                 <div className="button-wrapper">
                     <button className="return-button" onClick={onBack}>
-                        Back to Notifications
+                        Back to assignments
                     </button>
                 </div>
                 <div className="exercise-header">
@@ -88,10 +152,10 @@ function Exercise_description({ exercise_name, date, exercise_note, files,onBack
                     {exercise_note}
                 </div>
             </div>
-            <div className = "files-grid-container">
+            <div className="files-grid-container">
                 <div className="files-grid">
-                    {files.map((file_name) => (
-                        <File_container file_name={file_name}/>
+                    {files.map((file_name, index) => (
+                        <File_container key={index} file_name={file_name} />
                     ))}
                 </div>
             </div>
@@ -99,29 +163,82 @@ function Exercise_description({ exercise_name, date, exercise_note, files,onBack
     );
 }
 
-function Exercise({ exerciseData ,onBack }) {
-    const { exercise_name, date, exercise_note, files } = exerciseData;
+function Exercise({files}) {
+    const { classId } = useParams();
+    const [notifications, setNotifications] = useState([]);
+    const [selectedAssignment, setSelectedAssignment] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const [showExercise, setShowExercise] = useState(false);
+    // Fetch notifications (assignments list)
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/classroom/${classId}/assignment/all`);
+                const data = response.data;
+                const adaptedNotifications = data.map((assignment) => ({
+                    author: assignment.author,
+                    date: new Date(assignment.start_at),
+                    content: assignment.title,
+                    assignmentId: assignment.id,
+                }));
+                setNotifications(adaptedNotifications);
+            } catch (Error) {
+                console.error("Error fetching notifications:", Error);
+                setError(Error)
+            } finally{
+                setLoading(false);
+            }
+        };
 
-    const handleNotificationClick = () => {
-        setShowExercise(true);
+        if (classId) {
+            fetchNotifications();
+        }
+    
+    }, [classId, setError]);
+
+    const handleNotificationClick = async (assignmentId) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`http://localhost:8000/classroom/${classId}/assignment/${assignmentId}/detail`);
+            const data = response.data;
+            setSelectedAssignment({
+                exercise_name: data.title,
+                date: new Date(data.end_at),
+                exercise_note: data.descriptions,
+                files,
+            });
+        } catch (error) {
+            console.error("Error fetching assignment details:", error);
+            setError(error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleBackClick = () => {
-        setShowExercise(false);
+        setSelectedAssignment(null);
     };
+
+    if (error) {
+        return(
+        <>        
+            <div>{error.message}</div>
+            <AddPost/>
+        </>
+        );
+    }
 
     return (
         <div>
-            <ChildHeader nameHeader={"Exercise"} />
-            {showExercise ? (
+            <ChildHeader nameHeader={"Assignments"} />
+            {selectedAssignment ? (
                 <div className="exercise-overall">
                     <Exercise_description
-                        exercise_name={exercise_name}
-                        date={date}
-                        exercise_note={exercise_note}
-                        files={files}
+                        exercise_name={selectedAssignment.exercise_name}
+                        date={selectedAssignment.date}
+                        exercise_note={selectedAssignment.exercise_note}
+                        files={selectedAssignment.files}
                         onBack={handleBackClick}
                     />
                     <div>
