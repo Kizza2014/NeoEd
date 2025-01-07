@@ -4,7 +4,8 @@ from src.controller import (
     POST_CONTROLLER,
     ASSIGNMENT_CONTROLLER,
     AUTH_CONTROLLER,
-    NOTIFICATION_CONTROLLER
+    NOTIFICATION_CONTROLLER,
+    ATTN_CONTROLLER
 )
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -26,3 +27,4 @@ app.include_router(POST_CONTROLLER)
 app.include_router(ASSIGNMENT_CONTROLLER)
 app.include_router(AUTH_CONTROLLER)
 app.include_router(NOTIFICATION_CONTROLLER)
+app.include_router(ATTN_CONTROLLER)

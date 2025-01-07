@@ -2,6 +2,7 @@ import os
 from typing import Generator
 from mysql.connector import pooling, Error as MySQLError
 from dotenv import load_dotenv
+from mysql.connector.pooling import PooledMySQLConnection
 
 # Load environment variables and verify file exists
 env_path = 'src/.env'
@@ -33,7 +34,7 @@ DB_CONFIG = {
 try:
     CONNECTION_POOL = pooling.MySQLConnectionPool(
         pool_name="neoed_pool",
-        pool_size=10,
+        pool_size=20,
         **DB_CONFIG
     )
 except MySQLError as e:
@@ -77,5 +78,5 @@ def get_mysql_connection() -> Generator[MySQLConnection, None, None]:
         yield db
 
 
-def get_mysql_cnx():
+def get_mysql_cnx() -> PooledMySQLConnection:
     return CONNECTION_POOL.get_connection()
