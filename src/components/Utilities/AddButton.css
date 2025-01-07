@@ -10,7 +10,7 @@
   .buttonWrapper {
     border-radius: 50px;
     display: flex;
-    width: 115px;
+    min-width: 115px;
     height: 40px;
     font-weight: bold;
     justify-content: center;

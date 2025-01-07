@@ -88,17 +88,18 @@ function ExtendBlock({ name, icon, components }) {
     );
   }
   
-  function CheckClasses() {
+  function CheckClasses({handleChange}) {
     const [activeButton, setActiveButton] = useState("button1");
   
-    const handleClick = (button) => {
+    const handleClick = (button, isTeaching) => {
       setActiveButton(button);
+      handleChange(isTeaching);
     };
   
     return (
       <div style={{ display: "flex", justifyContent: "left", gap: "10px", margin: "20px" }}>
         <button
-          onClick={() => handleClick("button1")}
+          onClick={() => handleClick("button1", false)}
           style={{
             padding: "10px 20px",
             backgroundColor: "transparent", // Transparent background
@@ -109,10 +110,10 @@ function ExtendBlock({ name, icon, components }) {
             textDecoration: activeButton === "button1" ? "underline" : "none",
           }}
         >
-          Current
+          Joined
         </button>
         <button
-          onClick={() => handleClick("button2")}
+          onClick={() => handleClick("button2", true)}
           style={{
             padding: "10px 20px",
             backgroundColor: "transparent", // Transparent background
@@ -123,7 +124,7 @@ function ExtendBlock({ name, icon, components }) {
             textDecoration: activeButton === "button2" ? "underline" : "none",
           }}
         >
-          Complete
+          Teaching
         </button>
       </div>
     );
@@ -172,25 +173,39 @@ function ExtendBlock({ name, icon, components }) {
     );
   };
   
-  const CourseGrid = ({key,setKey}) => {
+  const CourseGrid = ({ key, setKey }) => {
     const [loading, setLoading] = useState(true);
     const [classes, setClasses] = useState([]);
+    const [joinedClass, setJoinedClass] = useState([]);
+    const [teachingClass, setTeachingClass] = useState([]);
+    const [isTeaching, setTeaching] = useState(false);
     const [error, setError] = useState('');
+  
     useEffect(() => {
       const fetchClasses = async () => {
         try {
           const response = await axios.get("http://localhost:8000/classroom/all");
-          const adaptedClasses = response.data.map((classItem) => ({
+  
+          const joiningClasses = response.data.joining_classes.map((classItem) => ({
             courseTitle: classItem.class_name,
             courseId: classItem.id,
             courseSchedule: classItem.class_schedule,
-            instructorInfo: classItem.owner_id,
+            instructorInfo: `Giáo viên: ${classItem.owner_fullname}`,
             locationInfo: "Phòng học: Chưa xác định",
           }));
-          setClasses(adaptedClasses);
+          setJoinedClass(joiningClasses);
+  
+          const teachingClasses = response.data.teaching_classes.map((classItem) => ({
+            courseTitle: classItem.class_name,
+            courseId: classItem.id,
+            courseSchedule: classItem.class_schedule,
+            instructorInfo: `Giáo viên: ${classItem.owner_fullname}`,
+            locationInfo: "Phòng học: Chưa xác định",
+          }));
+          setTeachingClass(teachingClasses);
         } catch (error) {
           console.error("Error fetching data:", error);
-          setError("An error occurred: " + error.message );
+          setError("An error occurred: " + error.message);
         } finally {
           setLoading(false);
         }
@@ -198,6 +213,10 @@ function ExtendBlock({ name, icon, components }) {
   
       fetchClasses();
     }, []);
+  
+    useEffect(() => {
+      setClasses(isTeaching ? teachingClass : joinedClass);
+    }, [isTeaching, teachingClass, joinedClass]);
   
     if (loading) {
       return (
@@ -216,13 +235,17 @@ function ExtendBlock({ name, icon, components }) {
     }
   
     return (
-      <div className="courseGrid">
-        {classes.map((classItem, index) => (
-          <CourseCard key={index} courseDetails={classItem} image={image} setKey={setKey}/>
-        ))}
-      </div>
+      <>
+        <CheckClasses handleChange={setTeaching} />
+        <div className="courseGrid">
+          {classes.map((classItem, index) => (
+            <CourseCard key={index} courseDetails={classItem} image={image} setKey={setKey} />
+          ))}
+        </div>
+      </>
     );
   };
+  
   
   
   const TeacherHomePage = () => {
@@ -256,7 +279,6 @@ function ExtendBlock({ name, icon, components }) {
             <SearchBox/>
             <AddButton setKey={setKey}/>
           </div>
-          <CheckClasses/>
           <CourseGrid key={key} setKey={handleTriggerReRender}/>
         </div>
       </div>

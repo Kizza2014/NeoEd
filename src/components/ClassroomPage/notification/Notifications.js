@@ -6,22 +6,60 @@ import ChildHeader from '../ChildHeader';
 import axios from "axios";
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
-import { ScaleLoader } from "react-spinners";
+import { FadeLoader, ScaleLoader } from "react-spinners";
 
 function PostForm({handleClick}) {
     const [files, setFiles] = useState([]);
+    const { classId } = useParams();
+    const [loading, setLoading] = useState(false);
+    const [notificationForm, setNotificationForm] = useState({
+        title: "",
+        content: "",
+        class_id: classId,
+    });
+    
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setNotificationForm((prevData) => ({
+          ...prevData,
+          [name]: value,
+        }));
+      };
 
     const handleUpload = () => {
-        if (files.length === 0) {
-            alert("No files to upload!");
-            handleClick();
-            return;
-        } else {
-            alert("Files Uploaded");
-            setFiles([]);
-            handleClick();
-        }
+        setLoading(true);
+        axios
+        .post('http://localhost:8000/notifications/create', null, {
+            params: notificationForm,
+        })
+
+        .then(response => {
+            var info = response.data;
+            console.log('Noti create');
+            setLoading(false);
+        })
+        .catch(error => {
+            alert(error);
+            setLoading(false);
+        });
+    };
+
+    if (loading) {
+        return(
+            <>
+            <div className="login-loading">
+                <FadeLoader
+                color="#ffb800"
+                height={50}
+                margin={60}
+                radius={3}
+                width={15}
+                />
+            </div>
+            </>
+        )
     }
+
     return (
         <div className="newClassDiv">
           <div style={{ backgroundColor: "#F4A481", textAlign: "center" }}>
@@ -34,15 +72,19 @@ function PostForm({handleClick}) {
             <label>
               Post name
               <textarea 
+               name="title"
                rows="1" 
                style={{ resize: "none"}}
+               onChange={handleChange}
                placeholder="null"></textarea>
             </label>
             <label>
               Post content
               <textarea
+                name="content"
                 placeholder="washedup n_g_a ngo"
                 rows="5" 
+                onChange={handleChange}
                 style={{ resize: "vertical" }}
                 ></textarea>
             </label>
@@ -69,15 +111,18 @@ function PostForm({handleClick}) {
         </div>
       );
 }
-function AddPost() {
+
+function AddNotification() {
     const [showDiv, setShowDiv] = useState(false);
     const handleClick = () => {
       setShowDiv(!showDiv);
     };
+
+
     return (
       <div className="createClassContainer">
         <button className="buttonWrapper" onClick={handleClick}>
-          <span> + Tạo post</span>
+          <span> + Tạo thông báo</span>
         </button>
         {showDiv && <PostForm handleClick={handleClick}/>}
       </div>
@@ -102,35 +147,36 @@ function Notification({ author, id, date,title, content, checked}) {
     const [extend, setExtend] = useState(false);
     const [check, setCheck] = useState(checked);
     const onClick = () => {
-        axios.patch('http://localhost:8000/notifications/set-read', 
-            null, { 
-                params: {  // Send as query parameters
-                    user_id: userId,
-                    notification_id: id,
-                    read_status: false,
-                }
-            }
-        )
-        // if (!checked) {
-        //     setCheck(true);
-        //     console.log(typeof(userId), typeof(id));
-        //     axios.patch('http://localhost:8000/notifications/set-read', 
-        //         null, { 
-        //             params: {  // Send as query parameters
-        //                 user_id: userId,
-        //                 notification_id: id,
-        //                 read_status: true,
-        //             }
+        // axios.patch('http://localhost:8000/notifications/set-read', 
+        //     null, { 
+        //         params: {  // Send as query parameters
+        //             user_id: userId,
+        //             notification_id: id,
+        //             read_status: false,
         //         }
-        //     )
-        //     .then(response => {
-        //         console.log('Notification updated successfully:', response.data);
-        //     })
-        //     .catch(error => {
-        //         alert(error);
-        //     });
-        // }
-        // setExtend(!extend);
+        //     }
+        // )
+
+        if (!checked) {
+            setCheck(true);
+            console.log(typeof(userId), typeof(id));
+            axios.patch('http://localhost:8000/notifications/set-read', 
+                null, { 
+                    params: {  // Send as query parameters
+                        user_id: userId,
+                        notification_id: id,
+                        read_status: true,
+                    }
+                }
+            )
+            .then(response => {
+                console.log('Notification updated successfully:', response.data);
+            })
+            .catch(error => {
+                alert(error);
+            });
+        }
+        setExtend(!extend);
     }
     return (
         <div className="notification-box" >
@@ -304,7 +350,7 @@ function Notification_page({files}) {
                 onNotificationClick={handleNotificationClick}
             />
             <div className="create-notification">
-                <AddPost/>
+                <AddNotification/>
             </div>
         </div>
     );

@@ -179,7 +179,7 @@ export const CourseCard = ({ courseDetails, image, setKey }) => {
   }
 
   const handleClick = () => {
-    navigate(`/Classroom/${courseId}`);
+    navigate(`/c/${courseId}`);
   };
 
   const handleDelete = async () => {

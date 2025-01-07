@@ -13,6 +13,14 @@ const Breadcrumbs = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const breadcrumbMapping = {
+    c: "Classroom",
+    a: "Assigments",
+    p: "Posts",
+    n: "Notifications",
+    r: "Requestss"
+  };
+
   useEffect(() => {
     const fetchClassName = async () => {
       try {
@@ -40,10 +48,14 @@ const Breadcrumbs = () => {
           {pathnames.map((value, index) => {
             const to = `/${pathnames.slice(0, index + 1).join('/')}`;
             const isLast = index === pathnames.length - 1;
-            
-            // Replace the `classId` with `className` when it matches the `classId`
-            var displayValue = index === 1 && className ? className : value;
-            displayValue = capitalize(displayValue);
+  
+            // Map the key from breadcrumbMapping or use the original value
+            let displayValue = breadcrumbMapping[value] || value;
+  
+            // Replace the `classId` with `className` if applicable
+            if (index === 1 && className) {
+              displayValue = className;
+            }
   
             return isLast ? (
               <li key={to} className="breadcrumb-item active" aria-current="page">

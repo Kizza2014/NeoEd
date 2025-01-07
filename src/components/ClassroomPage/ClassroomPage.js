@@ -13,38 +13,38 @@ function ClassroomPage() {
         <img src={logo} className="logo" alt="Description" loading="lazy" />
         <div className="button-list">
           <NavLink
-            to={`/Classroom/${classId}`}
+            to={`/c/${classId}`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
             end
           >
             Thông tin lớp học
           </NavLink>
           <NavLink
-            to={`/Classroom/${classId}/notifications`}
+            to={`/c/${classId}/n`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
           >
             Thông báo
           </NavLink>
           <NavLink
-            to={`/Classroom/${classId}/posts`}
+            to={`/c/${classId}/p`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
           >
             Học liệu
           </NavLink>
           <NavLink
-            to={`/Classroom/${classId}/assignment`}
+            to={`/c/${classId}/a`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
           >
             Bài tập
           </NavLink>
           <NavLink
-            to={`/Classroom/${classId}/requests`}
+            to={`/c/${classId}/r`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
           >
             Gửi yêu cầu cho giáo viên
           </NavLink>
           <NavLink
-            to="/Classroom"
+            to="/c"
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
             end
           >

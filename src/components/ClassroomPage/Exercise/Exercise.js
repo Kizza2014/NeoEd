@@ -174,7 +174,7 @@ function Exercise({files}) {
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/classroom/${classId}/assignment/all`);
+                const response = await axios.get(`http://localhost:8000/classroom/${classId}/post/all`);
                 const data = response.data;
                 const adaptedNotifications = data.map((assignment) => ({
                     author: assignment.author,

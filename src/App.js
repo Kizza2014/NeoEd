@@ -47,13 +47,13 @@ export default function MyApp() {
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route path="/Classroom" element={<TeacherHomePage />} />
-      <Route path="/Classroom/:classId" element={<ClassroomPage />}>
+      <Route path="/c" element={<TeacherHomePage />} />
+      <Route path="/c/:classId" element={<ClassroomPage />}>
         <Route path="" element={<ClassInfo/>} />
-        <Route path="notifications" element={<Notification_page files={files} />} />
-        <Route path="posts" element={<CourseContent />} />
-        <Route path="assignment" element={<Exercise files={files} />} />
-        <Route path="requests" element={<Request />} />
+        <Route path="n" element={<Notification_page files={files} />} />
+        <Route path="p" element={<CourseContent />} />
+        <Route path="a" element={<Exercise files={files} />} />
+        <Route path="r" element={<Request />} />
       </Route>
     </Routes>
   </BrowserRouter>
