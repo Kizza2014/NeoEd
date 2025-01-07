@@ -40,9 +40,26 @@ class UserRepository(MysqlRepositoryInterface):
         if len(new_user.password) < 8 or not any(char.isdigit() for char in new_user.password):
             raise PasswordValidationError
         password_hash = get_password_hash(new_user.password)
+        query = """
+        INSERT INTO `neoed`.`users`
+        (`id`,
+        `username`,
+        `fullname`,
+        `gender`,
+        `birthdate`,
+        `role`,
+        `email`,
+        `address`,
+        `hashed_password`,
+        `joined_at`)
+        VALUES
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
 
-        self.cursor.execute("INSERT INTO users VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+        """
+
+        self.cursor.execute(query,
                             (
+                                new_user.user_id,
                                 new_user.username,
                                 new_user.fullname,
                                 new_user.gender,

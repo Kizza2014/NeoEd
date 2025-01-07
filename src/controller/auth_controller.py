@@ -44,7 +44,8 @@ async def register(new_user: UserCreate, connection=Depends(get_mysql_connection
                             detail="Password must be at least 8 characters long and include at least one number.")
     except UsernameValidationError:
         raise HTTPException(status_code=400,
-                            detail="Username must not exceed 50 characters and can only include alphanumeric characters.")
+                            detail="Username must not exceed 50 characters and can only include alphanumeric "
+                                   "characters.")
 
 
 @AUTH_CONTROLLER.post("/login", response_model=TokenResponse)
@@ -97,7 +98,7 @@ async def refresh_token_(
 ):
     if not refresh_token:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="No refresh token provided",
         )
 
@@ -106,14 +107,14 @@ async def refresh_token_(
     payload = decode_refresh_token(refresh_token)
     if not payload or not payload.get("data"):
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
         )
 
     user = await user_repo.get_by_id(payload["data"])
     if not user:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="User not found",
         )
 
@@ -148,8 +149,12 @@ async def refresh_token_(
 
 
 @AUTH_CONTROLLER.post("/logout")
-async def logout(user_id: str):
-
+async def logout(access_token: str):
+    user_data = decode_access_token(access_token)
+    user_id = user_data['data']
+    redis = RedisRepository(user_id)
+    redis.delete_access_token()
+    redis.delete_refresh_token()
     return {
         "message": "Logout successful",
     }

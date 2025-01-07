@@ -32,3 +32,4 @@ def create_new_checkin_session_(class_id: str,
                                 duration: int):
     pass
 
+

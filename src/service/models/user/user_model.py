@@ -18,6 +18,7 @@ class UserRole(str, Enum):
 
 # Pydantic models for request/response
 class UserBase(BaseModel):
+    user_id: str
     username: str
     fullname: str
     gender: Gender

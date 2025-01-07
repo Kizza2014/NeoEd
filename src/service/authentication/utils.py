@@ -62,3 +62,25 @@ def decode_refresh_token(token: str):
             status_code=500,
             detail=f"An unexpected error occurred: {str(e)}",
         )
+
+
+def decode_access_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        return payload
+    except ExpiredSignatureError:
+        raise HTTPException(
+            status_code=401,
+            detail="Refresh token has expired",
+        )
+    except InvalidTokenError:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid refresh token",
+        )
+    except Exception as e:
+        # Bắt tất cả các lỗi khác
+        raise HTTPException(
+            status_code=500,
+            detail=f"An unexpected error occurred: {str(e)}",
+        )

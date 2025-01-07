@@ -147,3 +147,16 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         if not security_infor['require_password']:
             return True
         return verify_password(password, security_infor['hashed_password'])
+
+    def get_all_students(self, class_id: str):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+                                SELECT user_id
+                                FROM users_classes
+                                WHERE class_id LIKE %s
+                                AND users_classes.role LIKE 'student'
+                                """,
+                       (class_id,)
+                       )
+        res = cursor.fetchall()
+        return res

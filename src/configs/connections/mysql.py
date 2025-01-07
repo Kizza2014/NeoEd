@@ -75,3 +75,7 @@ def get_mysql_connection() -> Generator[MySQLConnection, None, None]:
     """
     with MySQLConnection() as db:
         yield db
+
+
+def get_mysql_cnx():
+    return CONNECTION_POOL.get_connection()
