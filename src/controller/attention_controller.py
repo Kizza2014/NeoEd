@@ -135,7 +135,7 @@ def get_current_ci_session(class_id: str):
     return session_id
 
 
-@ATTN_CONTROLLER.post("/checkin/student")
+@ATTN_CONTROLLER.post("/checkin/student-checkin")
 def student_checkin_(student_id: str,
                      session_id: str):
     try:
