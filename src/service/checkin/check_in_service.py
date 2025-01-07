@@ -11,13 +11,14 @@ from src.repository.mysql.classroom import MySQLClassroomRepository
 
 
 class CheckInService:
-    def __init__(self, class_id: str, session_id: str, creator_id: str, duration: int):
+    def __init__(self, class_id: str = None, session_id: str = None, creator_id: str = None):
         self.class_id = class_id
         self.session_id = session_id
         self.creator_id = creator_id
-        self.duration = duration
 
     def initialize(self):
+        if self.class_id is None and self.session_id is None:
+            raise ValueError()
         self._initialize_mysql()
         return CheckInRepository.initialize(self.class_id, self.session_id)
 
@@ -30,8 +31,8 @@ class CheckInService:
         `creator`,
         `data`,
         `started_at`,
-        `duration`,
-        `done`)
+        `done`,
+        `ended_at`)
         VALUES
         (%s, %s, %s, %s, %s, %s, %s)
 
@@ -43,8 +44,8 @@ class CheckInService:
                                          self.creator_id,
                                          json.dumps({}),
                                          datetime.now(),
-                                         self.duration,
-                                         0))
+                                         0,
+                                         datetime.now()))
             cnx.commit()
         except Exception as e:
             cnx.rollback()
@@ -53,12 +54,18 @@ class CheckInService:
             cnx.close()
 
     def check_in(self, student_id: str):
+        if student_id is None and self.session_id is None:
+            raise ValueError()
         CheckInRepository(self.session_id).check_in(student_id)
 
     def get_attendees(self):
+        if self.session_id is None:
+            raise ValueError()
         return CheckInRepository(self.session_id).get_attendees()
 
     def destroy(self):
+        if self.session_id is None and self.class_id is None:
+            raise ValueError()
         CheckInRepository(self.session_id).delete_cur_session(self.class_id)
 
     def _collect_redis(self, mysql):
@@ -78,6 +85,7 @@ class CheckInService:
         UPDATE `check_in_session`
         SET
         `data` = %s,
+        `ended_at` = %s,
         `done` = 1
         WHERE `session_id` = %s;
 
@@ -96,7 +104,7 @@ class CheckInService:
             data_str = json.dumps(data)
 
             cur = cnx.cursor()
-            cur.execute(update_session_query, (data_str, self.session_id))
+            cur.execute(update_session_query, (data_str, datetime.now(), self.session_id))
 
             cur.execute(update_absent_count_query, (*absentees, self.class_id))
 
