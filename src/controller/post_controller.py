@@ -8,7 +8,6 @@ from typing import List
 from src.service.models.classroom import PostResponse, PostCreate, PostUpdate
 from pymongo.errors import PyMongoError
 from src.configs.connections.blob_storage import SupabaseStorage
-import os
 import uuid
 
 
@@ -156,7 +155,7 @@ async def update_post(
 
         # ensure user is post's author
         repo = PostRepository(connection)
-        db_post = repo.get_post_by_id(class_id, post_id)
+        db_post = await repo.get_post_by_id(class_id, post_id)
         if current_user['username'] != db_post['author']:
             raise HTTPException(status_code=403, detail='Unauthorized. You must be the author of the post.')
 
