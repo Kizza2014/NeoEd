@@ -23,8 +23,7 @@ class UserRepository(MysqlRepositoryInterface):
         return query_result
 
     async def get_by_username(self, username: str) -> dict | None:
-        self.cursor.execute("""SELECT id, username, fullname, gender, birthdate, 
-                            role, email, address, joined_at, hashed_password
+        self.cursor.execute("""SELECT id, username, fullname, gender, birthdate, email, address, joined_at, hashed_password
                           FROM users 
                           WHERE username LIKE %s
                         """, (username,))
