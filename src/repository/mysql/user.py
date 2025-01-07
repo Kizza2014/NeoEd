@@ -16,19 +16,20 @@ class UserRepository(MysqlRepositoryInterface):
         return row
 
     async def get_all(self) -> List[dict]:
-        self.cursor.execute("""SELECT username, fullname, gender, birthdate, role, email, address, joined_at 
+        self.cursor.execute("""SELECT username, fullname, gender, birthdate, email, address, joined_at 
                           FROM users
                        """)
         query_result = self.cursor.fetchall()
         return query_result
 
     async def get_by_username(self, username: str) -> dict | None:
-        self.cursor.execute("""SELECT id, username, fullname, gender, birthdate, 
-                            role, email, address, joined_at, hashed_password
+        self.cursor.execute("""SELECT *
                           FROM users 
                           WHERE username LIKE %s
                         """, (username,))
-        return self.cursor.fetchone()
+        user = self.cursor.fetchone()
+        user.pop('hashed_password', None)
+        return user
 
     async def create_user(self, new_user: UserCreate) -> bool:
         current_time = datetime.now()

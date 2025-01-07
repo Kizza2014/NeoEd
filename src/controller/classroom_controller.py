@@ -1,17 +1,16 @@
 from src.repository.mysql.classroom import MySQLClassroomRepository
+from src.repository.mysql.user import UserRepository
 from src.repository.mongodb.classroom import MongoClassroomRepository
 from fastapi import APIRouter, Depends
 from src.configs.connections.mysql import get_mysql_connection
 from src.configs.connections.mongodb import get_mongo_connection
-from src.service.models.classroom import (
-    ClassroomCreate, ClassroomResponse,
-    ClassroomUpdate
-)
+from src.service.models.classroom import ClassroomCreate, ClassroomUpdate
 from mysql.connector import Error as MySQLError
 from pymongo.errors import PyMongoError
 from fastapi import HTTPException, UploadFile, File, Form
 from typing import List
 import uuid
+
 
 CLASSROOM_CONTROLLER = APIRouter(tags=['Classroom'])
 
@@ -20,13 +19,12 @@ current_user = {
     'id': 'user-ffe17039-f1e6-41dd-87f4-659489c4cd0d',
     'username': 'robinblake',
     'fullname': 'robinblake',
-    'gender': 'Other',
-    'role': 'Teacher'
+    'gender': 'Other'
 }
 
 
-@CLASSROOM_CONTROLLER.get("/classroom/all", response_model=List[ClassroomResponse])
-async def get_my_classrooms(connection=Depends(get_mysql_connection)) -> List[ClassroomResponse]:
+@CLASSROOM_CONTROLLER.get("/classroom/all")
+async def get_my_classrooms(connection=Depends(get_mysql_connection)) -> dict:
     try:
         # TODO: replace with user from token
         # Ensure user is logged in
@@ -34,15 +32,14 @@ async def get_my_classrooms(connection=Depends(get_mysql_connection)) -> List[Cl
             raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
 
         repo = MySQLClassroomRepository(connection)
-        query_result = await repo.get_all_classroom_of_user(current_user['id'])
-
-        return [ClassroomResponse(**classroom) for classroom in query_result]
+        classrooms = await repo.get_all(current_user['id'])
+        return classrooms
     except MySQLError as e:
         raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
 
 
-@CLASSROOM_CONTROLLER.get("/classroom/{class_id}/detail", response_model=ClassroomResponse)
-async def get_classroom_by_id(class_id: str, connection=Depends(get_mysql_connection)) -> ClassroomResponse:
+@CLASSROOM_CONTROLLER.get("/classroom/{class_id}/detail")
+async def get_by_id(class_id: str, connection=Depends(get_mysql_connection)) -> dict:
     try:
         # TODO: replace with user from token
         # ensure user is logged in
@@ -54,7 +51,7 @@ async def get_classroom_by_id(class_id: str, connection=Depends(get_mysql_connec
         if not db_classroom:
             raise HTTPException(status_code=404, detail="Classroom not found")
 
-        return ClassroomResponse(**db_classroom)
+        return db_classroom
     except MySQLError as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
@@ -76,12 +73,6 @@ async def create_classroom(
         if not current_user:
             raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
 
-
-        # ensure user is a teacher
-        if current_user.get('role', None) != 'Teacher':
-            raise HTTPException(status_code=403, detail='Only teacher can create classroom.')
-
-
         # create classroom
         information = {
             'class_name': class_name,
@@ -102,7 +93,7 @@ async def create_classroom(
         # transaction-like operation
         status1 = await mongo_repo.create_classroom(new_classroom, current_user['username'])
         status2 = await mysql_repo.create_classroom(new_classroom)
-        status3 = await mysql_repo.add_participant(new_classroom.owner_id, class_id)
+        status3 = await mysql_repo.add_participant(new_classroom.owner_id, class_id, role='teacher')
         if not all([status1, status2, status3]):
             mysql_connection.rollback()
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Create classroom failed')
@@ -211,8 +202,8 @@ async def delete_classroom_by_id(
 
 
 # Classroom participants
-@CLASSROOM_CONTROLLER.get('/classroom/{class_id}/participant/all', response_model=List[dict])
-async def get_all_participants(class_id: str, connection=Depends(get_mongo_connection)) -> List[dict]:
+@CLASSROOM_CONTROLLER.get('/classroom/{class_id}/participant/all')
+async def get_all_participants(class_id: str, connection=Depends(get_mongo_connection)) -> dict:
     try:
         # TODO: replace with user from token
         # ensure that user is logged in
@@ -225,15 +216,15 @@ async def get_all_participants(class_id: str, connection=Depends(get_mongo_conne
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
 
-@CLASSROOM_CONTROLLER.put('/classroom/{class_id}/participant/add/{username}')
-async def add_participant(
+@CLASSROOM_CONTROLLER.put('/classroom/{class_id}/participant/add-student/{username}')
+async def add_student(
         class_id: str,
         username: str,
         mysql_connection=Depends(get_mysql_connection),
         mongo_connection=Depends(get_mongo_connection)
 ) -> dict:
     """
-    For teacher to add participant to classroom
+    For teacher to add student to classroom
     """
     try:
         # TODO: replace with user from token
@@ -241,18 +232,17 @@ async def add_participant(
         if not current_user:
             raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
 
-        # ensure that user is classroom's owner
-        mysql_classoom_repo = MySQLClassroomRepository(mysql_connection, auto_commit=False)
-        class_owner = await mysql_classoom_repo.get_owner(class_id)
-        if current_user['id'] != class_owner['id']:
-            raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
+        # ensure user is teacher
+        mysql_classroom_repo = MySQLClassroomRepository(mysql_connection, auto_commit=False)
+        if await mysql_classroom_repo.get_user_role(current_user['id'], class_id) != 'teacher':
+            raise HTTPException(status_code=403, detail='Forbidden. You are not a teacher')
 
         # add participant
         mysql_user_repo = UserRepository(mysql_connection)
         mongo_classroom_repo = MongoClassroomRepository(mongo_connection)
         db_user = await mysql_user_repo.get_by_username(username)
-        status1 = await mongo_classroom_repo.add_participant(db_user['id'], db_user['username'], class_id)
-        status2 = await mysql_classoom_repo.add_participant(db_user['id'], class_id)
+        status1 = await mongo_classroom_repo.add_participant(db_user['id'], db_user['username'], class_id, role='student')
+        status2 = await mysql_classroom_repo.add_participant(db_user['id'], class_id, role='student')
 
         # transaction-like operation
         if not all([status1, status2]):
@@ -261,8 +251,55 @@ async def add_participant(
         mysql_connection.commit()
 
         return {
-            'message': f'Added participant successfully',
-            'user_id': db_user['id'],
+            'message': f'Added student successfully',
+            'student_id': db_user['id'],
+        }
+    except MySQLError as e:
+        mysql_connection.rollback()
+        raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
+    except PyMongoError as e:
+        mysql_connection.rollback()
+        raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+
+
+@CLASSROOM_CONTROLLER.put('/classroom/{class_id}/participant/add-teacher/{username}')
+async def add_teacher(
+        class_id: str,
+        username: str,
+        mysql_connection=Depends(get_mysql_connection),
+        mongo_connection=Depends(get_mongo_connection)
+) -> dict:
+    """
+    For owner to add teacher to classroom
+    """
+    try:
+        # TODO: replace with user from token
+        # ensure that user is logged in
+        if not current_user:
+            raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
+
+        # ensure that user is classroom's owner
+        mysql_classroom_repo = MySQLClassroomRepository(mysql_connection, auto_commit=False)
+        class_owner = await mysql_classroom_repo.get_owner(class_id)
+        if current_user['id'] != class_owner['id']:
+            raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
+
+        # add participant
+        mysql_user_repo = UserRepository(mysql_connection)
+        mongo_classroom_repo = MongoClassroomRepository(mongo_connection)
+        db_user = await mysql_user_repo.get_by_username(username)
+        status1 = await mongo_classroom_repo.add_participant(db_user['id'], db_user['username'], class_id, role='teacher')
+        status2 = await mysql_classroom_repo.add_participant(db_user['id'], class_id, role='teacher')
+
+        # transaction-like operation
+        if not all([status1, status2]):
+            mysql_connection.rollback()
+            raise HTTPException(status_code=500, detail='An unexpected error occurred. Please try again later')
+        mysql_connection.commit()
+
+        return {
+            'message': 'Added teacher successfully',
+            'teacher_id': db_user['id'],
         }
     except MySQLError as e:
         mysql_connection.rollback()
@@ -295,8 +332,8 @@ async def join_classroom(
 
         # add participant
         mongo_repo = MongoClassroomRepository(mongo_connection)
-        status2 = await mongo_repo.add_participant(current_user['id'], current_user['username'], class_id)
-        status1 = await mysql_repo.add_participant(current_user['id'], class_id)
+        status2 = await mongo_repo.add_participant(current_user['id'], current_user['username'], class_id, role='student')
+        status1 = await mysql_repo.add_participant(current_user['id'], class_id, role='student')
         mysql_connection.commit()
 
         # transaction-like operation
@@ -315,8 +352,8 @@ async def join_classroom(
         mysql_connection.rollback()
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
-@CLASSROOM_CONTROLLER.delete('/classroom/{class_id}/participant/delete/{username}')
-async def remove_participant(
+@CLASSROOM_CONTROLLER.delete('/classroom/{class_id}/participant/remove-student/{username}')
+async def remove_student(
         class_id: str,
         username: str,
         mysql_connection=Depends(get_mysql_connection),
@@ -330,20 +367,18 @@ async def remove_participant(
         # ensure that user is logged in
         if not current_user:
             raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
-        
-        # ensure that user is classroom's owner
-        mysql_classroom_repo = MySQLClassroomRepository(mysql_connection, auto_commit=False)
-        class_owner = await mysql_classroom_repo.get_owner(class_id)
-        if current_user['id'] != class_owner['id']:
-            raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
 
+        # ensure user is teacher
+        mysql_classroom_repo = MySQLClassroomRepository(mysql_connection, auto_commit=False)
+        if await mysql_classroom_repo.get_user_role(current_user['id'], class_id) != 'teacher':
+            raise HTTPException(status_code=403, detail='Forbidden. You are not a teacher')
 
         # remove participant
         mysql_user_repo = UserRepository(mysql_connection)
         mongo_classroom_repo = MongoClassroomRepository(mongo_connection)
         db_user = await mysql_user_repo.get_by_username(username)
-        status1 = await mysql_classroom_repo.remove_participant(db_user['id'], class_id)
-        status2 = await mongo_classroom_repo.remove_participant(db_user['id'], class_id)
+        status1 = await mysql_classroom_repo.remove_participant(db_user['id'], class_id, role='student')
+        status2 = await mongo_classroom_repo.remove_participant(db_user['id'], class_id, role='student')
 
         # transaction-like operation
         if not all([status1, status2]):
@@ -353,8 +388,56 @@ async def remove_participant(
 
 
         return {
-            'message': f'Removed participant successfully',
-            'username': username,
+            'message': f'Removed student successfully',
+            'student_id': db_user['id'],
+        }
+    except MySQLError as e:
+        mysql_connection.rollback()
+        raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
+    except PyMongoError as e:
+        mysql_connection.rollback()
+        raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+
+
+@CLASSROOM_CONTROLLER.delete('/classroom/{class_id}/participant/remove-teacher/{username}')
+async def remove_teacher(
+        class_id: str,
+        username: str,
+        mysql_connection=Depends(get_mysql_connection),
+        mongo_connection=Depends(get_mongo_connection)
+) -> dict:
+    """
+    For owner to remove a teacher from classroom
+    """
+    try:
+        # TODO: replace with user from token
+        # ensure that user is logged in
+        if not current_user:
+            raise HTTPException(status_code=403, detail='Unauthorized. You must login before accessing this resource.')
+
+        # ensure that user is classroom's owner
+        mysql_classroom_repo = MySQLClassroomRepository(mysql_connection, auto_commit=False)
+        class_owner = await mysql_classroom_repo.get_owner(class_id)
+        if current_user['id'] != class_owner['id']:
+            raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
+
+        # remove participant
+        mysql_user_repo = UserRepository(mysql_connection)
+        mongo_classroom_repo = MongoClassroomRepository(mongo_connection)
+        db_user = await mysql_user_repo.get_by_username(username)
+        status1 = await mysql_classroom_repo.remove_participant(db_user['id'], class_id, role='teacher')
+        status2 = await mongo_classroom_repo.remove_participant(db_user['id'], class_id, role='teacher')
+
+        # transaction-like operation
+        if not all([status1, status2]):
+            mysql_connection.rollback()
+            raise HTTPException(status_code=500, detail='An unexpected error occurred. Please try again later')
+        mysql_connection.commit()
+
+
+        return {
+            'message': f'Removed teacher successfully',
+            'teacher_id': db_user['id'],
         }
     except MySQLError as e:
         mysql_connection.rollback()
@@ -386,9 +469,10 @@ async def leave_classroom(
             raise HTTPException(status_code=403, detail='Forbidden. Owner cannot leave classroom')
 
         # remove participant
+        user_role = await mysql_repo.get_user_role(current_user['id'], class_id)
         mongo_repo = MongoClassroomRepository(mongo_connection)
-        status1 = await mysql_repo.remove_participant(current_user['id'], class_id)
-        status2 = await mongo_repo.remove_participant(current_user['id'], class_id)
+        status1 = await mysql_repo.remove_participant(current_user['id'], class_id, role=user_role)
+        status2 = await mongo_repo.remove_participant(current_user['id'], class_id, role=user_role)
         if not all([status1, status2]):
             mysql_connection.rollback()
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Please try again later')

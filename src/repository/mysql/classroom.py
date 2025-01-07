@@ -8,45 +8,73 @@ from mysql.connector import Error as MySQLError
 
 class MySQLClassroomRepository(MysqlRepositoryInterface):
 
-    # GET
-    async def get_all(self) -> list[dict]:
-        self.cursor.execute("""SELECT id, class_name, subject_name, owner_id, class_schedule, created_at, updated_at 
-                               FROM classes""")
-        return self.cursor.fetchall()
-
-    async def get_all_classroom_of_user(self, user_id: str) -> List[dict]:
+    async def get_all(self, user_id: str) -> dict:
         self.cursor.execute(
             """
-            SELECT c.id, c.class_name, c.subject_name, c.owner_id, c.class_schedule, 
-                            c.description, c.created_at, c.updated_at, c.require_password
-            FROM (SELECT *
+            SELECT 
+                -- classroom information
+                c.id, c.class_name, c.subject_name, c.class_schedule, c.description, c.created_at, 
+                c.updated_at, c.owner_id, c.require_password, 
+                
+                -- owner information
+                c.owner_id, u.username AS owner_username, u.fullname AS owner_fullname, uc.role, 
+                u.email AS owner_email, u.birthdate AS owner_birthdate, u.gender AS onwer_gender, 
+                u.address AS owner_address
+            FROM (SELECT class_id, role
                   FROM users_classes
                   WHERE user_id LIKE %s  
-                 ) AS uc JOIN classes AS c ON uc.class_id LIKE c.id
+                 ) AS uc JOIN classes AS c ON uc.class_id LIKE c.id JOIN users AS u ON c.owner_id LIKE u.id
             """,
             (user_id,)
         )
-        return self.cursor.fetchall()
+        classrooms = self.cursor.fetchall()
+        joined_classes = [classroom for classroom in classrooms if classroom['role'] == 'student']
+        owned_classes = [classroom for classroom in classrooms if classroom['role'] == 'teacher']
+        return {
+            'joining_classes': joined_classes,
+            'teaching_classes': owned_classes
+        }
 
     async def get_by_id(self, class_id: str) -> dict | None:
-        self.cursor.execute("""SELECT id, class_name, subject_name, owner_id, class_schedule, 
-                                        description, created_at, updated_at, require_password 
-                          FROM classes 
-                          WHERE id LIKE %s""",
-                            (class_id,))
-        return self.cursor.fetchone()
+        self.cursor.execute(
+            """SELECT 
+                    -- classroom information
+                    c.id AS class_id, c.class_name, c.subject_name, c.class_schedule, c.description, 
+                    c.created_at, c.updated_at, c.require_password,
+                    
+                    -- owner information
+                    c.owner_id, u.username AS owner_username, u.fullname AS owner_fullname, 
+                    u.email AS owner_email, u.birthdate AS owner_birthdate, u.gender AS onwer_gender, 
+                    u.address AS owner_address
+               FROM classes AS c JOIN users AS u ON c.owner_id LIKE u.id
+               WHERE c.id LIKE %s
+            """,
+            (class_id,)
+        )
+        res = self.cursor.fetchone()
+        return res
 
-    async def get_owner_id(self, class_id: str) -> str:
-        self.cursor.execute("SELECT owner_id FROM classes WHERE id LIKE %s", (class_id,))
+    async def get_owner(self, class_id: str) -> dict:
+        self.cursor.execute("""SELECT u.id, u.username, u.fullname, u.email, u.birthdate, u.address, u.joined_at 
+                               FROM classes AS c JOIN users AS u ON c.owner_id LIKE u.id 
+                               WHERE c.id LIKE %s""", (class_id,))
         owner = self.cursor.fetchone()
         if not owner:
             raise MySQLError('Classroom not found')
-        return owner['owner_id']
+        return owner
+
+    async def get_user_role(self, user_id: str, class_id: str) -> str:
+        self.cursor.execute("""SELECT * FROM users_classes WHERE user_id LIKE %s AND class_id LIKE %s""",
+                            (user_id, class_id)
+        )
+        res = self.cursor.fetchone()
+        if not res:
+            raise MySQLError('User not in this classroom.')
+        return res['role']
 
     # CREATE
     async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:
-        hashed_password = get_password_hash(new_classroom.password) if new_classroom.password else None
-
+        hashed_password = get_password_hash(new_classroom.password)
         self.cursor.execute("""INSERT INTO classes(id, class_name, subject_name, class_schedule, description, 
                                                     created_at, updated_at, owner_id, hashed_password, require_password)
                               VALUE(%s, %s, %s, %s, %s, NOW(), NOW(), %s, %s, %s)""",
@@ -115,22 +143,22 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         res = self.cursor.fetchall()
         return res
 
-    async def add_participant(self, user_id: str, class_id: str) -> bool:
-        self.cursor.execute("""INSERT INTO users_classes 
-                          VALUE (%s, %s, NOW())
+    async def add_participant(self, user_id: str, class_id: str, role: str) -> bool:
+        self.cursor.execute("""INSERT INTO users_classes(user_id, class_id, joined_at, role) 
+                          VALUE (%s, %s, NOW(), %s)
                         """,
-                            (user_id, class_id)
+                            (user_id, class_id, role)
                             )
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0
 
-    async def remove_participant(self, username: str, class_id: str) -> bool:
+    async def remove_participant(self, user_id: str, class_id: str, role: str) -> bool:
         self.cursor.execute("""
                                 DELETE FROM users_classes
-                                WHERE username LIKE %s AND class_id LIKE %s
+                                WHERE user_id LIKE %s AND class_id LIKE %s AND role LIKE %s
                             """,
-                            (username, class_id,)
+                            (user_id, class_id, role)
                             )
         if self.auto_commit:
             self.connection.commit()

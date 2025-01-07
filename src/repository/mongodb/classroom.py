@@ -1,7 +1,6 @@
 from pymongo.errors import PyMongoError
 from src.repository.mongodb.mongodb_repository import MongoDBRepositoryInterface
 from src.service.models.classroom import ClassroomCreate
-from typing import List
 
 
 class MongoClassroomRepository(MongoDBRepositoryInterface):
@@ -19,7 +18,7 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
             '_id': new_classroom.id,
             'posts': [],
             'assignments': [],
-            'participants': [{'user_id': new_classroom.owner_id, 'username': owner_username}]
+            'participants': [{'user_id': new_classroom.owner_id, 'username': owner_username, 'role': 'teacher'}]
         }
 
         res = self.collection.insert_one(class_info)
@@ -33,33 +32,26 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         return True
 
 
-    async def get_all_participants(self, class_id: str) -> List[dict]:
-        """
-        returns: [
-                    {
-                        'user_id': 'user-xxxxx-xxxxxx-xxxx-xxx',
-                        'username': 'username'
-                    },
-                    ...
-                ]
-        """
+    async def get_all_participants(self, class_id: str) -> dict:
         db_class = self.collection.find_one({'_id': class_id})
         if not db_class:
             raise PyMongoError("Classroom not found")
-        return db_class['participants']
+        participants = db_class.get('participants', [])
+        return {
+            'teachers': [participant for participant in participants if participant['role'] == 'teacher'],
+            'students': [participant for participant in participants if participant['role'] == 'student']
+        }
 
 
-    async def add_participant(self, user_id: str, username: str, class_id: str) -> bool:
+    async def add_participant(self, user_id: str, username: str, class_id: str, role: str) -> bool:
         filters = {'_id': class_id}
         updates = {
             '$addToSet': {
-                'participants': {'user_id': user_id, 'username': username}
+                'participants': {'user_id': user_id, 'username': username, 'role': role}
             }
         }
         res = self.collection.find_one_and_update(filters, updates)
-        if res is None:
-            raise PyMongoError("Classroom not found")
-        return True
+        return res is not None
 
 
     async def find_participant_in_class(self, user_id: str, class_id: str) -> bool:
@@ -69,14 +61,12 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         return any(participant['user_id'] == user_id for participant in db_class['participants'])
 
 
-    async def remove_participant(self, user_id: str, class_id: str) -> bool:
-        filters = {'_id': class_id}
+    async def remove_participant(self, user_id: str, class_id: str, role: str) -> bool:
+        filters = {'_id': class_id, 'participants.role': role}
         updates = {
             '$pull': {
                 'participants': {'user_id': user_id}
             }
         }
         res = self.collection.find_one_and_update(filters, updates)
-        if res is None:
-            raise PyMongoError("Classroom not found")
-        return True
+        return res is not None
