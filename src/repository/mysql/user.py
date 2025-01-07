@@ -17,18 +17,17 @@ class UserRepository(MysqlRepositoryInterface):
 
     async def get_all(self) -> List[dict]:
         self.cursor.execute("""SELECT username, fullname, gender, birthdate, email, address, joined_at 
-                          FROM users
+                                FROM users
                        """)
         query_result = self.cursor.fetchall()
         return query_result
 
     async def get_by_username(self, username: str) -> dict | None:
         self.cursor.execute("""SELECT *
-                          FROM users 
-                          WHERE username LIKE %s
+                               FROM users 
+                               WHERE username LIKE %s
                         """, (username,))
         user = self.cursor.fetchone()
-        user.pop('hashed_password', None)
         return user
 
     async def create_user(self, new_user: UserCreate) -> bool:
@@ -48,13 +47,12 @@ class UserRepository(MysqlRepositoryInterface):
         `fullname`,
         `gender`,
         `birthdate`,
-        `role`,
         `email`,
         `address`,
         `hashed_password`,
         `joined_at`)
         VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s);
 
         """
 
@@ -65,13 +63,12 @@ class UserRepository(MysqlRepositoryInterface):
                                 new_user.fullname,
                                 new_user.gender,
                                 new_user.birthdate,
-                                new_user.role,
                                 new_user.email,
                                 new_user.address,
                                 password_hash,
                                 time_mysql_format,
                             )
-                            )
+        )
         if self.auto_commit:
             self.connection.commit()
         return self.cursor.rowcount > 0
@@ -115,13 +112,3 @@ class UserRepository(MysqlRepositoryInterface):
             self.connection.commit()
         return self.cursor.rowcount > 0
 
-    # def change_user_password(self, user_id: str, new_password: str):
-    #     cursor = self.connection.cursor
-    #     password_hash = get_password_hash(new_password)
-    #     cursor.execute("""UPDATE users
-    #                       SET user_passwd = %s
-    #                       WHERE id LIKE %s
-    #                     """, (password_hash, user_id)
-    #                    )
-    #     self.connection.commit()
-    #     return cursor.rowcount > 0

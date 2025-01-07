@@ -34,7 +34,7 @@ DB_CONFIG = {
 try:
     CONNECTION_POOL = pooling.MySQLConnectionPool(
         pool_name="neoed_pool",
-        pool_size=20,
+        pool_size=1,
         **DB_CONFIG
     )
 except MySQLError as e:

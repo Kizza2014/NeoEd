@@ -18,12 +18,11 @@ class UserRole(str, Enum):
 
 # Pydantic models for request/response
 class UserBase(BaseModel):
-    user_id: str
+    id: str
     username: str
     fullname: str
     gender: Gender
     birthdate: Optional[date] = None
-    role: UserRole
     email: Optional[EmailStr] = None
     address: Optional[str] = None
 
@@ -47,5 +46,3 @@ class UserUpdate(BaseModel):
 class UserResponse(UserBase):
     joined_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True

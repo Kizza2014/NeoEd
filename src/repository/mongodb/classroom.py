@@ -62,10 +62,10 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
 
 
     async def remove_participant(self, user_id: str, class_id: str, role: str) -> bool:
-        filters = {'_id': class_id, 'participants.role': role}
+        filters = {'_id': class_id}
         updates = {
             '$pull': {
-                'participants': {'user_id': user_id}
+                'participants': {'user_id': user_id, 'role': role}
             }
         }
         res = self.collection.find_one_and_update(filters, updates)
