@@ -1,10 +1,11 @@
+import json
 import uuid
 
-from fastapi import BackgroundTasks
+from fastapi import BackgroundTasks, Query
 
 from src.repository.mysql.user import UserRepository
 from fastapi import APIRouter, Depends, Response, status, Cookie
-from src.configs.connections.mysql import get_mysql_connection
+from src.configs.connections.mysql import get_mysql_connection, get_mysql_cnx
 from src.repository.redis.check_in_repository import CheckInRepository
 from src.repository.redis.redis_repository import RedisRepository
 from src.service.checkin.check_in_service import CheckInService
@@ -19,18 +20,80 @@ from datetime import date
 ATTN_CONTROLLER = APIRouter(tags=['Attention'])
 
 
-def background_attention_task(class_id, session_id, creator_id, duration):
-    check_in_service = CheckInService(class_id, session_id, creator_id, duration)
-    if check_in_service.synchronize_mysql():
-        check_in_service.destroy()
-    else:
-        raise RuntimeError("Can not synchronize with MySQL. Saving on Redis only.")
+@ATTN_CONTROLLER.get("/checkin/sessions-of-class")
+def get_sessions_from_class_(class_id: str = Query(...)):
+    cnx = get_mysql_cnx()
+    query = """
+    SELECT `check_in_session`.`session_id`,
+    `check_in_session`.`class_id`,
+    `check_in_session`.`creator`,
+    `check_in_session`.`data`,
+    `check_in_session`.`started_at`,
+    `check_in_session`.`done`,
+    `check_in_session`.`ended_at`
+    FROM `check_in_session`
+    WHERE `check_in_session`.`class_id` = %s
+    """
+    try:
+        cur = cnx.cursor()
+        cur.execute(query, (class_id,))
+        rows = cur.fetchall()
+        return [
+            {
+                'session_id': row[0],
+                'class_id': row[1],
+                'creator': row[2],
+                'data': json.loads(row[3]),
+                'started_at': row[4],
+                'ended_at': row[6],
+                'done': row[5]
+            }
+            for row in rows
+        ]
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+    finally:
+        cnx.close()
 
 
-@ATTN_CONTROLLER.get("/absents/{class_id}")
-def get_absents_from_class_(class_id: str,
-                            class_date: date):
-    return True
+@ATTN_CONTROLLER.get("/checkin/{session_id}")
+def get_details_from_session_(session_id: str):
+    cnx = get_mysql_cnx()
+    query = """
+    SELECT `check_in_session`.`session_id`,
+    `check_in_session`.`class_id`,
+    `check_in_session`.`creator`,
+    `check_in_session`.`data`,
+    `check_in_session`.`started_at`,
+    `check_in_session`.`done`,
+    `check_in_session`.`ended_at`
+    FROM `check_in_session`
+    WHERE session_id = %s
+    """
+    try:
+        cur = cnx.cursor()
+        cur.execute(query, (session_id,))
+        row = cur.fetchone()
+        print(row)
+        return {
+            'session_id': row[0],
+            'class_id': row[1],
+            'creator': row[2],
+            'data': json.loads(row[3]),
+            'started_at': row[4],
+            'ended_at': row[6],
+            'done': row[5]
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+    finally:
+        cnx.close()
 
 
 @ATTN_CONTROLLER.post("/absents/new-request")
@@ -38,7 +101,9 @@ def create_absents_request(class_id: str,
                            student_id: str,
                            absent_on: date,
                            reason: str):
-    pass
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED
+    )
 
 
 @ATTN_CONTROLLER.post("/checkin/new")
