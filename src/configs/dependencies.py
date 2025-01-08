@@ -1,6 +1,5 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
-
 from src.repository.mysql import UserRepository
 from src.configs.connections.mysql import get_mysql_connection
 from src.configs.logging import get_logger
@@ -24,7 +23,7 @@ async def get_current_user(
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    user_id = payload.get("user_id")
+    user_id = payload.get("user_id", None)
     if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

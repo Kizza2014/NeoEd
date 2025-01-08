@@ -12,7 +12,7 @@ class Assignment(BaseModel):
     updated_at: datetime
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
-    attachments: Optional[List[str]] = None
+    attachments: Optional[List[dict]] = None
 
 
 class AssignmentResponse(Assignment):
@@ -25,7 +25,7 @@ class AssignmentCreate(BaseModel):
     descriptions: str
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
-    attachments: Optional[List[str]] = None
+    attachments: Optional[List[dict]] = None
 
 
 class AssignmentUpdate(BaseModel):
@@ -33,5 +33,5 @@ class AssignmentUpdate(BaseModel):
     descriptions: Optional[str] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
-    additional_attachments: Optional[List[str]] = None
-    removal_attachments: Optional[List[str]] = None
+    additional_attachments: Optional[List[dict]] = None
+    removal_attachments: Optional[List[dict]] = None

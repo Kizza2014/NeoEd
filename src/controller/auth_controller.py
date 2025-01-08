@@ -56,7 +56,7 @@ async def signin(
 ):
     user_repo = UserRepository(conn)
 
-    # Kiểm tra email và password
+    # Kiểm tra username và password
     user_db = await user_repo.get_by_username(user.username)
     user_id = user_db['id']
     user_pwd = user_db['hashed_password']
