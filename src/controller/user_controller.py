@@ -2,11 +2,11 @@ from src.service.models.user import UserResponse, UserUpdate
 from src.repository.mysql.user import UserRepository
 from fastapi import APIRouter, Depends
 from src.configs.connections.mysql import get_mysql_connection
-from typing import List
-from fastapi import HTTPException
-# from src.configs.dependencies import verify_token, get_current_user
+from fastapi import HTTPException, Depends
 from src.configs.logging import get_logger
 from mysql.connector import Error as MySQLError
+from src.service.authentication.utils import *
+from typing import List
 
 
 USER_CONTROLLER = APIRouter(tags=['User'])
@@ -16,16 +16,16 @@ logger = get_logger(__name__)
 # BASIC API
 @USER_CONTROLLER.get("/me", response_model=UserResponse)
 async def get_current_user_info(
-    # username: str,
+    user_id: str=Depends(verify_token),
     connection=Depends(get_mysql_connection)
 ) -> UserResponse:
+    if not user_id:
+        raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+
     user_repo = UserRepository(connection)
-    user = await user_repo.get_by_username('hoangkimgiap')  # temporary, will be replaced by username from token
-
+    user = await user_repo.get_by_id(user_id)
     if user is None:
-        # logger.error(f"Your account is not available")
         raise HTTPException(status_code=404, detail="User not found")
-
     return UserResponse(**user)
 
 

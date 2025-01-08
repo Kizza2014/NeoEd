@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 class UserRepository(MysqlRepositoryInterface):
-    async def get_by_id(self, user_id: str):
+    async def get_by_id(self, user_id: str) -> dict | None:
         query = """
         SELECT * FROM users WHERE id = %s
         """

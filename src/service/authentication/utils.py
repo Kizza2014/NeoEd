@@ -1,7 +1,6 @@
 import jwt
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 import datetime
-
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
@@ -84,3 +83,8 @@ def decode_access_token(token: str):
             status_code=500,
             detail=f"An unexpected error occurred: {str(e)}",
         )
+
+
+def verify_token(token: str) -> str | None:
+    payload = decode_access_token(token)
+    return payload.get('data', None)
