@@ -1,4 +1,3 @@
-from src.service.models.user import UserResponse
 from src.repository.mysql.classroom import MySQLClassroomRepository
 from src.repository.mysql.user import UserRepository
 from src.repository.mongodb.classroom import MongoClassroomRepository
@@ -11,20 +10,9 @@ from pymongo.errors import PyMongoError
 from fastapi import HTTPException, Form
 from typing import List
 import uuid
-from src.configs.dependencies import get_current_user
-from src.configs.security import http_bearer
-from fastapi.security import HTTPAuthorizationCredentials
 from src.service.authentication.utils import *
 
 CLASSROOM_CONTROLLER = APIRouter(tags=['Classroom'])
-
-# TODO: replace with user from token
-current_user = {
-    'id': 'user-ffe17039-f1e6-41dd-87f4-659489c4cd0d',
-    'username': 'robinblake',
-    'fullname': 'robinblake',
-    'gender': 'Other'
-}
 
 
 @CLASSROOM_CONTROLLER.get("/classroom/all")
@@ -37,7 +25,7 @@ async def get_my_classrooms(
             raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
 
         repo = MySQLClassroomRepository(connection)
-        classrooms = await repo.get_all(current_user['id'])
+        classrooms = await repo.get_all(user_id)
         return classrooms
     except MySQLError as e:
         raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
@@ -175,7 +163,7 @@ async def delete_classroom_by_id(
         # ensure that user is classroom's owner
         mysql_repo = MySQLClassroomRepository(mysql_connection, auto_commit=False)
         class_owner = await mysql_repo.get_owner(class_id)
-        if current_user['id'] != class_owner['id']:
+        if user_id != class_owner['id']:
             raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
 
         # delete classroom
