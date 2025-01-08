@@ -7,7 +7,7 @@ from src.configs.connections.mongodb import get_mongo_connection
 from src.service.models.classroom import ClassroomCreate, ClassroomUpdate
 from mysql.connector import Error as MySQLError
 from pymongo.errors import PyMongoError
-from fastapi import HTTPException, UploadFile, File, Form
+from fastapi import HTTPException, Form
 from typing import List
 import uuid
 

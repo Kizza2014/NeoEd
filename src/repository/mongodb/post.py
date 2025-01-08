@@ -49,7 +49,7 @@ class PostRepository(MongoDBRepositoryInterface):
         return result.modified_count > 0
 
 
-    async def update_post_by_id(self, class_id, post_id, update_data: PostUpdate) -> bool:
+    async def update_by_id(self, class_id, post_id, update_data: PostUpdate) -> bool:
         update_data = update_data.model_dump(exclude_unset=True)
 
         # Prepare additional and removal attachments
@@ -79,10 +79,9 @@ class PostRepository(MongoDBRepositoryInterface):
             filters,
             {'$set': update_fields}
         )
-
         return result.modified_count > 0
 
-    async def delete_post_by_id(self, class_id: str, post_id: str) -> bool:
+    async def delete_by_id(self, class_id: str, post_id: str) -> bool:
         result = self.collection.update_one(
             {'_id': class_id},
             {'$pull': {'posts': {'id': post_id}}}

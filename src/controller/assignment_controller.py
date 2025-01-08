@@ -366,7 +366,9 @@ async def resubmit(
         if db_assgn['end_at'] and db_assgn['end_at'] < datetime.now():
             raise HTTPException(status_code=403, detail='Assignment submission is closed.')
 
-        if await repo.get_submission(class_id, assgn_id, current_user['id']) is not None:
+        # ensure user has not been graded
+        submission = await repo.get_submission(class_id, assgn_id, current_user['id'])
+        if submission and submission.get('grade', None) is not None:
             raise HTTPException(status_code=403, detail='Your submission is already graded. You cannot resubmit.')
 
         # create resubmission
@@ -420,7 +422,7 @@ async def grade(
 
         # ensure user is teacher of the class
         mysql_classroom_repo = MySQLClassroomRepository(mysql_connection)
-        if await mysql_classroom_repo.get_user_role(class_id, current_user['id']) != 'teacher':
+        if await mysql_classroom_repo.get_user_role(current_user['id'], class_id) != 'teacher':
             raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class')
 
         # grade assignment

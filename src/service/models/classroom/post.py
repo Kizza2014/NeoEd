@@ -27,5 +27,5 @@ class PostCreate(BaseModel):
 class PostUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
-    additional_attachments: Optional[List[str]] = None
-    removal_attachments: Optional[List[str]] = None
+    additional_attachments: Optional[List[dict]] = None
+    removal_attachments: Optional[List[dict]] = None

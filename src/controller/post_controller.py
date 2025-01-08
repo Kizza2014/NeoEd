@@ -165,12 +165,12 @@ async def update_post(
             "content": content if content else None,
             "additional_attachments": [{'filename': file.filename} for file in
                                        additional_attachments] if additional_attachments else None,
-            "removal_attachments": removal_attachments if removal_attachments else None
+            "removal_attachments": [{'filename': filename} for filename in removal_attachments] if removal_attachments else None
         }
         update_data_dict = {k: v for k, v in update_data_dict.items() if v is not None}
 
         update_data = PostUpdate(**update_data_dict)
-        status = await repo.update_post_by_id(class_id, post_id, update_data)
+        status = await repo.update_by_id(class_id, post_id, update_data)
         if not status:
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Update post failed')
 
@@ -216,7 +216,7 @@ async def delete_post(class_id: str, post_id: str, connection=Depends(get_mongo_
 
         # delete post in database
         repo = PostRepository(connection)
-        status = await repo.delete_post_by_id(class_id, post_id)
+        status = await repo.delete_by_id(class_id, post_id)
         if not status:
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Delete post failed')
 
