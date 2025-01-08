@@ -21,7 +21,7 @@ class PostCreate(BaseModel):
     title: str
     author: str
     content: str
-    attachments: Optional[List[str]] = None
+    attachments: Optional[List[dict]] = None
 
 
 class PostUpdate(BaseModel):
