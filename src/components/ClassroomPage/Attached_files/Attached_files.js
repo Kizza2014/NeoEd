@@ -2,13 +2,17 @@ import "./Attached_files.css"
 
 import React, { useState } from 'react';
 
-function FileUploader() {
-    const [files, setFiles] = useState([]);
+function FileUploader({files, setFiles,sendHandle}) {
     const addFiles = (newFiles) => {
-        setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+        setFiles(newFiles);
     };
+    
     const removeFile = (index) => {
-        setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+        // Filter out the file at the given index
+        const updatedFiles = files.filter((_, i) => i !== index);
+        
+        // Update the state with the new filtered list
+        setFiles(updatedFiles);
     };
 
     return (
@@ -30,7 +34,7 @@ function FileUploader() {
                 />
                 Choose Files
             </label>
-            <button className="send-button">
+            <button className="send-button" onClick={sendHandle}>
                 Send request
             </button>
         </div>

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { Suspense, useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 import "./Notifications.css";
+import FileUploader from '../Attached_files/Attached_files';
 import ChildHeader from '../ChildHeader';
 import axios from "axios";
 import { FilePond, registerPlugin } from 'react-filepond';
@@ -15,35 +16,60 @@ function PostForm({handleClick}) {
     const [notificationForm, setNotificationForm] = useState({
         title: "",
         content: "",
-        class_id: classId,
+        // class_id: classId,
+        attachments: [],
     });
     
     const handleChange = (e) => {
         const { name, value } = e.target;
         setNotificationForm((prevData) => ({
-          ...prevData,
-          [name]: value,
+            ...prevData,
+            [name]: value,
         }));
-      };
-
-    const handleUpload = () => {
-        setLoading(true);
-        axios
-        .post('http://localhost:8000/notifications/create', null, {
-            params: notificationForm,
-        })
-
-        .then(response => {
-            var info = response.data;
-            console.log('Noti create');
-            setLoading(false);
-        })
-        .catch(error => {
-            alert(error);
-            setLoading(false);
-        });
     };
 
+    const handleFileChange = (newFiles) => {
+        setFiles(newFiles);  // Update files state
+        setNotificationForm((prevData) => ({
+            ...prevData,
+            attachments: newFiles,  // Update form with new files array
+        }));
+    };
+    
+    const handleUpload = () => {
+        setLoading(true);
+        console.log(notificationForm);
+        console.log(notificationForm.attachments); // Check if the form data is correct
+        // Create FormData object
+        const formData = new FormData();
+        formData.append('title', notificationForm.title);
+        formData.append('content', notificationForm.content);
+
+        // Append files to FormData
+        for (let i = 0; i < notificationForm.attachments.length; i++) {
+            formData.append('attachments', notificationForm.attachments[i]);
+        }
+
+        // Sending the request with FormData
+        axios.post(
+            `http://localhost:8000/classroom/${classId}/post/create`,
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                }
+            }
+        )
+            .then(response => {
+                console.log('Noti created successfully');
+                setLoading(false);
+            })
+            .catch(error => {
+                alert('Error uploading data');
+                console.error(error);
+                setLoading(false);
+            });
+    };
     if (loading) {
         return(
             <>
@@ -90,15 +116,11 @@ function PostForm({handleClick}) {
             </label>
           </div>
           <div className="file-uploader">
-            <FilePond
-                files={files}
-                onupdatefiles={setFiles}
-                allowMultiple={true}
-                maxFiles={3}
-                instantUpload={false}
-                name="files"
-                labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
-                />
+            <FileUploader 
+                files = {files}
+                setFiles={handleFileChange}
+                sendHandle={handleUpload}
+            />
             </div>
           <div className="buttonContainer">
             <button className="cancelButton" onClick={handleClick}>
@@ -298,7 +320,6 @@ function Notification_page({files}) {
     }, [classId, setError]);
 
     const handleNotificationClick = async (assignmentId, checked) => {
-        // setLoading(true);\
         try {
             // const response = await axios.get('http://127.0.0.1:8000/notifications/user/user-0bea98bd-a2b8-4d08-ac24-d72d3fdcb0f2');
             // const data = response.data;
@@ -338,6 +359,7 @@ function Notification_page({files}) {
         return(
         <>        
             <div>{error.message}</div>
+            <AddNotification/>
         </>
         );
     }

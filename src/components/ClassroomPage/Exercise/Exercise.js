@@ -5,22 +5,60 @@ import React, { Suspense, useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from 'react-router-dom';
 import { PuffLoader } from "react-spinners";
+import { parseISO } from 'date-fns';
+import { saveAs } from 'file-saver';
+import { PiFileSql, PiFilePdf, PiFileZip, PiFileDoc, PiFileImage, PiFileText, PiFile } from "react-icons/pi";
+
+import { BsFiletypeXlsx, BsFiletypeXls } from "react-icons/bs";
 
 import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 
-function File_container({ file_name }) {
+function File_container({ file_name, file_url }) {
+    const iconMap = {
+        pdf: <PiFilePdf size={35} color="black" />,
+        doc: <PiFileDoc size={35} color="black" />,
+        docx: <PiFileDoc size={35} color="black" />,
+        xls: <BsFiletypeXls size={35} color="black" />,
+        xlsx: <BsFiletypeXlsx size={35} color="black" />,
+        jpg: <PiFileImage size={35} color="black" />,
+        png: <PiFileImage size={35} color="black" />,
+        txt: <PiFileText size={35} color="black" />,
+        zip: <PiFileZip size={35} color="black" />,
+        sql: <PiFileSql size={35} color="black" />,
+        default: <PiFile size={35} color="black" />,
+    };
+
+    const getFileIcon = (fileName) => {
+        const extension = fileName.split('.').pop().toLowerCase();
+        return iconMap[extension] || iconMap['default'];
+    };
+    const handleDownload = () => {
+        saveAs(file_url, file_name);
+    };
+
     return (
-        <div className="file-container">
+        <div className="file-container" style={{ cursor: "pointer" }}>
             <div className="file-icon">
-                <img src={require('./file.png')} alt="File Icon" />
+                {getFileIcon(file_name)}
             </div>
             <div className="file-name">
-                <p>{file_name}</p>
+                <a
+                    href={file_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    onClick={handleDownload}
+                    style={{ color: "black" }}
+                    onMouseEnter={(e) => e.target.style.textDecoration = "underline"}
+                    onMouseLeave={(e) => e.target.style.textDecoration = "none"}
+                >   
+                    {file_name}
+                </a>
             </div>
         </div>
     );
 }
+
 
 function PostForm({handleClick}) {
     const [files, setFiles] = useState([]);
@@ -83,6 +121,7 @@ function PostForm({handleClick}) {
         </div>
       );
 }
+
 function AddPost() {
     const [showDiv, setShowDiv] = useState(false);
     const handleClick = () => {
@@ -154,8 +193,13 @@ function Exercise_description({ exercise_name, date, exercise_note, files, onBac
             </div>
             <div className="files-grid-container">
                 <div className="files-grid">
-                    {files.map((file_name, index) => (
-                        <File_container key={index} file_name={file_name} />
+                    {files.map((file, index) => (
+                        // eslint-disable-next-line react/jsx-pascal-case
+                        <File_container
+                            key={index}
+                            file_name={file.filename}
+                            file_url={file.url}
+                        />
                     ))}
                 </div>
             </div>
@@ -163,7 +207,9 @@ function Exercise_description({ exercise_name, date, exercise_note, files, onBac
     );
 }
 
-function Exercise({files}) {
+
+
+function Exercise() {
     const { classId } = useParams();
     const [notifications, setNotifications] = useState([]);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
@@ -178,7 +224,7 @@ function Exercise({files}) {
                 const data = response.data;
                 const adaptedNotifications = data.map((assignment) => ({
                     author: assignment.author,
-                    date: new Date(assignment.start_at),
+                    date: new Date(assignment.updated_at),
                     content: assignment.title,
                     assignmentId: assignment.id,
                 }));
@@ -200,13 +246,13 @@ function Exercise({files}) {
     const handleNotificationClick = async (assignmentId) => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8000/classroom/${classId}/assignment/${assignmentId}/detail`);
+            const response = await axios.get(`http://localhost:8000/classroom/${classId}/post/${assignmentId}/detail`);
             const data = response.data;
             setSelectedAssignment({
                 exercise_name: data.title,
-                date: new Date(data.end_at),
-                exercise_note: data.descriptions,
-                files,
+                date: new Date(data.updated_at),
+                exercise_note: data.content,
+                files: data.attachments,
             });
         } catch (error) {
             console.error("Error fetching assignment details:", error);
@@ -242,7 +288,7 @@ function Exercise({files}) {
                         onBack={handleBackClick}
                     />
                     <div>
-                        <FileUploader />
+                        <FileUploader files={[]}/>
                     </div>
                 </div>
             ) : (

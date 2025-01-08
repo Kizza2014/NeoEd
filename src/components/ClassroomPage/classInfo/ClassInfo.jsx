@@ -21,12 +21,14 @@ export function ClassInfo() {
         const adaptedDetails = [
           { label: "Tên lớp", value: data.class_name },    
           { label: "Mã lớp", value: data.subject_name },  
-          { label: "Giáo viên", value: data.owner_id },     
+          { label: "Giáo viên", value: data.owner_fullname },     
           { label: "Phòng học", value: "Chưa xác định" }
         ];
 
         setClassDetails(adaptedDetails);
-        setParticipants(participantsResponse.data[0]);
+
+        const students = participantsResponse.data.students || [];
+            setParticipants(students);
 
       } catch (err) {
         console.error("Error fetching class information:", err);
@@ -40,6 +42,14 @@ export function ClassInfo() {
       fetchClassInfo();
     }
   }, [classId]);
+
+  if (error) {
+    return (
+      <div style={{ display: "flex", padding: "30px" }}>
+        {error}
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -59,12 +69,12 @@ export function ClassInfo() {
         ))}
         <div className={styles.curriculum}>Giáo trình</div>
         <div className={styles.participants}>
-          <div className={styles.title}>Danh sách học viên</div>
+        <div className={styles.title}>Danh sách học viên</div>
           {participants.length > 0 ? (
             <ul className={styles.participantList}>
               {participants.map((participant, index) => (
                 <li key={index} className={styles.participant}>
-                  {participant}
+                  {participant.username} {/* Display the username */}
                 </li>
               ))}
             </ul>

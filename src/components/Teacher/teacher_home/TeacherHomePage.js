@@ -89,11 +89,12 @@ function ExtendBlock({ name, icon, components }) {
   }
   
   function CheckClasses({handleChange}) {
-    const [activeButton, setActiveButton] = useState("button1");
+    const isTeaching = sessionStorage.getItem('isTeaching') === "true";
+    const [activeButton, setActiveButton] = useState((isTeaching ? 'button2' : 'button1'));
   
     const handleClick = (button, isTeaching) => {
       setActiveButton(button);
-      handleChange(isTeaching);
+      handleChange();
     };
   
     return (
@@ -118,8 +119,8 @@ function ExtendBlock({ name, icon, components }) {
             padding: "10px 20px",
             backgroundColor: "transparent", // Transparent background
             color: activeButton === "button2" ? "black" : "#2353F0",
-            fontWeight: "bold", // Bold for both active and inactive
-            border: "none", // No border
+            fontWeight: "bold", 
+            border: "none", 
             cursor: "pointer",
             textDecoration: activeButton === "button2" ? "underline" : "none",
           }}
@@ -178,8 +179,15 @@ function ExtendBlock({ name, icon, components }) {
     const [classes, setClasses] = useState([]);
     const [joinedClass, setJoinedClass] = useState([]);
     const [teachingClass, setTeachingClass] = useState([]);
-    const [isTeaching, setTeaching] = useState(false);
+    const [isTeaching, setTeaching] = useState(() => {
+      const storedValue = sessionStorage.getItem('isTeaching');
+      return storedValue === "true"; // Explicitly convert to boolean
+    });
     const [error, setError] = useState('');
+    const changeClass = () => {
+      setTeaching(!isTeaching);
+      sessionStorage.setItem('isTeaching', !isTeaching);
+    }
   
     useEffect(() => {
       const fetchClasses = async () => {
@@ -236,7 +244,7 @@ function ExtendBlock({ name, icon, components }) {
   
     return (
       <>
-        <CheckClasses handleChange={setTeaching} />
+        <CheckClasses handleChange={changeClass} />
         <div className="courseGrid">
           {classes.map((classItem, index) => (
             <CourseCard key={index} courseDetails={classItem} image={image} setKey={setKey} />

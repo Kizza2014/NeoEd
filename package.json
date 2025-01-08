@@ -10,6 +10,8 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
+    "date-fns": "^4.1.0",
+    "file-saver": "^2.0.5",
     "filepond": "^4.32.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

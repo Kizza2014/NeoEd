@@ -12,15 +12,19 @@ function LoginButton({userName,password}) {
     const navigate = useNavigate();
     const handleLogin = () => {
         setLoading(true);
-        axios.post('http://localhost:8000/login', { username: userName, password: password})
+        axios.post(
+            'http://localhost:8000/login', 
+            { username: 'user', password: 'password' },
+        )
         .then(response => {
             var info = response.data;
             console.log('Login successful:', response.data);
             sessionStorage.setItem('access_token', info.access_token);
+            sessionStorage.setItem('isTeaching', false);
             localStorage.setItem('user_id', info.user_id);
             localStorage.setItem('refresh_token', info.refresh_token);
             setLoading(false);
-            navigate('/Classroom');
+            navigate('/c');
         })
         .catch(error => {
             alert(`Login failed: Check your email or password`);
