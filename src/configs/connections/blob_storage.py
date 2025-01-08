@@ -165,49 +165,22 @@ class SupabaseStorage:
 
 
     async def get_file_url(self, bucket_name: str, file_location: str, expires_in: int = 86400):
-        """
-        Generates a signed URL for a file in Supabase storage.
-
-        Parameters:
-        - bucket_name (str): The name of the bucket containing the file.
-        - file_location (str): The path or location of the file in the bucket.
-        - expires_in (int, optional): Number of seconds until the URL expires. Defaults to 86400 (1 day).
-
-        Returns:
-        - str: The generated signed URL.
-
-        Raises:
-        - Exception: If generating the signed URL fails, raises an exception with error details.
-        """
         try:
+            filename = file_location.split('/')[-1]
             response = self.client.storage.from_(bucket_name).create_signed_url(file_location, expires_in)
-            return response['signedURL']
+            return {'filename': filename, 'url': response['signedURL']}
         except Exception as e:
             raise Exception(f"Error generating signed URL for file '{file_location}': {str(e)}")
 
     async def get_file_urls(self, bucket_name: str, file_locations: List[str], expires_in: int = 86400):
-        """
-        Generates signed URLs for multiple files in Supabase storage.
-
-        Parameters:
-        - bucket_name (str): The name of the bucket containing the files.
-        - file_locations (List[str]): A list of file paths or locations in the bucket.
-        - expires_in (int, optional): Number of seconds until the URLs expire. Defaults to 86400 (1 day).
-
-        Returns:
-        - List[dict]: A list of dictionaries containing the file paths and their corresponding signed URLs.
-
-        Raises:
-        - Exception: If generating any signed URL fails, the error details are included in the returned list.
-        """
-        signed_urls = []
+        urls = []
         for file_location in file_locations:
+            filename = file_location.split('/')[-1]
             try:
-                response = self.client.storage.from_(bucket_name).create_signed_url(file_location, expires_in)
-                signed_urls.append(response['signedURL'])
+                urls.append(await self.get_file_url(bucket_name, file_location, expires_in))
             except Exception as e:
-                signed_urls.append({'file': file_location, 'url': None, 'error': str(e)})
-        return signed_urls
+                urls.append({'filename': filename, 'url': None, 'error': str(e)})
+        return urls
 
 
     async def download_file(self, bucket_name: str, file_name: str, download_path: str):

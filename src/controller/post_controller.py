@@ -68,7 +68,7 @@ async def get_post_by_id(class_id: str, post_id: str, connection=Depends(get_mon
         post_folder = class_id + '/' + post_id
         urls = await storage.get_file_urls(
             bucket_name=BUCKET,
-            file_locations=[post_folder + '/' + filename for filename in db_post['attachments']]
+            file_locations=[post_folder + '/' + file['filename'] for file in db_post['attachments']]
         )
         db_post['attachments'] = urls
 
@@ -103,7 +103,7 @@ async def create_post(
         post_dict = {
             "title": title,
             "content": content,
-            "attachments": [file.filename for file in attachments] if attachments else None
+            "attachments": [{'filename': file.filename} for file in attachments] if attachments else None
         }
         post_dict = {k: v for k, v in post_dict.items() if v is not None}
         newpost_id = 'post-' + str(uuid.uuid4())
@@ -163,7 +163,7 @@ async def update_post(
         update_data_dict = {
             "title": title if title else None,
             "content": content if content else None,
-            "additional_attachments": [file.filename for file in
+            "additional_attachments": [{'filename': file.filename} for file in
                                        additional_attachments] if additional_attachments else None,
             "removal_attachments": removal_attachments if removal_attachments else None
         }
