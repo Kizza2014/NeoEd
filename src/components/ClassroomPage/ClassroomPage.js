@@ -2,11 +2,13 @@ import './ClassroomPage.css';
 import React from "react";
 import logo from '../Utilities/logined_logo.png';
 import TopBar from '../Utilities/Top_bar';
-import { NavLink, useParams } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
+import { NavLink, useParams, Outlet, useOutlet } from 'react-router-dom';
+import Post from './posts/Posts';
+import { ClassInfo } from './classInfo/ClassInfo';
 
 function ClassroomPage() {
   const { classId } = useParams();
+  const outlet = useOutlet();
   return (
     <div className="container">
       <div className="slide">
@@ -19,18 +21,18 @@ function ClassroomPage() {
           >
             Thông tin lớp học
           </NavLink>
-          <NavLink
+          {/* <NavLink
             to={`/c/${classId}/n`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
           >
             Thông báo
-          </NavLink>
-          <NavLink
+          </NavLink> */}
+          {/* <NavLink
             to={`/c/${classId}/p`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
           >
             Học liệu
-          </NavLink>
+          </NavLink> */}
           <NavLink
             to={`/c/${classId}/a`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
@@ -53,8 +55,16 @@ function ClassroomPage() {
         </div>
       </div>
       <div className="content-div">
-        <TopBar />
-        <Outlet />
+          <TopBar />
+          <div>
+              {!outlet && (
+                  <>
+                      <ClassInfo />
+                      <Post />
+                  </>
+              )}
+              <Outlet />
+          </div>
       </div>
     </div>
   );

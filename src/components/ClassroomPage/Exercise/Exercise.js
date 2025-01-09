@@ -1,34 +1,95 @@
 import ChildHeader from "../ChildHeader";
-import FileUploader from "../Attached_files/Attached_files";
 import './Exercise.css';
-import React, { Suspense, useState, useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams } from 'react-router-dom';
+import { useNavigate, useOutlet, Outlet, useParams } from 'react-router-dom';
 
-import Exercise_description from "./ExerciseDetail/ExerciseDetail";
+import { FadeLoader } from "react-spinners";
 
-import { saveAs } from 'file-saver';
-import { PiFileSql, PiFilePdf, PiFileZip, PiFileDoc, PiFileImage, PiFileText, PiFile } from "react-icons/pi";
+import FileUploader from "../Attached_files/Attached_files";
 
-import { BsFiletypeXlsx, BsFiletypeXls } from "react-icons/bs";
-
-import { FilePond, registerPlugin } from 'react-filepond';
 import 'filepond/dist/filepond.min.css';
 
 function PostForm({handleClick}) {
     const [files, setFiles] = useState([]);
+    const { classId } = useParams();
+    const [loading, setLoading] = useState(false);
+    const [notificationForm, setNotificationForm] = useState({
+        title: "",
+        descriptions: "",
+        // class_id: classId,
+        start_at: new Date(),
+        end_at: new Date(),
+        attachments: [],
+    });
+    
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setNotificationForm((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
+    const handleFileChange = (newFiles) => {
+        setFiles(newFiles);  // Update files state
+        setNotificationForm((prevData) => ({
+            ...prevData,
+            attachments: newFiles,  // Update form with new files array
+        }));
+    };
+    
     const handleUpload = () => {
-        if (files.length === 0) {
-            alert("No files to upload!");
-            handleClick();
-            return;
-        } else {
-            alert("Files Uploaded");
-            setFiles([]);
-            handleClick();
+        setLoading(true);
+        console.log(notificationForm);
+        console.log(notificationForm.attachments); // Check if the form data is correct
+        // Create FormData object
+        const formData = new FormData();
+        formData.append('title', notificationForm.title);
+        formData.append('descriptions', notificationForm.descriptions);
+
+        // Append files to FormData
+        for (let i = 0; i < notificationForm.attachments.length; i++) {
+            formData.append('attachments', notificationForm.attachments[i]);
         }
+
+        // Sending the request with FormData
+        axios.post(
+            `http://localhost:8000/classroom/${classId}/assignment/create`,
+            formData,
+            {
+                params: {
+                    token: sessionStorage.getItem('access_token'),
+                },
+            }
+        )
+            .then(response => {
+                console.log('Noti created successfully');
+                setLoading(false);
+            })
+            .catch(error => {
+                alert('Error uploading data');
+                console.error(error);
+                setLoading(false);
+            });
+    };
+    if (loading) {
+        return(
+            <>
+            <div className="login-loading">
+                <FadeLoader
+                color="#ffb800"
+                height={50}
+                margin={60}
+                radius={3}
+                width={15}
+                />
+            </div>
+            </>
+        )
     }
+
     return (
         <div className="newClassDiv">
           <div style={{ backgroundColor: "#F4A481", textAlign: "center" }}>
@@ -41,29 +102,29 @@ function PostForm({handleClick}) {
             <label>
               Post name
               <textarea 
+               name="title"
                rows="1" 
                style={{ resize: "none"}}
+               onChange={handleChange}
                placeholder="null"></textarea>
             </label>
             <label>
-              Post content
+              Post descriptions
               <textarea
+                name="descriptions"
                 placeholder="washedup n_g_a ngo"
                 rows="5" 
+                onChange={handleChange}
                 style={{ resize: "vertical" }}
                 ></textarea>
             </label>
           </div>
           <div className="file-uploader">
-            <FilePond
-                files={files}
-                onupdatefiles={setFiles}
-                allowMultiple={true}
-                maxFiles={3}
-                instantUpload={false}
-                name="files"
-                labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
-                />
+            <FileUploader 
+                files = {files}
+                setFiles={handleFileChange}
+                sendHandle={handleUpload}
+            />
             </div>
           <div className="buttonContainer">
             <button className="cancelButton" onClick={handleClick}>
@@ -94,8 +155,8 @@ function AddPost() {
 
 function Notification({ author, date, content, onClick }) {
     return (
-        <div className="notification-box" onClick={onClick}>
-            <div className="notification-header">
+        <div className="notification-box">
+            <div className="notification-header" onClick={onClick} >
                 <span className="notification-author">{author}</span>
                 <span className="notification-date">
                     <span style={{ marginRight: '15px' }}>{date.toLocaleDateString()}</span>
@@ -127,16 +188,17 @@ function Notifications({ notifications, onNotificationClick }) {
 
 function Exercise() {
     const { classId } = useParams();
+    const navigate = useNavigate();
+    const outlet = useOutlet();
     const [notifications, setNotifications] = useState([]);
     const [selectedAssignment, setSelectedAssignment] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Fetch notifications (assignments list)
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/classroom/${classId}/post/all`,
+                const response = await axios.get(`http://localhost:8000/classroom/${classId}/assignment/all`,
                     { params: {
                                 token: sessionStorage.getItem("access_token"),
                             },
@@ -145,7 +207,7 @@ function Exercise() {
                 const data = response.data;
                 const adaptedNotifications = data.map((assignment) => ({
                     author: assignment.author,
-                    date: new Date(assignment.updated_at),
+                    date: new Date(assignment.end_at),
                     content: assignment.title,
                     assignmentId: assignment.id,
                 }));
@@ -165,33 +227,28 @@ function Exercise() {
     }, [classId, setError]);
 
     const handleNotificationClick = async (assignmentId) => {
-        setLoading(true);
-        try {
-            const response = await axios.get(`http://localhost:8000/classroom/${classId}/post/${assignmentId}/detail`
-                ,{
-                    params: {
-                        token: sessionStorage.getItem('access_token'),
-                    },
-                }
-            );
-            const data = response.data;
-            setSelectedAssignment({
-                exercise_name: data.title,
-                date: new Date(data.updated_at),
-                exercise_note: data.content,
-                files: data.attachments,
-            });
-        } catch (error) {
-            console.error("Error fetching assignment details:", error);
-            setError(error);
-        } finally {
-            setLoading(false);
-        }
+        navigate(`/c/${classId}/a/${assignmentId}`);
     };
 
     const handleBackClick = () => {
         setSelectedAssignment(null);
     };
+
+    if (loading) {
+        return(
+            <>
+            <div className="login-loading">
+                <FadeLoader
+                color="#ffb800"
+                height={50}
+                margin={60}
+                radius={3}
+                width={15}
+                />
+            </div>
+            </>
+        )
+    }
 
     if (error) {
         return(
@@ -205,25 +262,18 @@ function Exercise() {
     return (
         <div>
             <ChildHeader nameHeader={"Assignments"} />
-            {selectedAssignment ? (
-                <div className="exercise-overall">
-                    <Exercise_description
-                        exercise_name={selectedAssignment.exercise_name}
-                        date={selectedAssignment.date}
-                        exercise_note={selectedAssignment.exercise_note}
-                        files={selectedAssignment.files}
-                        onBack={handleBackClick}
+            <div>
+                {!outlet && (
+                    <>
+                    <Notifications
+                        notifications={notifications}
+                        onNotificationClick={handleNotificationClick}
                     />
-                    <div>
-                        <FileUploader files={[]}/>
-                    </div>
-                </div>
-            ) : (
-                <Notifications
-                    notifications={notifications}
-                    onNotificationClick={handleNotificationClick}
-                />
-            )}
+                    <AddPost/>
+                    </>
+                )}
+                <Outlet />
+            </div>
         </div>
     );
 }

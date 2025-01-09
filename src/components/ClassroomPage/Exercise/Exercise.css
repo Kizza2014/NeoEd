@@ -31,11 +31,26 @@
     flex-direction: column;
 }
 
-.exercise-overall{
+.exercise-overall {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between; /* Adjust spacing as needed */
     margin: 20px;
+    padding-left: 50px;
+}
+
+.exercise-description-container {
+    flex: 2; 
+}
+
+.file-uploader-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 10px; 
+    box-sizing: border-box; 
+    width: 30%; 
+    padding-top: 65px;
 }
 
 .file-container{

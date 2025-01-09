@@ -3,8 +3,8 @@
     border: 2px solid black;
     display:flex;
     width: 294px;
-    min-height: 199px;
-    height: auto;   
+    height: auto; 
+    box-sizing: border-box;
     flex-direction: column;
     padding:5px;
 }

@@ -2,13 +2,14 @@ import './TeacherClassroomPage.css';
 import React from "react";
 import logo from '../Utilities/logined_logo.png';
 import TopBar from '../Utilities/Top_bar';
-import { NavLink, useParams } from 'react-router-dom';
-import { Outlet } from 'react-router-dom';
+import { NavLink, useParams, Outlet, useOutlet } from 'react-router-dom';
 
+import Post from '../ClassroomPage/posts/Posts';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 function TeacherClassroomPage() {
     const { classId } = useParams();
+    const outlet = useOutlet();
     return (
       <div className="container">
         <div className="slide">
@@ -57,6 +58,10 @@ function TeacherClassroomPage() {
         <div className="content-div">
           <TopBar />
           <Outlet />
+          {!outlet && (
+              <Post
+              />
+          )}
         </div>
       </div>
     );

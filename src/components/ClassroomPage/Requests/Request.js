@@ -78,7 +78,7 @@ function Request(){
             <ChildHeader nameHeader="Send request" />
             <div className = "request-container">
                 <Request_form/>
-                <FileUploader/>
+                <FileUploader files={[]}/>
             </div>
             <Sended_requests request_list={requests}/>
         </div>

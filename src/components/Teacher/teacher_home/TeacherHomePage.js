@@ -174,7 +174,7 @@ function ExtendBlock({ name, icon, components }) {
     );
   };
   
-  const CourseGrid = ({ key, setKey }) => {
+  const CourseGrid = ({ uniqueKey, setKey }) => {
     const [loading, setLoading] = useState(true);
     const [classes, setClasses] = useState([]);
     const access_token = sessionStorage.getItem('access_token');
@@ -292,7 +292,7 @@ function ExtendBlock({ name, icon, components }) {
             <SearchBox/>
             <AddButton setKey={setKey}/>
           </div>
-          <CourseGrid key={key} setKey={handleTriggerReRender}/>
+          <CourseGrid uniqueKey={key} setKey={handleTriggerReRender}/>
         </div>
       </div>
     )

@@ -241,37 +241,6 @@ function Notifications({ notifications, onNotificationClick }) {
     );
 }
 
-// function Exercise_description({ exercise_name, date, exercise_note, files, onBack }) {
-//     return (
-//         <div className="exercise_description">
-//             <div>
-//                 <div className="button-wrapper">
-//                     <button className="return-button" onClick={onBack}>
-//                         Back to assignments
-//                     </button>
-//                 </div>
-//                 <div className="exercise-header">
-//                     <p>{exercise_name}</p>
-//                     <p>
-//                         <pre>
-//                             Date: {date.toLocaleDateString()}   {date.toLocaleTimeString()}
-//                         </pre>
-//                     </p>
-//                 </div>
-//                 <div className="exercise-content">
-//                     {exercise_note}
-//                 </div>
-//             </div>
-//             <div className="files-grid-container">
-//                 <div className="files-grid">
-//                     {files.map((file_name, index) => (
-//                         <File_container key={index} file_name={file_name} />
-//                     ))}
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// }
 
 function Notification_page({files}) {
     const { classId } = useParams();
@@ -295,14 +264,6 @@ function Notification_page({files}) {
                     notificationId: assignment.notification_id,
                     checked: assignment.read_status,
                 }));
-                // const response = await axios.get(`http://localhost:8000/classroom/${classId}/post/all`);
-                // const data = response.data;
-                // const adaptedNotifications = data.map((assignment) => ({
-                //     author: assignment.title,
-                //     date: new Date(assignment.updated_at),
-                //     content: assignment.content,
-                //     assignmentId: assignment.id,
-                // }));
                 console.log(adaptedNotifications);
                 setNotifications(adaptedNotifications);
             } catch (error) {
@@ -358,7 +319,7 @@ function Notification_page({files}) {
     if (error) {
         return(
         <>        
-            <div>{error.message}</div>
+            <div>{error.code + error.name}</div>
             <AddNotification/>
         </>
         );
