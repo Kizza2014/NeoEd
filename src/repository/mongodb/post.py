@@ -11,7 +11,6 @@ class PostRepository(MongoDBRepositoryInterface):
         super().__init__(connection)
         self.collection = self.connection.get_collection("classes")
 
-
     async def get_posts_in_class(self, class_id: str) -> List[dict]:
         db_class = self.collection.find_one({'_id': class_id})
         if not db_class:
@@ -19,8 +18,12 @@ class PostRepository(MongoDBRepositoryInterface):
         return db_class['posts']
 
 
-    async def get_post_by_id(self, class_id: str, post_id: str) -> dict | None:
+    async def get_by_id(self, class_id: str, post_id: str) -> dict | None:
         db_class = self.collection.find_one({'_id': class_id})
+
+        if not db_class:
+            raise PyMongoError("Class not found.")
+
         posts_list = db_class['posts']
         for post in posts_list:
             if post['id'] == post_id:

@@ -3,6 +3,7 @@ from src.service.models.classroom import AssignmentUpdate, AssignmentCreate
 from typing import List
 from datetime import datetime
 from src.service.models.classroom.submission import Submission, Resubmission
+from pytz import timezone
 
 
 class AssignmentRepository(MongoDBRepositoryInterface):
@@ -27,9 +28,10 @@ class AssignmentRepository(MongoDBRepositoryInterface):
 
     async def create_assignment(self, class_id: str, new_assgn: AssignmentCreate) -> bool:
         assgn_info = new_assgn.model_dump()
-        created_at = datetime.now()
-        assgn_info['created_at'] = created_at
-        assgn_info['updated_at'] = created_at
+        tz = timezone('Asia/Ho_Chi_Minh')
+        current_time = datetime.now(tz)
+        assgn_info['created_at'] = current_time
+        assgn_info['updated_at'] = current_time
 
         filters = {'_id': class_id}
         updates = {
@@ -91,6 +93,8 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         submission_info = submission.model_dump(exclude_unset=True)
         submission_info['submitted_at'] = datetime.now()
         submission_info['grade'] = None
+        submission_info['graded_at'] = None
+        submission_info['graded_by'] = None
 
         filters = {'_id': class_id, 'assignments.id': assgn_id}
         updates = {
@@ -102,10 +106,9 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         response = self.collection.update_one(filters, updates)
         return response.modified_count > 0
 
-
     async def resubmit(self, class_id: str, assgn_id: str, resubmission: Resubmission) -> bool:
         resubmission_info = resubmission.model_dump(exclude_unset=True)
-        resubmission_info['submitted_at'] = datetime.now()
+        resubmission_info['submitted_at'] = datetime.now(timezone('Asia/Ho_Chi_Minh'))
 
         additional_attachments = resubmission_info.pop('additional_attachments', None)
         removal_attachments = resubmission_info.pop('removal_attachments', None)
@@ -140,27 +143,38 @@ class AssignmentRepository(MongoDBRepositoryInterface):
 
         return ok
 
-
-    async def grade(self, class_id: str, assgn_id: str, student_id: str, grade: float):
+    async def grade(self, class_id: str, assgn_id: str, student_id: str, grade: float, graded_by: str):
+        current_time = datetime.now(timezone('Asia/Ho_Chi_Minh'))
         filters = {'_id': class_id, 'assignments.id': assgn_id, 'assignments.submissions.student_id': student_id}
         updates = {
             '$set': {
-                'assignments.$.submissions.$[submission].grade': grade
+                'assignments.$.submissions.$[submission].grade': grade,
+                'assignments.$.submissions.$[submission].graded_at': current_time,
+                'assignments.$.submissions.$[submission].graded_by': graded_by
             }
         }
         array_filters = [{'submission.student_id': student_id}]
         response = self.collection.update_one(filters, updates, array_filters=array_filters)
         return response.modified_count > 0
 
-
     async def get_all_submission(self, class_id: str, assgn_id: str) -> List[dict]:
         response = self.collection.find_one({'_id': class_id, 'assignments.id': assgn_id}, {'assignments.$': 1})
         return response['assignments'][0].get('submissions', [])
-
-
 
     async def get_submission(self, class_id: str, assgn_id: str, student_id: str) -> dict | None:
         response = self.collection.find_one(
             {'_id': class_id, 'assignments.id': assgn_id, 'assignments.submissions.student_id': student_id},
             {'assignments.submissions.$': 1})
         return response['assignments'][0]['submissions'][0] if response else None
+
+    async def remove_submission(self, class_id: str, assgn_id: str, student_id: str) -> bool:
+        filters = {'_id': class_id, 'assignments.id': assgn_id}
+        updates = {
+            '$pull': {
+                'assignments.$.submissions': {'student_id': student_id}
+            }
+        }
+
+        response = self.collection.update_one(filters, updates)
+        return response.modified_count > 0
+

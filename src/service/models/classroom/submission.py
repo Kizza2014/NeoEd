@@ -7,6 +7,8 @@ class Submission(BaseModel):
     student_id: str
     submitted_at: datetime
     grade: Optional[float] = None
+    graded_at: Optional[datetime] = None
+    graded_by: Optional[str] = None
     attachments: Optional[List[dict]] = None
 
 class Resubmission(BaseModel):

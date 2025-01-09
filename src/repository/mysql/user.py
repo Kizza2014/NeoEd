@@ -8,31 +8,33 @@ from datetime import datetime
 
 class UserRepository(MysqlRepositoryInterface):
     async def get_by_id(self, user_id: str) -> dict | None:
+        cursor = self.connection.cursor
         query = """
         SELECT * FROM users WHERE id = %s
         """
-        self.cursor.execute(query, (user_id, ))
-        row = self.cursor.fetchone()
+        cursor.execute(query, (user_id, ))
+        row = cursor.fetchone()
         return row
 
     async def get_all(self) -> List[dict]:
-        self.cursor.execute("""SELECT username, fullname, gender, birthdate, email, address, joined_at 
+        cursor = self.connection.cursor
+        cursor.execute("""SELECT username, fullname, gender, birthdate, email, address, joined_at 
                                 FROM users
                        """)
-        query_result = self.cursor.fetchall()
+        query_result = cursor.fetchall()
         return query_result
 
     async def get_by_username(self, username: str) -> dict | None:
-        self.cursor.execute("""SELECT *
-                               FROM users 
-                               WHERE username LIKE %s
-                        """, (username,))
-        user = self.cursor.fetchone()
+        cursor = self.connection.cursor
+        cursor.execute(
+            """SELECT * FROM users WHERE username LIKE %s""",
+            (username,)
+        )
+        user = cursor.fetchone()
         return user
 
     async def create_user(self, new_user: UserCreate) -> bool:
-        current_time = datetime.now()
-        time_mysql_format = current_time.strftime('%Y-%m-%d %H:%M:%S')
+        cursor = self.connection.cursor
 
         if len(new_user.username) > 50 or not new_user.username.isalnum():
             raise UsernameValidationError
@@ -40,6 +42,7 @@ class UserRepository(MysqlRepositoryInterface):
         if len(new_user.password) < 8 or not any(char.isdigit() for char in new_user.password):
             raise PasswordValidationError
         password_hash = get_password_hash(new_user.password)
+
         query = """
         INSERT INTO `neoed`.`users`
         (`id`,
@@ -52,28 +55,19 @@ class UserRepository(MysqlRepositoryInterface):
         `hashed_password`,
         `joined_at`)
         VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, %s);
-
+        (%s, %s, %s, %s, %s, %s, %s, %s, NOW());
         """
 
-        self.cursor.execute(query,
-                            (
-                                new_user.user_id,
-                                new_user.username,
-                                new_user.fullname,
-                                new_user.gender,
-                                new_user.birthdate,
-                                new_user.email,
-                                new_user.address,
-                                password_hash,
-                                time_mysql_format,
-                            )
+        cursor.execute(
+            query,
+            (new_user.user_id,new_user.username,new_user.fullname,new_user.gender,new_user.birthdate,new_user.email,new_user.address,password_hash,)
         )
         if self.auto_commit:
             self.connection.commit()
-        return self.cursor.rowcount > 0
+        return cursor.rowcount > 0
 
     async def update_by_id(self, user_id: str, new_info: UserUpdate) -> bool:
+        cursor = self.connection.cursor
         update_fields = []
         update_values = []
 
@@ -99,16 +93,16 @@ class UserRepository(MysqlRepositoryInterface):
                         WHERE id LIKE %s
                        """
         update_values.append(user_id)
-        self.cursor.execute(update_query, tuple(update_values))
+        cursor.execute(update_query, tuple(update_values))
 
         if self.auto_commit:
             self.connection.commit()
-        return self.cursor.rowcount > 0
+        return cursor.rowcount > 0
 
     async def delete_by_username(self, username: str) -> bool:
-        self.cursor.execute("DELETE FROM users_classes WHERE username LIKE %s", (username,))
-        self.cursor.execute("DELETE FROM users WHERE username LIKE %s", (username,))
+        cursor = self.connection.cursor
+        cursor.execute("DELETE FROM users WHERE username LIKE %s", (username,))
         if self.auto_commit:
             self.connection.commit()
-        return self.cursor.rowcount > 0
+        return cursor.rowcount > 0
 

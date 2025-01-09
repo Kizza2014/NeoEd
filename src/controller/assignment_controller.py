@@ -1,8 +1,4 @@
-from src.repository.mysql.classroom import MySQLClassroomRepository
-from src.repository.mysql.user import UserRepository
 from src.configs.connections.mysql import get_mysql_connection
-from src.repository.mongodb.assignment import AssignmentRepository
-from src.repository.mongodb.classroom import MongoClassroomRepository
 from fastapi import APIRouter, Depends, HTTPException, Form, UploadFile, File
 from src.configs.connections.mongodb import get_mongo_connection
 from pymongo.errors import PyMongoError
@@ -12,63 +8,58 @@ from src.configs.connections import SupabaseStorage
 from src.service.notification.notification_service import NotificationService
 import uuid
 from datetime import datetime
+from pytz import timezone
 from src.service.models.classroom.submission import Submission, Resubmission
 from src.service.authentication.utils import verify_token
+from src.controller.utils import get_mysql_repo, get_mongo_repo
 
 
 ASSIGNMENT_CONTROLLER = APIRouter(tags=['Assignments'])
 BUCKET = 'assignments'
 
-# TODO: replace with user from token
-current_user = {
-    'id': 'user-ffe17039-f1e6-41dd-87f4-659489c4cd0d',
-    'username': 'robinblake',
-    'fullname': 'robinblake',
-    'gender': 'Other',
-    'role': 'Teacher'
-}
 
 @ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/all", response_model=List[AssignmentResponse])
 async def get_all_assignments(
         class_id: str,
         user_id: str=Depends(verify_token),
-        connection=Depends(get_mongo_connection)
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> List[AssignmentResponse]:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is a participant of the class
-        classroom_repo = MongoClassroomRepository(connection)
-        if not await classroom_repo.find_participant_in_class(user_id, class_id):
+        if not await mongo_repo['classroom'].find_participant_in_class(user_id, class_id):
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
-        repo = AssignmentRepository(connection)
-        query_result = await repo.get_all(class_id)
-        return [AssignmentResponse(**assgn_dict) for assgn_dict in query_result]
+        assignments = await mongo_repo['assignment'].get_all(class_id)
+        return [AssignmentResponse(**assgn_dict) for assgn_dict in assignments]
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+
 
 @ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/{assgn_id}/detail", response_model=AssignmentResponse)
 async def get_by_id(
         class_id: str,
         assgn_id: str,
         user_id: str=Depends(verify_token),
-        connection=Depends(get_mongo_connection)
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> AssignmentResponse:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is a participant of the class
-        classroom_repo = MongoClassroomRepository(connection)
-        if not await classroom_repo.find_participant_in_class(user_id, class_id):
+        if not await mongo_repo['classroom'].find_participant_in_class(user_id, class_id):
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
-        repo = AssignmentRepository(connection)
-        db_assgn = await repo.get_by_id(class_id, assgn_id)
+        db_assgn = await mongo_repo['assignment'].get_by_id(class_id, assgn_id)
         if not db_assgn:
             raise HTTPException(status_code=404, detail="Assignment not found")
 
@@ -84,6 +75,7 @@ async def get_by_id(
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
+
 @ASSIGNMENT_CONTROLLER.post("/classroom/{class_id}/assignment/create")
 async def create_assignment(
         class_id: str,
@@ -93,7 +85,7 @@ async def create_assignment(
         start_at: datetime = Form(None),
         end_at: datetime = Form(None),
         attachments: List[UploadFile] = File(None),
-        connection=Depends(get_mongo_connection),
+        mongo_cnx=Depends(get_mongo_connection),
         mysql_cnx=Depends(get_mysql_connection)
 ) -> dict:
     try:
@@ -101,15 +93,15 @@ async def create_assignment(
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
-        user_repo = UserRepository(mysql_cnx)
-        current_user = await user_repo.get_by_id(user_id)
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
 
         # ensure user is teacher of the class
-        mysql_classroom_repo = MySQLClassroomRepository(mysql_cnx)
-        if await mysql_classroom_repo.get_user_role(user_id, class_id) != 'teacher':
+        if await mysql_repo['classroom'].get_user_role(user_id, class_id) != 'teacher':
             raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class.')
 
         # create assignment in database
+        current_user = await mysql_repo['user'].get_by_id(user_id)
         assignment_dict = {
             'title': title,
             'author': current_user['username'],
@@ -121,9 +113,7 @@ async def create_assignment(
         assignment_dict = {k:v for k, v in assignment_dict.items() if v is not None}
         assgn_id = 'assignment-' + str(uuid.uuid4())
         new_assignment = AssignmentCreate(**assignment_dict, id=assgn_id)
-
-        repo = AssignmentRepository(connection)
-        if not await repo.create_assignment(class_id, new_assignment):
+        if not await mongo_repo['assignment'].create_assignment(class_id, new_assignment):
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Failed to create assignment.")
 
         # upload attachments to storage
@@ -161,20 +151,20 @@ async def update_by_id(
         end_at: datetime = Form(None),
         additional_attachments: List[UploadFile] = File(None),
         removal_attachments: List[str] = Form(None),
-        mysql_connection=Depends(get_mysql_connection),
-        mongo_connection=Depends(get_mongo_connection)
+        mysql_cnx=Depends(get_mysql_connection),
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
-        user_repo = UserRepository(mysql_connection)
-        current_user = await user_repo.get_by_id(user_id)
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
 
         # ensure user is author of the assignment
-        assgn_repo = AssignmentRepository(mongo_connection)
-        db_assgn = await assgn_repo.get_by_id(class_id, assgn_id)
+        current_user = await mysql_repo['user'].get_by_id(user_id)
+        db_assgn = await mongo_repo['assignment'].get_by_id(class_id, assgn_id)
         if current_user['username'] != db_assgn['author']:
             raise HTTPException(status_code=403, detail='Unauthorized. You must be author of this assignment.')
         
@@ -190,8 +180,7 @@ async def update_by_id(
         }
         information = {k:v for k,v in information.items() if v is not None}
         update_info = AssignmentUpdate(**information)
-        status = await assgn_repo.update_by_id(class_id, assgn_id, update_info)
-        if not status:
+        if not await mongo_repo['assignment'].update_by_id(class_id, assgn_id, update_info):
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Failed to update assignment.")
 
         # upload and remove attachments
@@ -202,7 +191,6 @@ async def update_by_id(
             files=additional_attachments if additional_attachments else [],
             dest_folder=assignment_folder
         )
-
         remove_results = await storage.remove_files(
             bucket_name=BUCKET,
             file_locations=[assignment_folder + '/' + filename for filename in removal_attachments]
@@ -222,25 +210,25 @@ async def delete_by_id(
         class_id: str,
         assgn_id: str,
         user_id: str=Depends(verify_token),
-        mysql_connection=Depends(get_mysql_connection),
-        mongo_connection=Depends(get_mongo_connection)
+        mysql_cnx=Depends(get_mysql_connection),
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
-        user_repo = UserRepository(mysql_connection)
-        current_user = await user_repo.get_by_id(user_id)
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
 
-        # ensure user is author of the assignment
-        assgn_repo = AssignmentRepository(mongo_connection)
-        db_assgn = await assgn_repo.get_by_id(class_id, assgn_id)
-        if current_user['username'] != db_assgn['author']:
-            raise HTTPException(status_code=403, detail='Unauthorized. You must be author of this assignment.')
+        # ensure user is author of the assignment or class owner
+        current_user = await mysql_repo['user'].get_by_id(user_id)
+        db_assgn = await mongo_repo['assignment'].get_by_id(class_id, assgn_id)
+        class_owner = await mysql_repo['classroom'].get_owner(class_id)
+        if current_user['username'] != db_assgn['author'] and user_id != class_owner['id']:
+            raise HTTPException(status_code=403, detail='Unauthorized. You must be author of this assignment or class owner.')
 
-        repo = AssignmentRepository(mongo_connection)
-        status = await repo.delete_by_id(class_id, assgn_id)
+        status = await mongo_repo['assignment'].delete_by_id(class_id, assgn_id)
         if not status:
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Failed to delete assignment.")
 
@@ -260,96 +248,114 @@ async def delete_by_id(
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
-@ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/{assgn_id}/submission/all")
+
+"""
+    ASSIGNMENT SUBMISSION
+"""
+@ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/{assgn_id}/submission/all", response_model=List[Submission])
 async def get_all_submission(
         class_id: str,
         assgn_id: str,
         user_id: str=Depends(verify_token),
-        mysql_connection=Depends(get_mysql_connection),
-        mongo_connection=Depends(get_mongo_connection)
-) -> List[dict]:
+        mysql_cnx=Depends(get_mysql_connection),
+        mongo_cnx=Depends(get_mongo_connection)
+) -> List[Submission]:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is teacher of the class
-        mysql_classroom_repo = MySQLClassroomRepository(mysql_connection)
-        if await mysql_classroom_repo.get_user_role(user_id, class_id) != 'teacher':
+        if await mysql_repo['classroom'].get_user_role(user_id, class_id) != 'teacher':
             raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class.')
 
-        repo = AssignmentRepository(mongo_connection)
-        submissions = await repo.get_all_submission(class_id, assgn_id)
-        return submissions
+        submissions = await mongo_repo['assignment'].get_all_submission(class_id, assgn_id)
+        return [Submission(**submission) for submission in submissions]
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
-@ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/{assgn_id}/submission/{student_id}/detail")
+
+@ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/{assgn_id}/submission/{student_id}/detail", response_model=Submission)
 async def get_submission(
         class_id: str,
         assgn_id:str,
         student_id: str,
         user_id: str=Depends(verify_token),
-        mysql_connection=Depends(get_mysql_connection),
-        mongo_connection=Depends(get_mongo_connection)
-) -> dict:
+        mysql_cnx=Depends(get_mysql_connection),
+        mongo_cnx=Depends(get_mongo_connection)
+) -> Submission:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
-        # ensure user is teacher of the class
-        mysql_classroom_repo = MySQLClassroomRepository(mysql_connection)
-        if await mysql_classroom_repo.get_user_role(user_id, class_id) != 'teacher':
-            raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class.')
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
 
-        repo = AssignmentRepository(mongo_connection)
-        submission = await repo.get_submission(class_id, assgn_id, student_id)
+        # ensure user is teacher of the class or student of the submission
+        if await mysql_repo['classroom'].get_user_role(user_id, class_id) != 'teacher' and user_id != student_id:
+            raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class or student of the submission.')
+
+        submission = await mongo_repo['assignment'].get_submission(class_id, assgn_id, student_id)
         if not submission:
             raise HTTPException(status_code=404, detail="Submission not found")
-        return submission
+
+        # get attachments urls
+        submission_folder = class_id + '/' + assgn_id + '/' + student_id
+        storage = SupabaseStorage()
+        urls = await storage.get_file_urls(
+            bucket_name=BUCKET,
+            file_locations=[submission_folder + '/' + file['filename'] for file in submission['attachments']]
+        )
+        submission['attachments'] = urls
+        return Submission(**submission)
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
-# SUBMIT ASSIGNMENT
-@ASSIGNMENT_CONTROLLER.put("/classroom/{class_id}/assignment/{assgn_id}/submit")
+
+@ASSIGNMENT_CONTROLLER.put("/classroom/{class_id}/assignment/{assgn_id}/submit", response_model=dict)
 async def submit(
         class_id: str,
         assgn_id: str,
         user_id: str=Depends(verify_token),
         attachments: List[UploadFile] = File(None),
-        connection=Depends(get_mongo_connection)
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is a participant of the class
-        classroom_repo = MongoClassroomRepository(connection)
-        if not await classroom_repo.find_participant_in_class(user_id, class_id):
+        if not await mongo_repo['classroom'].find_participant_in_class(user_id, class_id):
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
         # submit assignment
-        repo = AssignmentRepository(connection)
-        db_assgn = await repo.get_by_id(class_id, assgn_id)
+        tz = timezone('Asia/Ho_Chi_Minh')
+        current_time = datetime.now(tz)
+        db_assgn = await mongo_repo['assignment'].get_by_id(class_id, assgn_id)
         if not db_assgn:
             raise HTTPException(status_code=404, detail="Assignment not found")
-        if db_assgn['end_at'] and db_assgn['end_at'] < datetime.now():
+        if db_assgn['end_at'] and tz.localize(db_assgn['end_at']) < current_time:
             raise HTTPException(status_code=403, detail='Assignment submission is closed.')
 
         # create submission
         submission = Submission(
             student_id=user_id,
             attachments=[{'filename':attachment.filename} for attachment in attachments],
-            submitted_at=datetime.now()
+            submitted_at=current_time
         )
-        if not await repo.submit(class_id, assgn_id, submission):
+        if not await mongo_repo['assignment'].submit(class_id, assgn_id, submission):
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Failed to submit assignment.")
 
         # upload attachments to storage
         storage = SupabaseStorage()
-        submission_folder = class_id + "/" + assgn_id + "/" + current_user['id']
+        submission_folder = class_id + "/" + assgn_id + "/" + user_id
         upload_results = await storage.bulk_upload(
             bucket_name=BUCKET,
             files=attachments if attachments else [],
@@ -364,52 +370,54 @@ async def submit(
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
-@ASSIGNMENT_CONTROLLER.put("/classroom/{class_id}/assignment/{assgn_id}/resubmit")
+@ASSIGNMENT_CONTROLLER.put("/classroom/{class_id}/assignment/{assgn_id}/resubmit", response_model=dict)
 async def resubmit(
         class_id: str,
         assgn_id: str,
         user_id: str=Depends(verify_token),
         additional_attachments: List[UploadFile] = File(None),
         removal_attachments: List[str] = Form(None),
-        connection=Depends(get_mongo_connection)
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is a participant of the class
-        classroom_repo = MongoClassroomRepository(connection)
-        if not await classroom_repo.find_participant_in_class(user_id, class_id):
+        if not await mongo_repo['classroom'].find_participant_in_class(user_id, class_id):
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
         # resubmit assignment
-        repo = AssignmentRepository(connection)
-        db_assgn = await repo.get_by_id(class_id, assgn_id)
+        tz = timezone('Asia/Ho_Chi_Minh')
+        current_time = datetime.now(tz)
+        db_assgn = await mongo_repo['assignment'].get_by_id(class_id, assgn_id)
         if not db_assgn:
             raise HTTPException(status_code=404, detail="Assignment not found")
-        if db_assgn['end_at'] and db_assgn['end_at'] < datetime.now():
+        if db_assgn['end_at'] and tz.localize(db_assgn['end_at']) < current_time:
             raise HTTPException(status_code=403, detail='Assignment submission is closed.')
 
         # ensure user has not been graded
-        submission = await repo.get_submission(class_id, assgn_id, current_user['id'])
+        submission = await mongo_repo['assignment'].get_submission(class_id, assgn_id, user_id)
         if submission and submission.get('grade', None) is not None:
             raise HTTPException(status_code=403, detail='Your submission is already graded. You cannot resubmit.')
 
         # create resubmission
         resubmission = Resubmission(
-            student_id=current_user['id'],
+            student_id=user_id,
             additional_attachments=[{'filename':attachment.filename} for attachment in additional_attachments]
                                                             if additional_attachments else [],
             removal_attachments=[{'filename':attachment} for attachment in removal_attachments] if removal_attachments else [],
-            submitted_at=datetime.now()
+            submitted_at=current_time
         )
-        if not await repo.resubmit(class_id, assgn_id, resubmission):
+        if not await mongo_repo['assignment'].resubmit(class_id, assgn_id, resubmission):
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Failed to resubmit assignment.")
 
         # upload attachments to storage
         storage = SupabaseStorage()
-        submission_folder = class_id + "/" + assgn_id + "/" + current_user['id']
+        submission_folder = class_id + "/" + assgn_id + "/" + user_id
         upload_results = await storage.bulk_upload(
             bucket_name=BUCKET,
             files=additional_attachments if additional_attachments else [],
@@ -430,36 +438,85 @@ async def resubmit(
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
-@ASSIGNMENT_CONTROLLER.put("/classroom/{class_id}/assignment/{assgn_id}/submission/{student_id}/grade")
-async def grade(
+
+@ASSIGNMENT_CONTROLLER.delete("/classroom/{class_id}/assignment/{assgn_id}/submission/{student_id}/delete")
+async def remove_submission(
         class_id: str,
         assgn_id: str,
         student_id: str,
         user_id: str=Depends(verify_token),
-        grade: float = Form(...),
-        mongo_connection=Depends(get_mongo_connection),
-        mysql_connection=Depends(get_mysql_connection)
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
+        # ensure user is author of submission
+        if user_id != student_id:
+            raise HTTPException(status_code=403, detail='Unauthorized. You must be author of this submission.')
+
+        # ensure submission is not graded
+        db_submission = await mongo_repo['assignment'].get_submission(class_id, assgn_id, student_id)
+        if db_submission.get('grade', None) is not None:
+            raise HTTPException(status_code=403, detail='Your submission is already graded. You cannot remove it.')
+
+        # remove submission
+        if not await mongo_repo['assignment'].remove_submission(class_id, assgn_id, student_id):
+            raise HTTPException(status_code=500, detail="Unexpected error occurred. Failed to remove submission.")
+
+        # remove attachments
+        submission_folder = class_id + '/' + assgn_id + '/' + student_id
+        storage = SupabaseStorage()
+        remove_results = await storage.remove_files(
+            bucket_name=BUCKET,
+            file_locations=[submission_folder + '/' + file['filename'] for file in db_submission['attachments']]
+        )
+
+        return {
+            'message': 'Submission removed successfully',
+            'assignment_id': assgn_id,
+            'remove_results': remove_results
+        }
+    except PyMongoError as e:
+        raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+
+
+@ASSIGNMENT_CONTROLLER.put("/classroom/{class_id}/assignment/{assgn_id}/submission/{student_id}/grade")
+async def grade_assignment(
+        class_id: str,
+        assgn_id: str,
+        student_id: str,
+        user_id: str=Depends(verify_token),
+        grade: float = Form(...),
+        mongo_cnx=Depends(get_mongo_connection),
+        mysql_cnx=Depends(get_mysql_connection)
+) -> dict:
+    try:
+        if not user_id:
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
+
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is teacher of the class
-        mysql_classroom_repo = MySQLClassroomRepository(mysql_connection)
-        if await mysql_classroom_repo.get_user_role(user_id, class_id) != 'teacher':
+        if await mysql_repo['classroom'].get_user_role(user_id, class_id) != 'teacher':
             raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class')
 
         # grade assignment
-        repo = AssignmentRepository(mongo_connection)
-        if not await repo.grade(class_id, assgn_id, student_id, grade):
+        db_user = await mysql_repo['user'].get_by_id(user_id)
+        if not await mongo_repo['assignment'].grade(class_id, assgn_id, student_id, grade, db_user['username']):
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Failed to grade assignment.")
 
         return {
             'message': 'Assignment graded successfully',
             'assignment_id': assgn_id,
             'student_id': student_id,
-            'grade': grade
+            'grade': grade,
+            'graded_by': db_user['username']
         }
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")

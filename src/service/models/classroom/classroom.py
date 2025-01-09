@@ -10,6 +10,8 @@ class ClassroomBase(BaseModel):
     class_schedule: str
     description: Optional[str] = None
     owner_id: str
+    owner_username: str
+    owner_fullname: str
     require_password: bool = False
 
 

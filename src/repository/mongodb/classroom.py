@@ -13,12 +13,12 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         return self.collection.find_one({'_id': class_id})
 
 
-    async def create_classroom(self, new_classroom: ClassroomCreate, owner_username: str) -> bool:
+    async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:
         class_info = {
             '_id': new_classroom.id,
             'posts': [],
             'assignments': [],
-            'participants': [{'user_id': new_classroom.owner_id, 'username': owner_username, 'role': 'teacher'}]
+            'participants': [{'user_id': new_classroom.owner_id, 'username': new_classroom.owner_username, 'role': 'teacher'}]
         }
 
         res = self.collection.insert_one(class_info)

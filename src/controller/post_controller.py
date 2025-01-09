@@ -1,8 +1,5 @@
 from src.configs.connections.mysql import get_mysql_connection
 from src.service.notification.notification_service import NotificationService
-from src.repository.mysql.user import UserRepository
-from src.repository.mongodb.post import PostRepository
-from src.repository.mongodb.classroom import MongoClassroomRepository
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from src.configs.connections import get_mongo_connection
 from typing import List
@@ -11,6 +8,7 @@ from pymongo.errors import PyMongoError
 from src.configs.connections.blob_storage import SupabaseStorage
 import uuid
 from src.service.authentication.utils import verify_token
+from src.controller.utils import get_mongo_repo, get_mysql_repo
 
 
 BUCKET = 'posts'
@@ -21,20 +19,20 @@ POST_CONTROLLER = APIRouter(tags=['Post'])
 async def get_all_posts(
         class_id: str,
         user_id: str=Depends(verify_token),
-        connection=Depends(get_mongo_connection)
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> List[PostResponse]:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is a participant of the class
-        classroom_repo = MongoClassroomRepository(connection)
-        post_repo = PostRepository(connection)
-        if not await classroom_repo.find_participant_in_class(user_id, class_id):
+        if not await mongo_repo['classroom'].find_participant_in_class(user_id, class_id):
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
-        posts = await post_repo.get_posts_in_class(class_id)
+        posts = await mongo_repo['post'].get_posts_in_class(class_id)
         return [PostResponse(**post) for post in posts]
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
@@ -45,21 +43,21 @@ async def get_post_by_id(
         class_id: str,
         post_id: str,
         user_id: str=Depends(verify_token),
-        connection=Depends(get_mongo_connection)
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> PostResponse:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is a participant of the class
-        classroom_repo = MongoClassroomRepository(connection)
-        if not await classroom_repo.find_participant_in_class(user_id, class_id):
+        if not await mongo_repo['classroom'].find_participant_in_class(user_id, class_id):
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
-        post_repo = PostRepository(connection)
-        db_post = await post_repo.get_post_by_id(class_id, post_id)
-        if db_post is None:
+        db_post = await mongo_repo['post'].get_by_id(class_id, post_id)
+        if not db_post:
             raise HTTPException(status_code=404, detail="Post not found")
 
         # generate url for each attachment
@@ -70,7 +68,6 @@ async def get_post_by_id(
             file_locations=[post_folder + '/' + file['filename'] for file in db_post['attachments']]
         )
         db_post['attachments'] = urls
-
         return PostResponse(**db_post)
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
@@ -83,7 +80,7 @@ async def create_post(
         title: str = Form(...),
         content: str = Form(...),
         attachments: List[UploadFile] = File(None),
-        connection=Depends(get_mongo_connection),
+        mongo_cnx=Depends(get_mongo_connection),
         mysql_cnx=Depends(get_mysql_connection)
 ) -> dict:
 
@@ -92,16 +89,14 @@ async def create_post(
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
+        mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
         # ensure user is a participant of the class
-        classroom_repo = MongoClassroomRepository(connection)
-        if not await classroom_repo.find_participant_in_class(user_id, class_id):
+        if not await mongo_repo['classroom'].find_participant_in_class(user_id, class_id):
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
-        user_repo = UserRepository(mysql_cnx)
-        current_user = await user_repo.get_by_id(user_id)
-
         # create post in database
-        repo = PostRepository(connection)
         post_dict = {
             "title": title,
             "content": content,
@@ -109,8 +104,9 @@ async def create_post(
         }
         post_dict = {k: v for k, v in post_dict.items() if v is not None}
         newpost_id = 'post-' + str(uuid.uuid4())
+        current_user = await mysql_repo['user'].get_by_id(user_id)
         new_post = PostCreate(**post_dict, id=newpost_id, author=current_user['username'])
-        if not await repo.create_post(class_id=class_id, new_post=new_post):
+        if not await mongo_repo['post'].create_post(class_id=class_id, new_post=new_post):
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Create post failed')
 
         # upload attachments to storage
@@ -148,20 +144,20 @@ async def update_post(
         content: str = Form(None),
         additional_attachments: List[UploadFile] = File(None),
         removal_attachments: List[str] = Form(None),
-        mysql_connection=Depends(get_mysql_connection),
-        mongo_connection=Depends(get_mongo_connection),
+        mysql_cnx=Depends(get_mysql_connection),
+        mongo_cnx=Depends(get_mongo_connection),
 ) -> dict:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
-        user_repo = UserRepository(mysql_connection)
-        current_user = await user_repo.get_by_id(user_id)
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
 
         # ensure user is post's author
-        repo = PostRepository(mongo_connection)
-        db_post = await repo.get_post_by_id(class_id, post_id)
+        current_user = await mysql_repo['user'].get_by_id(user_id)
+        db_post = await mongo_repo['post'].get_by_id(class_id, post_id)
         if current_user['username'] != db_post['author']:
             raise HTTPException(status_code=403, detail='Unauthorized. You must be the author of the post.')
 
@@ -176,7 +172,7 @@ async def update_post(
         update_data_dict = {k: v for k, v in update_data_dict.items() if v is not None}
 
         update_data = PostUpdate(**update_data_dict)
-        status = await repo.update_by_id(class_id, post_id, update_data)
+        status = await mongo_repo['post'].update_by_id(class_id, post_id, update_data)
         if not status:
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Update post failed')
 
@@ -211,26 +207,26 @@ async def delete_post(
         class_id: str,
         post_id: str,
         user_id: str=Depends(verify_token),
-        mysql_connection=Depends(get_mysql_connection),
-        mongo_connection=Depends(get_mongo_connection)
+        mysql_cnx=Depends(get_mysql_connection),
+        mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
                                 detail='Unauthorized. Try to login again before accessing this resource.')
 
-        user_repo = UserRepository(mysql_connection)
-        current_user = await user_repo.get_by_id(user_id)
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
 
-        # ensure user is post's author
-        repo = PostRepository(mongo_connection)
-        db_post = await repo.get_post_by_id(class_id, post_id)
-        if current_user['username'] != db_post['author']:
-            raise HTTPException(status_code=403, detail='Unauthorized. You must be the author of the post.')
+        # ensure user is post's author or class owner
+        current_user = await mysql_repo['user'].get_by_id(user_id)
+        db_post = await mongo_repo['post'].get_by_id(class_id, post_id)
+        class_owner = await mysql_repo['classroom'].get_owner(class_id)
+        if current_user['username'] != db_post['author'] and user_id != class_owner['id']:
+            raise HTTPException(status_code=403, detail='Unauthorized. You must be the author of the post or class owner.')
 
         # delete post in database
-        repo = PostRepository(mongo_connection)
-        status = await repo.delete_by_id(class_id, post_id)
+        status = await mongo_repo['post'].delete_by_id(class_id, post_id)
         if not status:
             raise HTTPException(status_code=500, detail='An unexpected error occurred. Delete post failed')
 
