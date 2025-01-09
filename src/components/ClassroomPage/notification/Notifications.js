@@ -55,9 +55,9 @@ function PostForm({handleClick}) {
             `http://localhost:8000/classroom/${classId}/post/create`,
             formData,
             {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                }
+                params: {
+                    token: sessionStorage.getItem('access_token'),
+                },
             }
         )
             .then(response => {

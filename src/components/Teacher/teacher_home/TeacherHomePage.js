@@ -177,6 +177,7 @@ function ExtendBlock({ name, icon, components }) {
   const CourseGrid = ({ key, setKey }) => {
     const [loading, setLoading] = useState(true);
     const [classes, setClasses] = useState([]);
+    const access_token = sessionStorage.getItem('access_token');
     const [joinedClass, setJoinedClass] = useState([]);
     const [teachingClass, setTeachingClass] = useState([]);
     const [isTeaching, setTeaching] = useState(() => {
@@ -192,7 +193,11 @@ function ExtendBlock({ name, icon, components }) {
     useEffect(() => {
       const fetchClasses = async () => {
         try {
-          const response = await axios.get("http://localhost:8000/classroom/all");
+          const response = await axios.get("http://localhost:8000/classroom/all", {
+            params: {
+              token: access_token,
+            },
+          });
   
           const joiningClasses = response.data.joining_classes.map((classItem) => ({
             courseTitle: classItem.class_name,

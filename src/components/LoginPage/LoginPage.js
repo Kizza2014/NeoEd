@@ -12,9 +12,10 @@ function LoginButton({userName,password}) {
     const navigate = useNavigate();
     const handleLogin = () => {
         setLoading(true);
+        console.log({ username: userName, password: password });
         axios.post(
-            'http://localhost:8000/login', 
-            { username: 'user', password: 'password' },
+            'http://127.0.0.1:8000/login', 
+            { username: userName, password: password },
         )
         .then(response => {
             var info = response.data;
@@ -67,6 +68,7 @@ function LoginButton({userName,password}) {
 function LoginPage() {
     const [userName, setUserName] = useState("scottdavis");
     const [password, setPassword] = useState("1");
+
     const handleEmailChange = (event) => {
         setUserName(event.target.value);
     };
@@ -74,7 +76,7 @@ function LoginPage() {
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
     };
-
+    console.log({ username: userName, password: password })
     return (
         <div className="container">
             <div className="left-div"></div>

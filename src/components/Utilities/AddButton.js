@@ -32,7 +32,15 @@ function ClassForm({ handleClick, setKey }) {
       }
       console.log(formDataEncoded);
 
-      const response = await axios.post("http://localhost:8000/classroom/create", formDataEncoded);
+      const response = await axios.post(
+        "http://localhost:8000/classroom/create",
+        formDataEncoded,
+        {
+            params: {
+                token: sessionStorage.getItem("access_token"),
+           }
+        }
+    );
       // const response = await axios.post("http://localhost:8000/classroom/create", null, { 
       //   params: {formData}
     // });

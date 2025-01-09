@@ -192,15 +192,19 @@ const courses = [
 ];
 
 const CourseGrid = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [classes, setClasses] = useState([]);
   const [error, setError] = useState("");
-
+  const access_token = sessionStorage.getItem('access_token');
   useEffect(() => {
     const fetchClasses = async () => {
+      console.log(access_token);
       try {
-        const response = await axios.get("http://localhost:8000/classroom/all");
+        const response = await axios.get("http://localhost:8000/classroom/all", {
+          params: {
+            token: access_token,
+          },
+        });
         const adaptedClasses = response.data.map((classItem) => ({
           courseTitle: classItem.class_name,
           courseId: classItem.id,

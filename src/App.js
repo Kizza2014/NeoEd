@@ -9,37 +9,12 @@ import Exercise from './components/ClassroomPage/Exercise/Exercise.js';
 import ClassroomPage from './components/ClassroomPage/ClassroomPage.js';
 import { BrowserRouter, Routes, Route} from 'react-router-dom';
 import TeacherHomePage from './components/Teacher/teacher_home/TeacherHomePage.js';
-
+import Exercise_description from './components/ClassroomPage/Exercise/ExerciseDetail/ExerciseDetail.js';
 const files = [
   "Assignment1.ipynb",
   "Solution1.pdf",
   "Readme.txt",
   "Readme.txt",
-];
-
-const exerciseData = {
-  exercise_name: "Bài tập tuần 1",
-  date: new Date(),
-  exercise_note: "Các em nộp file .ipynb nhé, sau thời gian trên sẽ không nộp được bài nữa, những ai chưa nộp bài sẽ coi như nghỉ không phép.",
-  files: files,
-};
-
-const notifications = [
-  {
-      author: "Admin",
-      date: new Date(),
-      content: "Your assignment has been graded.",
-  },
-  {
-      author: "System",
-      date: new Date(),
-      content: "The server will be down for maintenance at midnight.",
-  },
-  {
-      author: "Teacher",
-      date: new Date(),
-      content: "Class has been rescheduled to tomorrow at 9 AM.",
-  },
 ];
 
 export default function MyApp() {
@@ -53,7 +28,10 @@ export default function MyApp() {
         <Route path="n" element={<Notification_page files={files} />} />
         <Route path="p" element={<CourseContent />} />
         <Route path="a" element={<Exercise files={files} />} />
-        <Route path="r" element={<Request />} />
+        <Route path="a" element={<Exercise files={files} />}>
+            <Route path=":assignmentId" element={<Exercise_description />} />
+        </Route>
+        <Route path="r" element={<Request />}/>
       </Route>
     </Routes>
   </BrowserRouter>
