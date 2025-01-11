@@ -57,8 +57,6 @@ async def create_classroom(
         subject_name: str = Form(...),
         class_schedule: str = Form(None),
         description: str = Form(None),
-        password: str = Form(...),
-        require_password: bool = Form(False),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
@@ -79,8 +77,6 @@ async def create_classroom(
             'owner_id': current_user['id'],
             'owner_username': current_user['username'],
             'owner_fullname': current_user['fullname'],
-            'password': password,
-            'require_password': require_password
         }
         information = {k: v for k, v in information.items() if v is not None}
         class_id = 'classroom-' + str(uuid.uuid4())
@@ -224,8 +220,6 @@ async def update_classroom_by_id(
         subject_name: str = Form(None),
         class_schedule: str = Form(None),
         description: str = Form(None),
-        password: str = Form(None),
-        require_password: bool = Form(None),
         mysql_cnx=Depends(get_mysql_connection)
 ) -> dict:
     try:
@@ -244,8 +238,6 @@ async def update_classroom_by_id(
             'subject_name': subject_name if subject_name else None,
             'class_schedule': class_schedule if class_schedule else None,
             'description': description if description else None,
-            'password': password if password else None,
-            'require_password': require_password if require_password is not None else None
         }
         information = {k:v for k, v in information.items() if v is not None}
         update_info = ClassroomUpdate(**information)

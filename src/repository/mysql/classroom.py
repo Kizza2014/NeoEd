@@ -1,6 +1,5 @@
 from src.repository.mysql.mysql_repository_interface import MysqlRepositoryInterface
 from src.service.models.classroom import ClassroomCreate, ClassroomUpdate
-from src.service.authentication.utils import get_password_hash, verify_password
 from typing import List
 from datetime import datetime
 from pytz import timezone
@@ -16,7 +15,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
             SELECT 
                 -- classroom information
                 c.id, c.class_name, c.subject_name, c.class_schedule, c.description, c.created_at, 
-                c.updated_at, c.owner_id, c.require_password, 
+                c.updated_at, c.owner_id,
                 
                 -- owner information
                 c.owner_id, u.username AS owner_username, u.fullname AS owner_fullname, uc.role
@@ -41,7 +40,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
             """SELECT 
                     -- classroom information
                     c.id, c.class_name, c.subject_name, c.class_schedule, c.description, 
-                    c.created_at, c.updated_at, c.require_password,
+                    c.created_at, c.updated_at,
                     
                     -- owner information
                     c.owner_id, u.username AS owner_username, u.fullname AS owner_fullname
@@ -89,13 +88,12 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
     async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:
         cursor = self.connection.cursor
         invitation_code = await generate_invitation_code(new_classroom.id)
-        hashed_password = get_password_hash(new_classroom.password)
         tz = timezone('Asia/Ho_Chi_Minh')
         current_time = datetime.now(tz)
         cursor.execute(
             """INSERT INTO classes(id, class_name, subject_name, class_schedule, description, created_at, 
-                                    updated_at, owner_id, hashed_password, require_password, invitation_code)
-               VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                                    updated_at, owner_id, invitation_code)
+               VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (
                 new_classroom.id,
                 new_classroom.class_name,
@@ -105,8 +103,6 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                 current_time,
                 current_time,
                 new_classroom.owner_id,
-                hashed_password,
-                new_classroom.require_password,
                 invitation_code
             )
         )
@@ -126,12 +122,8 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         query_params = []
         query_values = []
         for k, v in new_info.items():
-            if k == 'password':
-                query_params.append('hashed_password = %s')
-                query_values.append(get_password_hash(v))
-            else:
-                query_params.append(f"{k} = %s")
-                query_values.append(v)
+            query_params.append(f"{k} = %s")
+            query_values.append(v)
 
         tz = timezone('Asia/Ho_Chi_Minh')
         current_time = datetime.now(tz)
@@ -181,18 +173,6 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         if self.auto_commit:
             self.connection.commit()
         return cursor.rowcount > 0
-
-    # SECURITY
-    async def verify_password(self, class_id: str, password: str) -> bool:
-        cursor = self.connection.cursor
-        cursor.execute(
-            """SELECT hashed_password, require_password FROM classes WHERE id LIKE %s""",
-            (class_id,)
-        )
-        security_infor = cursor.fetchone()
-        if not security_infor['require_password']:
-            return True
-        return verify_password(password, security_infor['hashed_password'])
 
     def get_all_students(self, class_id: str):
         cursor = self.connection.cursor()
