@@ -58,13 +58,12 @@ async def signin(
 
     # Kiểm tra username và password
     user_db = await user_repo.get_by_username(user.username)
+    if not user_db:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect username",)
     user_id = user_db['id']
     user_pwd = user_db['hashed_password']
-    if not user_db or not verify_password(user.password, user_pwd):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
+    if not verify_password(user.password, user_pwd):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password")
 
     # Tạo tokens
     access_token = create_access_token(user_id)

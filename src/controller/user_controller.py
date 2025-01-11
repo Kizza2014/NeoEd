@@ -6,6 +6,7 @@ from fastapi import HTTPException, Depends
 from src.configs.logging import get_logger
 from mysql.connector import Error as MySQLError
 from src.service.authentication.utils import *
+from src.controller.utils import get_mysql_repo
 from typing import List
 
 
@@ -17,13 +18,13 @@ logger = get_logger(__name__)
 @USER_CONTROLLER.get("/me", response_model=UserResponse)
 async def get_current_user_info(
     user_id: str=Depends(verify_token),
-    connection=Depends(get_mysql_connection)
+    mysql_cnx=Depends(get_mysql_connection)
 ) -> UserResponse:
     if not user_id:
         raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
 
-    user_repo = UserRepository(connection)
-    user = await user_repo.get_by_id(user_id)
+    mysql_repo = await get_mysql_repo(mysql_cnx)
+    user = await mysql_repo['user'].get_by_id(user_id)
     if user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return UserResponse(**user)
@@ -31,17 +32,17 @@ async def get_current_user_info(
 
 @USER_CONTROLLER.put("/me/update")
 async def update_user_info(
-    # current_user: UserResponse,
     user_data: UserUpdate,
-    connection=Depends(get_mysql_connection),
+    user_id: str=Depends(verify_token),
+    mysql_cnx=Depends(get_mysql_connection),
 ):
     try:
-        user_repo = UserRepository(connection)
-        current_user = await user_repo.get_by_username('hoangkimgiap') # temporary, will be replaced by username from token
+        if not user_id:
+            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
 
-        status = await user_repo.update_by_id(current_user['id'], user_data)
-
-        if not status:
+        mysql_repo = await get_mysql_repo(mysql_cnx)
+        current_user = await mysql_repo['user'].get_by_id(user_id)
+        if not await mysql_repo['user'].update_by_id(user_id, user_data):
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Update user failed")
 
         return {

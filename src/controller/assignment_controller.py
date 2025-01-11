@@ -252,14 +252,14 @@ async def delete_by_id(
 """
     ASSIGNMENT SUBMISSION
 """
-@ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/{assgn_id}/submission/all", response_model=List[Submission])
+@ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/{assgn_id}/submission/all", response_model=List[dict])
 async def get_all_submission(
         class_id: str,
         assgn_id: str,
         user_id: str=Depends(verify_token),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
-) -> List[Submission]:
+) -> List[dict]:
     try:
         if not user_id:
             raise HTTPException(status_code=403,
@@ -273,7 +273,7 @@ async def get_all_submission(
             raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class.')
 
         submissions = await mongo_repo['assignment'].get_all_submission(class_id, assgn_id)
-        return [Submission(**submission) for submission in submissions]
+        return submissions
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
