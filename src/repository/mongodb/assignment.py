@@ -6,6 +6,8 @@ from src.service.models.classroom.submission import Submission, Resubmission
 from pytz import timezone
 
 
+TIMEZONE = timezone('Asia/Ho_Chi_Minh')
+
 class AssignmentRepository(MongoDBRepositoryInterface):
     def __init__(self, connection):
         super().__init__(connection)
@@ -28,10 +30,8 @@ class AssignmentRepository(MongoDBRepositoryInterface):
 
     async def create_assignment(self, class_id: str, new_assgn: AssignmentCreate) -> bool:
         assgn_info = new_assgn.model_dump()
-        tz = timezone('Asia/Ho_Chi_Minh')
-        current_time = datetime.now(tz)
-        assgn_info['created_at'] = current_time
-        assgn_info['updated_at'] = current_time
+        assgn_info['created_at'] = datetime.now(TIMEZONE)
+        assgn_info['updated_at'] = datetime.now(TIMEZONE)
 
         filters = {'_id': class_id}
         updates = {
@@ -69,7 +69,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
 
         # update other fields
         update_fields = {f'assignments.$.{k}': v for k, v in update_data.items()}
-        update_fields['assignments.$.updated_at'] = datetime.now()
+        update_fields['assignments.$.updated_at'] = datetime.now(TIMEZONE)
         result = self.collection.update_one(
             filters,
             {'$set': update_fields}
@@ -91,7 +91,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
 # SUBMIT
     async def submit(self, class_id, assgn_id, submission: Submission) -> bool:
         submission_info = submission.model_dump(exclude_unset=True)
-        submission_info['submitted_at'] = datetime.now()
+        submission_info['submitted_at'] = datetime.now(TIMEZONE)
         submission_info['grade'] = None
         submission_info['graded_at'] = None
         submission_info['graded_by'] = None
@@ -108,7 +108,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
 
     async def resubmit(self, class_id: str, assgn_id: str, resubmission: Resubmission) -> bool:
         resubmission_info = resubmission.model_dump(exclude_unset=True)
-        resubmission_info['submitted_at'] = datetime.now(timezone('Asia/Ho_Chi_Minh'))
+        resubmission_info['submitted_at'] = datetime.now(TIMEZONE)
 
         additional_attachments = resubmission_info.pop('additional_attachments', None)
         removal_attachments = resubmission_info.pop('removal_attachments', None)
@@ -144,7 +144,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         return ok
 
     async def grade(self, class_id: str, assgn_id: str, student_id: str, grade: float, graded_by: str):
-        current_time = datetime.now(timezone('Asia/Ho_Chi_Minh'))
+        current_time = datetime.now(TIMEZONE)
         filters = {'_id': class_id, 'assignments.id': assgn_id, 'assignments.submissions.student_id': student_id}
         updates = {
             '$set': {

@@ -5,6 +5,8 @@ from src.repository.mongodb.assignment import AssignmentRepository
 from src.repository.mongodb.post import PostRepository
 from typing import TypedDict
 from fastapi import HTTPException
+from pytz import timezone
+from datetime import datetime
 
 
 class MySQLRepo(TypedDict):
@@ -39,3 +41,11 @@ async def handle_transaction(statuses, mysql_cnx):
 
 async def role_in_classroom(user_id: str, class_id: str, mysql_repo: MySQLRepo) -> str:
     return await mysql_repo['classroom'].get_user_role(user_id, class_id)
+
+async def can_submit(assignment) -> bool:
+    tz = timezone('Asia/Ho_Chi_Minh')
+    current_time = datetime.now(tz)
+    if (assignment['start_at'] and tz.localize(assignment['start_at']) > current_time) \
+            or (assignment['end_at'] and tz.localize(assignment['end_at']) < current_time):
+        return False
+    return True

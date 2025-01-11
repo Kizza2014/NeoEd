@@ -1,9 +1,12 @@
 from pymongo.errors import PyMongoError
-
 from src.repository.mongodb import MongoDBRepositoryInterface
 from src.service.models.classroom import PostCreate, PostUpdate
 from typing import List
 from datetime import datetime
+from pytz import timezone
+
+
+TIMEZONE = timezone('Asia/Ho_Chi_Minh')
 
 
 class PostRepository(MongoDBRepositoryInterface):
@@ -32,7 +35,7 @@ class PostRepository(MongoDBRepositoryInterface):
 
     async def create_post(self, class_id, new_post: PostCreate) -> bool:
         post_info = new_post.model_dump()
-        created_at = datetime.now()
+        created_at = datetime.now(TIMEZONE)
 
         post_info['created_at'] = created_at
         post_info['updated_at'] = created_at
@@ -77,7 +80,7 @@ class PostRepository(MongoDBRepositoryInterface):
 
         # update other fields
         update_fields = {f'posts.$.{k}': v for k, v in update_data.items()}
-        update_fields['posts.$.updated_at'] = datetime.now()
+        update_fields['posts.$.updated_at'] = datetime.now(TIMEZONE)
         result = self.collection.update_one(
             filters,
             {'$set': update_fields}

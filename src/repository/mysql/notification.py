@@ -15,8 +15,9 @@ class NotificationRepository(MysqlRepositoryInterface):
 
         """
         try:
-            self.cursor.execute(query, (item_id,))
-            row = self.cursor.fetchone()
+            cursor = self.connection.cursor
+            cursor.execute(query, (item_id,))
+            row = cursor.fetchone()
             return row
         except Exception as e:
             raise e
@@ -41,7 +42,8 @@ class NotificationRepository(MysqlRepositoryInterface):
 
         """
         try:
-            self.cursor.execute(query, (item.notification_id,
+            cursor = self.connection.cursor
+            cursor.execute(query, (item.notification_id,
                                         item.title,
                                         item.content,
                                         item.direct_url,
@@ -64,7 +66,8 @@ class NotificationRepository(MysqlRepositoryInterface):
         AND u.role = 'Student';
         """
         try:
-            self.cursor.execute(query, (item.notification_id, item.class_id))
+            cursor = self.connection.cursor
+            cursor.execute(query, (item.notification_id, item.class_id))
             self.connection.commit()
         except Exception as e:
             self.connection.rollback()
@@ -79,9 +82,9 @@ class NotificationRepository(MysqlRepositoryInterface):
         WHERE 
         `users_notifications_status`.`user_id` = %s;
         """
-
-        self.cursor.execute(query, (user_id,))
-        rows = self.cursor.fetchall()
+        cursor = self.connection.cursor
+        cursor.execute(query, (user_id,))
+        rows = cursor.fetchall()
         return rows
 
     def set_read_status(self, user_id: str, notification_id: str, status: bool):
@@ -93,7 +96,8 @@ class NotificationRepository(MysqlRepositoryInterface):
 
         """
         try:
-            self.cursor.execute(query, (status, user_id, notification_id))
+            cursor = self.connection.cursor
+            cursor.execute(query, (status, user_id, notification_id))
             self.connection.commit()
         except Exception as e:
             self.connection.rollback()

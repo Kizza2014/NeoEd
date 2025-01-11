@@ -6,6 +6,7 @@ from pytz import timezone
 from mysql.connector import Error as MySQLError
 from src.repository.utils import generate_invitation_code
 
+TIMEZONE = timezone('Asia/Ho_Chi_Minh')
 
 class MySQLClassroomRepository(MysqlRepositoryInterface):
     async def get_classroom_for_user(self, user_id: str) -> dict:
@@ -88,8 +89,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
     async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:
         cursor = self.connection.cursor
         invitation_code = await generate_invitation_code(new_classroom.id)
-        tz = timezone('Asia/Ho_Chi_Minh')
-        current_time = datetime.now(tz)
+        current_time = datetime.now(TIMEZONE)
         cursor.execute(
             """INSERT INTO classes(id, class_name, subject_name, class_schedule, description, created_at, 
                                     updated_at, owner_id, invitation_code)
@@ -130,8 +130,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
             query_params.append(f"{k} = %s")
             query_values.append(v)
 
-        tz = timezone('Asia/Ho_Chi_Minh')
-        current_time = datetime.now(tz)
+        current_time = datetime.now(TIMEZONE)
         query_params.append('updated_at = %s')
         query_values.append(current_time)
         update_query = f"""UPDATE classes SET {', '.join(query_params)} WHERE id LIKE %s"""
@@ -159,8 +158,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
 
     async def add_participant(self, user_id: str, class_id: str, role: str) -> bool:
         cursor = self.connection.cursor
-        tz = timezone('Asia/Ho_Chi_Minh')
-        current_time = datetime.now(tz)
+        current_time = datetime.now(TIMEZONE)
         cursor.execute(
             """INSERT INTO users_classes(user_id, class_id, joined_at, role) VALUE (%s, %s, %s, %s)""",
             (user_id, class_id, current_time, role)

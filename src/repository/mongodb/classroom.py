@@ -4,6 +4,7 @@ from src.service.models.classroom import ClassroomCreate
 from pytz import timezone
 from datetime import datetime
 
+TIMEZONE = timezone('Asia/Ho_Chi_Minh')
 
 class MongoClassroomRepository(MongoDBRepositoryInterface):
     def __init__(self, connection):
@@ -25,7 +26,7 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         return res.acknowledged
 
     async def create_classroom_from_template(self, template, new_id: str) -> bool:
-        current_time = datetime.now(timezone('Asia/Ho_Chi_Minh'))
+        current_time = datetime.now(TIMEZONE)
         db_classroom = self.collection.find_one({'_id': template['id']})
         if db_classroom is None:
             raise PyMongoError("Template not found")
@@ -49,6 +50,8 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
             assignment['submissions'] = []
             assignment['created_at'] = current_time
             assignment['updated_at'] = current_time
+            assignment['start_at'] = None
+            assignment['end_at'] = None
 
         res = self.collection.insert_one(db_classroom)
         return res.acknowledged

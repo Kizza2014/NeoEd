@@ -3,7 +3,6 @@ from src.service.authentication.utils import get_password_hash
 from src.repository.mysql import MysqlRepositoryInterface
 from typing import List
 from src.service.models.user import UserCreate, UserUpdate
-from datetime import datetime
 
 
 class UserRepository(MysqlRepositoryInterface):
