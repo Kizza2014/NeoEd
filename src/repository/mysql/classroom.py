@@ -5,6 +5,7 @@ from typing import List
 from datetime import datetime
 from pytz import timezone
 from mysql.connector import Error as MySQLError
+from src.repository.utils import generate_invitation_code
 
 
 class MySQLClassroomRepository(MysqlRepositoryInterface):
@@ -52,6 +53,21 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         res = cursor.fetchone()
         return res
 
+    async def get_by_invitation_code(self, invitation_code: str) -> dict | None:
+        cursor =self.connection.cursor
+        cursor.execute("SELECT * FROM classes WHERE invitation_code LIKE %s", (invitation_code,))
+        res = cursor.fetchone()
+        if res:
+            res.pop('invitation_code', None)
+            return res
+        return None
+
+    async def get_invitation_code(self, class_id: str) -> str:
+        cursor = self.connection.cursor
+        cursor.execute("SELECT invitation_code FROM classes WHERE id LIKE %s", (class_id,))
+        res = cursor.fetchone()
+        return res['invitation_code'] if res else None
+
     async def get_owner(self, class_id: str) -> dict:
         cursor = self.connection.cursor
         cursor.execute("""SELECT u.id, u.username, u.fullname, u.email, u.birthdate, u.address, u.joined_at 
@@ -68,19 +84,18 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                             (user_id, class_id)
         )
         res = cursor.fetchone()
-        if not res:
-            raise MySQLError('User not in this classroom.')
-        return res['role']
+        return res['role'] if res else None
 
     async def create_classroom(self, new_classroom: ClassroomCreate) -> bool:
         cursor = self.connection.cursor
+        invitation_code = await generate_invitation_code(new_classroom.id)
         hashed_password = get_password_hash(new_classroom.password)
         tz = timezone('Asia/Ho_Chi_Minh')
         current_time = datetime.now(tz)
         cursor.execute(
             """INSERT INTO classes(id, class_name, subject_name, class_schedule, description, created_at, 
-                                    updated_at, owner_id, hashed_password, require_password)
-               VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                                    updated_at, owner_id, hashed_password, require_password, invitation_code)
+               VALUE(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
             (
                 new_classroom.id,
                 new_classroom.class_name,
@@ -91,7 +106,8 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                 current_time,
                 new_classroom.owner_id,
                 hashed_password,
-                new_classroom.require_password
+                new_classroom.require_password,
+                invitation_code
             )
         )
 
