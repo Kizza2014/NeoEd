@@ -497,6 +497,11 @@ async def remove_teacher(
         if not is_classroom_owner(user_id, class_id, mysql_repo):
             raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
 
+        # ensure teacher is not class owner
+        db_user = await mysql_repo['user'].get_by_username(username)
+        if user_id == db_user['id']:
+            raise HTTPException(status_code=403, detail='Forbidden. Owner cannot be removed from classroom')
+
         # remove participant
         db_user = await mysql_repo['user'].get_by_username(username)
         status1 = await mysql_repo['classroom'].remove_participant(db_user['id'], class_id, role='teacher')
