@@ -171,7 +171,7 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
 
     async def remove_participant(self, user_id: str, class_id: str, role: str) -> bool:
         cursor = self.connection.cursor
-        self.cursor.execute(
+        cursor.execute(
             """DELETE FROM users_classes WHERE user_id LIKE %s AND class_id LIKE %s AND role LIKE %s""",
             (user_id, class_id, role)
         )
