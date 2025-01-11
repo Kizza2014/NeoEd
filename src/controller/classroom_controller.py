@@ -6,6 +6,7 @@ from mysql.connector import Error as MySQLError
 from pymongo.errors import PyMongoError
 from fastapi import Form, HTTPException
 import uuid
+from src.configs.connections import SupabaseStorage
 from src.service.authentication.utils import *
 from src.controller.utils import get_mysql_repo, handle_transaction, get_mongo_repo, role_in_classroom, MySQLRepo
 
@@ -113,24 +114,35 @@ async def create_from_template(
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
 
+        # ensure user is teacher
+        if await role_in_classroom(user_id, template_class_id, mysql_repo) != 'teacher':
+            raise HTTPException(status_code=403, detail='Forbidden. You are not a teacher in this classroom')
+
         template_class = await mysql_repo['classroom'].get_by_id(template_class_id)
 
         if not template_class:
             raise HTTPException(status_code=404, detail='Template classroom not found')
 
-        newclass_id = 'classroom-' + str(uuid.uuid4())
-
         # create classroom
+        current_user = await mysql_repo['user'].get_by_id(user_id)
+        template_class['owner_id'] = current_user['id']
+        template_class['owner_username'] = current_user['username']
+        template_class['owner_fullname'] = current_user['fullname']
+        newclass_id = 'classroom-' + str(uuid.uuid4())
         status1 = await mysql_repo['classroom'].create_classroom_from_template(template_class, newclass_id)
         status2 = await mongo_repo['classroom'].create_classroom_from_template(template_class, newclass_id)
         await handle_transaction([status1, status2], mysql_cnx)
 
         # copy attachments from template to new classroom
-        # classroom_folder =
+        storage = SupabaseStorage()
+        post_copy_results = await storage.copy_post_attachments('posts', template_class_id, newclass_id)
+        assgn_copy_results = await storage.copy_assignment_attachments('assignments', template_class_id, newclass_id)
 
         return {
             'message': 'Created classroom from template successfully',
-            'class_id': newclass_id
+            'class_id': newclass_id,
+            'post_copy_results': post_copy_results,
+            'assgn_copy_results': assgn_copy_results,
         }
     except MySQLError as e:
         mysql_cnx.rollback()

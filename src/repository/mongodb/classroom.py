@@ -1,6 +1,8 @@
 from pymongo.errors import PyMongoError
 from src.repository.mongodb.mongodb_repository import MongoDBRepositoryInterface
 from src.service.models.classroom import ClassroomCreate
+from pytz import timezone
+from datetime import datetime
 
 
 class MongoClassroomRepository(MongoDBRepositoryInterface):
@@ -23,6 +25,7 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         return res.acknowledged
 
     async def create_classroom_from_template(self, template, new_id: str) -> bool:
+        current_time = datetime.now(timezone('Asia/Ho_Chi_Minh'))
         db_classroom = self.collection.find_one({'_id': template['id']})
         if db_classroom is None:
             raise PyMongoError("Template not found")
@@ -32,10 +35,20 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         db_classroom['participants'] = [{'user_id': template['owner_id'], 'username': template['owner_username'], 'role': 'teacher'}]
 
         # only keep posts from teachers
-        db_classroom['post'] = [post for post in db_classroom['posts'] if post['author'] in teachers_username]
+        posts = []
+        for post in db_classroom['posts']:
+            if post['author'] in teachers_username:
+                post['author'] = template['owner_username']
+                post['created_at'] = current_time
+                post['updated_at'] = current_time
+                posts.append(post)
+        db_classroom['posts'] = posts
         # empty assignments submissions
         for assignment in db_classroom['assignments']:
+            assignment['author'] = template['owner_username']
             assignment['submissions'] = []
+            assignment['created_at'] = current_time
+            assignment['updated_at'] = current_time
 
         res = self.collection.insert_one(db_classroom)
         return res.acknowledged
