@@ -172,6 +172,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         for submission in submissions:
             student_id = submission['student_id']
             students[student_id]['submitted'] = True
+            students[student_id]['submitted_at'] = submission['submitted_at']
             if submission['grade'] is not None:
                 students[student_id]['grade'] = submission['grade']
             else:

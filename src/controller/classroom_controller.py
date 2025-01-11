@@ -99,6 +99,47 @@ async def create_classroom(
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
 
+@CLASSROOM_CONTROLLER.post('/classroom/create-from-template', response_model=dict)
+async def create_from_template(
+        template_class_id: str,
+        user_id: str=Depends(verify_token),
+        mysql_cnx=Depends(get_mysql_connection),
+        mongo_cnx=Depends(get_mongo_connection)
+) -> dict:
+    try:
+        if not user_id:
+            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+
+        mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
+        mongo_repo = await get_mongo_repo(mongo_cnx)
+
+        template_class = await mysql_repo['classroom'].get_by_id(template_class_id)
+
+        if not template_class:
+            raise HTTPException(status_code=404, detail='Template classroom not found')
+
+        newclass_id = 'classroom-' + str(uuid.uuid4())
+
+        # create classroom
+        status1 = await mysql_repo['classroom'].create_classroom_from_template(template_class, newclass_id)
+        status2 = await mongo_repo['classroom'].create_classroom_from_template(template_class, newclass_id)
+        await handle_transaction([status1, status2], mysql_cnx)
+
+        # copy attachments from template to new classroom
+        # classroom_folder =
+
+        return {
+            'message': 'Created classroom from template successfully',
+            'class_id': newclass_id
+        }
+    except MySQLError as e:
+        mysql_cnx.rollback()
+        raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
+    except PyMongoError as e:
+        mysql_cnx.rollback()
+        raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+
+
 @CLASSROOM_CONTROLLER.get('/classroom/{class_id}/participant/all')
 async def get_all_participants(class_id: str, mongo_cnx=Depends(get_mongo_connection)) -> dict:
     try:
@@ -314,6 +355,11 @@ async def add_student(
         if await role_in_classroom(user_id, class_id, mysql_repo) != 'teacher':
             raise HTTPException(status_code=403, detail='Forbidden. You are not a teacher in this classroom')
 
+        # ensure user is not already in classroom
+        db_user = await mysql_repo['user'].get_by_username(username)
+        if await mongo_repo['classroom'].find_participant_in_class(db_user['id'], class_id):
+            raise HTTPException(status_code=403, detail='Forbidden. User is already in this classroom')
+
         # add participant
         db_user = await mysql_repo['user'].get_by_username(username)
         status1 = await mysql_repo['classroom'].add_participant(db_user['id'], class_id, role='student')
@@ -353,6 +399,11 @@ async def add_teacher(
         # ensure that user is classroom's owner
         if not await is_classroom_owner(user_id, class_id, mysql_repo):
             raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
+
+        # ensure user is not already in classroom
+        db_user = await mysql_repo['user'].get_by_username(username)
+        if await mongo_repo['classroom'].find_participant_in_class(db_user['id'], class_id):
+            raise HTTPException(status_code=403, detail='Forbidden. User is already in this classroom')
 
         # add participant
         db_user = await mysql_repo['user'].get_by_username(username)

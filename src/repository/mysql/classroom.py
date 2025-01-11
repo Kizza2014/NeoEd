@@ -116,6 +116,11 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
             self.connection.commit()
         return cursor.rowcount > 0
 
+    async def create_classroom_from_template(self, template, new_id: str):
+        _template = template.copy()
+        _template['id'] = new_id
+        return await self.create_classroom(ClassroomCreate(**_template))
+
     async def update_by_id(self, class_id: str, new_info: ClassroomUpdate) -> bool:
         cursor = self.connection.cursor
         new_info = new_info.model_dump(exclude_unset=True)

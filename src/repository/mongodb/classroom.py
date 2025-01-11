@@ -22,6 +22,24 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         res = self.collection.insert_one(class_info)
         return res.acknowledged
 
+    async def create_classroom_from_template(self, template, new_id: str) -> bool:
+        db_classroom = self.collection.find_one({'_id': template['id']})
+        if db_classroom is None:
+            raise PyMongoError("Template not found")
+
+        db_classroom['_id'] = new_id
+        teachers_username = [participant['username'] for participant in db_classroom['participants'] if participant['role'] == 'teacher']
+        db_classroom['participants'] = [{'user_id': template['owner_id'], 'username': template['owner_username'], 'role': 'teacher'}]
+
+        # only keep posts from teachers
+        db_classroom['post'] = [post for post in db_classroom['posts'] if post['author'] in teachers_username]
+        # empty assignments submissions
+        for assignment in db_classroom['assignments']:
+            assignment['submissions'] = []
+
+        res = self.collection.insert_one(db_classroom)
+        return res.acknowledged
+
     async def delete_by_id(self, class_id: str) -> bool:
         res = self.collection.find_one_and_delete({'_id': class_id})
         if res is None:
