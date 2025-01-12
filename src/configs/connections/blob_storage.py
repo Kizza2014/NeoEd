@@ -170,22 +170,10 @@ class SupabaseStorage:
         return copy_results
 
     async def get_file_url(self, bucket_name: str, file_location: str, expires_in: int = 86400):
-        try:
-            filename = file_location.split('/')[-1]
-            response = self.client.storage.from_(bucket_name).create_signed_url(file_location, expires_in)
-            return {'filename': filename, 'url': response['signedURL']}
-        except Exception as e:
-            raise Exception(f"Error generating signed URL for file '{file_location}': {str(e)}")
+        return self.client.storage.from_(bucket_name).create_signed_url(file_location, expires_in)
 
     async def get_file_urls(self, bucket_name: str, file_locations: List[str], expires_in: int = 86400) -> List[dict]:
-        urls = []
-        for file_location in file_locations:
-            filename = file_location.split('/')[-1]
-            try:
-                urls.append(await self.get_file_url(bucket_name, file_location, expires_in))
-            except Exception as e:
-                urls.append({'filename': filename, 'url': None, 'error': str(e)})
-        return urls
+        return self.client.storage.from_(bucket_name).create_signed_urls(file_locations, expires_in)
 
     async def download_file(self, bucket_name: str, file_name: str, download_path: str):
         try:

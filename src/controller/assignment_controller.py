@@ -275,7 +275,21 @@ async def get_all_submission(
             raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class.')
 
         submissions = await mongo_repo['assignment'].get_all_submission(class_id, assgn_id)
-        return submissions
+
+        # get url for attachments
+        storage = SupabaseStorage()
+        response = []
+        for submission in submissions:
+            _submission = submission.copy()
+            if submission.get('attachments', None):
+                submission_folder = class_id + '/' + assgn_id + '/' + submission['user_id']
+                attachments = submission['attachments']
+                _submission['attachments'] = await storage.get_file_urls(
+                    bucket_name='assignments',
+                    file_locations=[submission_folder + '/' + file['filename'] for file in attachments]
+                )
+            response.append(_submission)
+        return response
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 

@@ -32,6 +32,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         assgn_info = new_assgn.model_dump()
         assgn_info['created_at'] = datetime.now(TIMEZONE)
         assgn_info['updated_at'] = datetime.now(TIMEZONE)
+        assgn_info['submissions'] = []
 
         filters = {'_id': class_id}
         updates = {
@@ -157,11 +158,12 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         response = self.collection.update_one(filters, updates, array_filters=array_filters)
         return response.modified_count > 0
 
-    async def get_all_submission(self, class_id: str, assgn_id: str) -> List[dict]:
-        participant_response = self.collection.find_one({'_id': class_id}, {'participants': 1})
-        submission_response = self.collection.find_one({'_id': class_id, 'assignments.id': assgn_id}, {'assignments.$': 1})
-        participants = participant_response.get('participants', [])
-        submissions = submission_response['assignments'][0].get('submissions', [])
+    async def get_all_submission(self, class_id: str, assgn_id: str):
+        response = self.collection.find_one(
+            {'_id': class_id, 'assignments.id': assgn_id}, {'participants': 1, 'assignments.submissions.$': 1}
+        )
+        participants = response.get('participants', [])
+        submissions = response['assignments'][0].get('submissions', [])
 
         students = {}
         for participant in participants:
@@ -173,6 +175,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
             student_id = submission['student_id']
             students[student_id]['submitted'] = True
             students[student_id]['submitted_at'] = submission['submitted_at']
+            students[student_id]['attachments'] = submission.get('attachments', [])
             if submission['grade'] is not None:
                 students[student_id]['grade'] = submission['grade']
             else:
