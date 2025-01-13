@@ -4,7 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import { FadeLoader } from "react-spinners";
-
+import useWindowSize from "../Teacher/teacher_home/SizeContext.js"
+import { IoMdAdd } from "react-icons/io";
 function ClassForm({ handleClick, setKey }) {
   const [formData, setFormData] = useState({
     class_name: "",
@@ -144,17 +145,31 @@ function ClassForm({ handleClick, setKey }) {
 
 function AddButton({setKey}) {
   const [showDiv, setShowDiv] = useState(false);
+  const {width} = useWindowSize();
   const handleClick = () => {
     setShowDiv(!showDiv);
   };
   return (
-    <div className="createClassContainer">
-      <button className="buttonWrapper" onClick={handleClick}>
-      <FontAwesomeIcon icon={faPlus} size="2x"/>
-        <span>Tạo lớp</span>
-      </button>
-      {showDiv && <ClassForm handleClick={handleClick} setKey={setKey} />}
+    <div>
+      {width >= 600?(
+            <div className="createClassContainer">
+            <button className="buttonWrapper" onClick={handleClick}>
+            <FontAwesomeIcon icon={faPlus} size="2x"/>
+            <span>Tạo lớp</span>
+            </button>
+            {showDiv && <ClassForm handleClick={handleClick} setKey={setKey} />}
+          </div>
+      ):(
+        <div className="createClassContainer-m">
+        <button className="buttonWrapper-m" onClick={handleClick}>
+        <IoMdAdd size={250}/>
+
+        </button>
+        {showDiv && <ClassForm handleClick={handleClick} setKey={setKey} />}
+      </div>
+      )}    
     </div>
+
   );
 }
 

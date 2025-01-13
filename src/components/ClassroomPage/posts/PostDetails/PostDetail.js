@@ -14,6 +14,7 @@ import FileUploader from "../../Attached_files/Attached_files";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
 function File_container({ file_name, file_url }) {
+    file_name = file_name.split('/').pop();
     const iconMap = {
         pdf: <PiFilePdf size={35} color="black" />,
         doc: <PiFileDoc size={35} color="black" />,
@@ -61,8 +62,8 @@ function File_container({ file_name, file_url }) {
 function Post_description() {
     const navigate = useNavigate(); 
     const { classId, postId } = useParams();
-
     const [files, setFiles] = useState([]);
+    
     const handleFileChange = (newFiles) => {
         setFiles(newFiles); 
     };
@@ -119,7 +120,7 @@ function Post_description() {
             );
     
             removalFiles.forEach((file, index) => {
-                formData.append(`removal_attachments`, file.filename);
+                formData.append(`removal_attachments`, file.path);
             });
 
             console.log("FormData Content:", Array.from(formData.entries()));
@@ -311,7 +312,7 @@ function Post_description() {
                                 key={index}
                                 style={{ display: "flex", alignItems: "center", gap: "10px" }}
                             >
-                                <File_container file_name={file.filename} file_url={file.url} />
+                                <File_container file_name={file.path} file_url={file.signedURL} />
                                 {isEditing && (
                                     <button
                                         onClick={() => handleFileDelete(index)}

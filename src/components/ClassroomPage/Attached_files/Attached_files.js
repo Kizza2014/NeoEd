@@ -1,10 +1,10 @@
 import "./Attached_files.css"
 
-import React, { useState } from 'react';
+import React from 'react';
 
 function FileUploader({files, setFiles,sendHandle}) {
     const addFiles = (newFiles) => {
-        setFiles(newFiles);
+        setFiles((prevFiles) => [...prevFiles, ...newFiles]);
     };
     
     const removeFile = (index) => {

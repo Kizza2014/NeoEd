@@ -21,6 +21,22 @@
     justify-content: center;
     margin: 1%;
     border-radius: 20px;
+
+}
+
+.content-m{
+    width: 93%;
+    flex: 2; 
+    background-color: #f5e3c4a1;
+    border: 4px solid rgb(198, 198, 198); 
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    border-radius: 20px;
+    gap: 6px;
+    
 }
 
 .logo{
@@ -191,3 +207,116 @@ margin-left: 8px;
     align-items: center; /* Center vertically */
     z-index: 9999; /* Ensure it stays on top of other content */
 }
+/* Căn giữa logo */
+.logo-m {
+    display: block;
+    margin: 0 auto;
+    width: 200px; /* Thay đổi theo kích thước mong muốn */
+    height: auto;
+}
+/* Container chính của form */
+.content-m {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 75%; /* Để form chiếm toàn bộ chiều cao màn hình */
+    padding: 10px;
+    background-color: #f5f5f5;
+
+}
+
+/* Logo */
+.logo-m {
+    display: block;
+    margin: 0 auto;
+    width: 150px; /* Kích thước logo tùy chỉnh */
+    margin-bottom: 20px;
+}
+
+/* Container của form */
+.form-container-m {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+/* Các input trong form */
+.input-container-m {
+    margin-bottom: 20px;
+}
+
+.input-container-m label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Checkbox và nút quên mật khẩu */
+.check-box-m {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.remember-pass-m {
+    margin-right: 10px;
+}
+
+/* Nút quên mật khẩu */
+.forgot-password-m {
+    background: none;
+    color: #007BFF;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.button-login-m {
+    width: 110%;
+    height: auto; 
+    padding: 20px 20px ; /* Tăng kích thước padding để làm nút lớn hơn */
+    font-size: 30px; 
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login-button-m:hover {
+    background-color: #45a049;
+}
+
+/* Phần đăng ký */
+.registerPrompt-m {
+    text-align: center;
+}
+
+.registerLink {
+    background: none;
+    color: #007BFF;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.registerLink:hover {
+    text-decoration: underline;
+}
+
+  

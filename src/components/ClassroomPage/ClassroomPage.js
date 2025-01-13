@@ -5,67 +5,125 @@ import TopBar from '../Utilities/Top_bar';
 import { NavLink, useParams, Outlet, useOutlet } from 'react-router-dom';
 import Post from './posts/Posts';
 import { ClassInfo } from './classInfo/ClassInfo';
+import InvitationCode from '../Utilities/InvitationCode';
+import UserMenu from '../HomePage/userinfo/componentback/MenuUser';
+import useWindowSize from '../Teacher/teacher_home/SizeContext';
+import { FaUserCheck, FaInfoCircle, FaBell, FaBook, FaClipboard, FaSignOutAlt } from "react-icons/fa";
+
 
 function ClassroomPage() {
   const { classId } = useParams();
   const outlet = useOutlet();
+  const {width} = useWindowSize();
   return (
-    <div className="container">
-      <div className="slide">
-        <img src={logo} className="logo" alt="Description" loading="lazy" />
-        <div className="button-list">
-          <NavLink
-            to={`/c/${classId}`}
-            className={({ isActive }) => (isActive ? "active_class_link" : "")}
-            end
-          >
-            Thông tin lớp học
-          </NavLink>
-          {/* <NavLink
-            to={`/c/${classId}/n`}
-            className={({ isActive }) => (isActive ? "active_class_link" : "")}
-          >
-            Thông báo
-          </NavLink> */}
-          {/* <NavLink
-            to={`/c/${classId}/p`}
-            className={({ isActive }) => (isActive ? "active_class_link" : "")}
-          >
-            Học liệu
-          </NavLink> */}
-          <NavLink
-            to={`/c/${classId}/a`}
-            className={({ isActive }) => (isActive ? "active_class_link" : "")}
-          >
-            Bài tập
-          </NavLink>
-          <NavLink
-            to={`/c/${classId}/r`}
-            className={({ isActive }) => (isActive ? "active_class_link" : "")}
-          >
-            Gửi yêu cầu cho giáo viên
-          </NavLink>
-          <NavLink
-            to="/c"
-            className={({ isActive }) => (isActive ? "active_class_link" : "")}
-            end
-          >
-            Thoát lớp học
-          </NavLink>
-        </div>
-      </div>
-      <div className="content-div">
-          <TopBar />
-          <div>
-              {!outlet && (
-                  <>
-                      <ClassInfo />
-                      <Post />
-                  </>
-              )}
-              <Outlet />
+    <div>
+        {width >= 600? 
+        (
+        <div className="container">
+          <div className="slide">
+            <img src={logo} className="logo" alt="Description" loading="lazy" />
+            <div className="button-list">
+              <NavLink
+                to={`/c/t/${classId}`}
+                className={({ isActive }) => (isActive ? "active_class_link" : "")}
+                end
+              >
+                Thông tin lớp học
+              </NavLink>
+
+              <NavLink
+                to={`/c/t/${classId}/a`}
+                className={({ isActive }) => (isActive ? "active_class_link" : "")}
+              >
+                Bài tập
+              </NavLink>
+              <NavLink
+                to={`/c/t/${classId}/r`}
+                className={({ isActive }) => (isActive ? "active_class_link" : "")}
+              >
+                Gửi yêu cầu cho giáo viên
+              </NavLink>
+              <NavLink
+                to="/c"
+                className={({ isActive }) => (isActive ? "active_class_link" : "")}
+                end
+              >
+                Thoát lớp học
+              </NavLink>
+            </div>
           </div>
-      </div>
+          <div className="content-div">
+              <TopBar />
+              <div>
+                  {!outlet && (
+                      <>
+                          <ClassInfo />
+                          <InvitationCode/>
+                          <Post />
+                      </>
+                  )}
+                  <Outlet />
+              </div>
+          </div>
+        </div>
+      ) : ( 
+        <div>
+          <div className="header_mobile">
+            <img src={logo} className="logo-m" alt="Description" loading="lazy" />
+            <div className="user-menu">
+              <UserMenu />
+            </div>
+          </div>
+          <div className="class">
+          Lớp học
+          </div>
+          <div className="line"> </div>
+          <div className="content">
+          <Outlet />
+          </div>
+          <div className="footer">
+            <NavLink
+              to={`/c/${classId}`}
+              className={({ isActive }) => (isActive ? "active_class_link" : "")}
+              end
+            >
+            <FaInfoCircle /> Thông tin lớp học
+            </NavLink>
+            <NavLink
+              to={`/c/${classId}/notifications`}
+              className={({ isActive }) => (isActive ? "active_class_link" : "")}
+            >
+            <FaBell /> Thông báo
+            </NavLink>
+            <NavLink
+              to={`/c/${classId}/posts`}
+              className={({ isActive }) => (isActive ? "active_class_link" : "")}
+            >
+            <FaBook /> Học liệu
+            </NavLink>
+            <NavLink
+              to={`/c/${classId}/assignment`}
+              className={({ isActive }) => (isActive ? "active_class_link" : "")}
+            >
+            <FaClipboard /> Bài tập
+            </NavLink>
+            <NavLink
+              to={`/c/${classId}/requests`}
+              className={({ isActive }) => (isActive ? "active_class_link" : "")}
+            >
+              <FaUserCheck /> Điểm danh
+            </NavLink>
+            <NavLink
+              to="/c"
+              className={({ isActive }) => (isActive ? "active_class_link" : "")}
+              end
+            >
+            <FaSignOutAlt /> Thoát lớp học
+            </NavLink>
+          </div>
+          </div>
+      )
+      }
     </div>
   );
 }

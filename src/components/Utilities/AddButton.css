@@ -1,120 +1,150 @@
 .createClassContainer {
-    border-radius: 0;
-    display: flex;
-    max-width: 115px;
-    flex-direction: column;
-    color: rgba(0, 0, 0, 1);
-    font: 600 16px Inter, sans-serif;
-  }
-  
-  .buttonWrapper {
-    border-radius: 50px;
-    display: flex;
-    min-width: 115px;
-    height: 40px;
-    font-weight: bold;
-    justify-content: center;
-    align-items: center;
-    padding: 8px 9px;
-    border: 1px solid rgba(0, 0, 0, 1);
-  }
-  
-  .buttonIcon {
-    aspect-ratio: 1;
-    object-fit: contain;
-    object-position: center;
-    width: 25px;
-    fill: var(--Primary-Blue-500, #08f);
-  }
-  
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
+  border-radius: 0;
+  display: flex;
+  max-width: 115px;
+  flex-direction: column;
+  color: rgba(0, 0, 0, 1);
+  font: 600 16px Inter, sans-serif;
+}
 
-  .newClassDiv {
-    display:flex;
-    flex-direction: column;
-    position: fixed;
-    top: 50%;
-    left: 50%; 
-    transform: translate(-50%, -50%);
-    padding: 20px;
-    background-color: rgba(255, 255, 255);
-    color: rgb(0, 0, 0);
-    border: 1px solid black;
-    width: 528px;
-    height: 744px;
-    z-index: 9999;
-  }
+.buttonWrapper {
+  border-radius: 50px;
+  display: flex;
+  min-width: 115px;
+  height: 40px;
+  font-weight: bold;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 9px;
+  border: 1px solid rgba(0, 0, 0, 1);
+}
+.buttonWrapper-m {
+  border-radius: 50%; 
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  width: 80px; 
+  height: 80px; 
+  position: fixed; 
+  bottom: 40px;
+  right: 20px; 
+  z-index: 9999; 
+  background-color: #ffffff; 
+  border: 2px solid #000000; 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+  cursor: pointer; 
+}
+
+.buttonWrapper-m:hover {
+  background-color: #f0f0f0; /* Màu nền khi hover */
+}
 
 
-  .closeButton {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    color: white;
-    cursor: pointer;
-  }
+.buttonWrapper-m svg {
+  color: black; /* Đặt màu cho dấu "+" */
+}
 
-  .informationDiv {
-    margin-top: 40px;
-    width: 100%;
-    box-sizing: border-box;
-    padding-bottom: 0;
-    border-bottom: 1px solid black;
+
+
+.buttonIcon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  width: 25px;
+  fill: var(--Primary-Blue-500, #08f);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.newClassDiv {
+  display:flex;
+  flex-direction: column;
+  position: fixed;
+  height: auto;
+  top: 50%;
+  left: 50%; 
+  transform: translate(-50%, -50%);
+  padding: 10px;
+  background-color: rgba(255, 255, 255);
+  color: rgb(0, 0, 0);
+  border: 1px solid black;
+  min-width: 450px;
+  width: 500px;
+  height: 744px;
+  z-index: 9999;
+  overflow: auto;
+}
+
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  cursor: pointer;
+}
+
+.informationDiv {
+  margin-top: 40px;
+  width: 100%;
+  box-sizing: border-box;
+  padding-bottom: 0;
+  border-bottom: 1px solid black;
 }
 
 .informationTitle {
-  padding-bottom: 0px;
-  margin-bottom: 0px;
-  margin-top: 0px;
+padding-bottom: 0px;
+margin-bottom: 0px;
+margin-top: 0px;
 }
 
 .informationForm{
-  display: flex;
-  flex-direction: column;
-  margin-top: 30px;
-  gap: 30px;
-  padding: 10px;
+display: flex;
+flex-direction: column;
+margin-top: 30px;
+gap: 30px;
+padding: 10px;
 }
 
 .informationForm label {
-  font-size: 16px;
+font-size: 16px;
 }
 
 .informationForm textarea {
-  padding: 8px;
-  font-size: 14px;
-  margin-top: 5px;
-  width: 100%;
-  border: 1px solid black;
-  box-sizing: border-box; 
+padding: 8px;
+font-size: 14px;
+margin-top: 5px;
+width: 100%;
+border: 1px solid black;
+box-sizing: border-box; 
 }
 
 .buttonContainer{
-  display: flex;
-  position: absolute;
-  bottom: 70px;
-  right: 40px;
-  gap: 15px;
+display: flex;
+position: absolute;
+bottom: 70px;
+right: 40px;
+gap: 15px;
 }
 
 .buttonContainer button{
-  border: 1px solid black;
-  width: 94px;
-  padding: 8px 16px;
-  box-sizing: border-box; 
+border: 1px solid black;
+width: 94px;
+padding: 8px 16px;
+box-sizing: border-box; 
 }
 
 .createButton{
-  background: #F66E18;
-  color: whitesmoke;
+background: #F66E18;
+color: whitesmoke;
 }

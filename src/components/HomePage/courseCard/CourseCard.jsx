@@ -41,8 +41,6 @@ function UpdateForm({ courseId, showForm, setKey }) {
             subject_name: data.subject_name || "",
             description: data.description || "",
             class_schedule: data.class_schedule || "",
-            password: data.password || "",
-            require_password: data.require_password || false,
           });
         }
       } catch (error) {
@@ -64,9 +62,14 @@ function UpdateForm({ courseId, showForm, setKey }) {
       }
       console.log(formDataEncoded);
 
-      const response = await axios.put(`http://localhost:8000/classroom/${courseId}/update`, formDataEncoded);
-      // const response = await axios.post("http://localhost:8000/classroom/create", null, { 
-      //   params: {formData}
+      const response = await axios.put(`http://localhost:8000/classroom/${courseId}/update`, formDataEncoded
+        ,{
+          params: {
+            class_id: courseId,
+            token: sessionStorage.getItem('access_token'),
+          },
+        }
+      );
     // });
       alert("Classroom updated successfully:", response.data);
     } catch (error) {
@@ -161,7 +164,7 @@ function UpdateForm({ courseId, showForm, setKey }) {
   );
 }
 
-export const CourseCard = ({ courseDetails, image, setKey }) => {
+export const CourseCard = ({ courseDetails, image, isTeaching, setKey }) => {
   const [loading, setLoading] = useState(false);
   const [showDiv, setShowDiv] = useState(false);
 
@@ -169,7 +172,8 @@ export const CourseCard = ({ courseDetails, image, setKey }) => {
     setShowDiv(!showDiv);
   };
   
-  const { courseTitle, courseId, courseSchedule, instructorInfo, locationInfo } = courseDetails;
+  const { courseTitle, courseId, instructorInfo } = courseDetails;
+
   const navigate = useNavigate(); 
 
   const [showOption, setShowOption] = useState(false);
@@ -179,23 +183,50 @@ export const CourseCard = ({ courseDetails, image, setKey }) => {
   }
 
   const handleClick = () => {
-    navigate(`/c/${courseId}`);
+    navigate(`/${isTeaching}/${courseId}`);
   };
 
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`http://localhost:8000/classroom/${courseId}/delete`, {class_id: courseId});
+      await axios.delete(`http://localhost:8000/classroom/${courseId}/delete`, 
+      {
+        params: {
+          class_id: courseId,
+          token: sessionStorage.getItem('access_token'),
+        },
+      });
+      console.log(`Deleted course with ID: ${courseId}`);
     } catch (error) {
       console.error("Error creating classroom:", error);
       alert(error);
     } finally {
-      console.log(`Deleted course with ID: ${courseId}`);
       setLoading(false);
       setKey();
     }
   };
 
+  const handleDuplicate = async () => {
+    try {
+      setLoading(true);
+      await axios.post(`http://localhost:8000/classroom/create-from-template`,
+        null,
+        {
+          params: {
+            template_class_id: courseId,
+            token: sessionStorage.getItem('access_token'),
+          },
+        }
+       );
+       console.log(`Duplicated course with ID: ${courseId}`);
+    } catch (error) {
+      console.error("Error creating classroom:", error);
+      alert(error);
+    } finally {
+      setLoading(false);
+      setKey();
+    }
+  };
   if (loading) {
     return(
         <>
@@ -258,6 +289,7 @@ export const CourseCard = ({ courseDetails, image, setKey }) => {
             <PiDotsThreeOutlineLight size={27} />
             {showOption && (
               <div className={styles.optionBox}>
+                <button onClick={handleDuplicate}>Duplicate</button>
                 <button onClick={showUpdateForm}>Update</button>
                 <button onClick={handleDelete}>Delete</button>
               </div>

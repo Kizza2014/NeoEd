@@ -21,7 +21,6 @@ function PostForm({handleClick}) {
         // class_id: classId,
         start_at: new Date(),
         end_at: new Date(),
-        attachments: [],
     });
     
     const handleChange = (e) => {
@@ -33,25 +32,20 @@ function PostForm({handleClick}) {
     };
 
     const handleFileChange = (newFiles) => {
-        setFiles(newFiles);  // Update files state
-        setNotificationForm((prevData) => ({
-            ...prevData,
-            attachments: newFiles,  // Update form with new files array
-        }));
+        setFiles(newFiles); 
+
     };
     
     const handleUpload = () => {
         setLoading(true);
-        console.log(notificationForm);
-        console.log(notificationForm.attachments); // Check if the form data is correct
         // Create FormData object
         const formData = new FormData();
         formData.append('title', notificationForm.title);
         formData.append('descriptions', notificationForm.descriptions);
 
         // Append files to FormData
-        for (let i = 0; i < notificationForm.attachments.length; i++) {
-            formData.append('attachments', notificationForm.attachments[i]);
+        for (let i = 0; i < files.length; i++) {
+            formData.append('attachments', files[i]);
         }
 
         // Sending the request with FormData
@@ -187,6 +181,11 @@ function Notifications({ notifications, onNotificationClick }) {
 }
 
 function Exercise() {
+    const [isTeaching, setTeaching] = useState(() => {
+        const storedValue = sessionStorage.getItem('isTeaching');
+        return storedValue === "true"; // Explicitly convert to boolean
+      });
+
     const { classId } = useParams();
     const navigate = useNavigate();
     const outlet = useOutlet();
@@ -198,6 +197,7 @@ function Exercise() {
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get(`http://localhost:8000/classroom/${classId}/assignment/all`,
                     { params: {
                                 token: sessionStorage.getItem("access_token"),
@@ -227,7 +227,11 @@ function Exercise() {
     }, [classId, setError]);
 
     const handleNotificationClick = async (assignmentId) => {
-        navigate(`/c/${classId}/a/${assignmentId}`);
+        if (isTeaching){
+            navigate(`/c/t/${classId}/a/${assignmentId}`);
+        } else {
+            navigate(`/c/${classId}/a/${assignmentId}`);
+        }
     };
 
     const handleBackClick = () => {

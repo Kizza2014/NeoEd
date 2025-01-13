@@ -16,11 +16,7 @@ function PostForm({handleClick}) {
     const [loading, setLoading] = useState(false);
     const [notificationForm, setNotificationForm] = useState({
         title: "",
-        descriptions: "",
-        // class_id: classId,
-        start_at: new Date(),
-        end_at: new Date(),
-        attachments: [],
+        content: "",
     });
     
     const handleChange = (e) => {
@@ -33,26 +29,22 @@ function PostForm({handleClick}) {
 
     const handleFileChange = (newFiles) => {
         setFiles(newFiles);  // Update files state
-        setNotificationForm((prevData) => ({
-            ...prevData,
-            attachments: newFiles,  // Update form with new files array
-        }));
     };
     
     const handleUpload = () => {
         setLoading(true);
-        console.log(notificationForm);
-        console.log(notificationForm.attachments); // Check if the form data is correct
         // Create FormData object
+        console.log(notificationForm);
+        console.log(files);
         const formData = new FormData();
         formData.append('title', notificationForm.title);
-        formData.append('content', notificationForm.descriptions);
+        formData.append('content', notificationForm.content);
 
         // Append files to FormData
-        for (let i = 0; i < notificationForm.attachments.length; i++) {
-            formData.append('attachments', notificationForm.attachments[i]);
+        for (let i = 0; i < files.length; i++) {
+            console.log(files[i]);
+            formData.append('attachments', files[i]);
         }
-
         // Sending the request with FormData
         axios.post(
             `http://localhost:8000/classroom/${classId}/post/create`,

@@ -1,0 +1,17 @@
+.back-button {
+    background-color: #b8b1b1; /* Màu nền ban đầu */
+    color: rgb(5, 5, 5); /* Màu chữ */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Thêm hiệu ứng chuyển đổi */
+  }
+  
+  .back-button:hover {
+    background-color: #7c7976; /* Màu nền khi hover */
+    transform: scale(1.05); /* Phóng to nhẹ nút khi hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ */
+  }
+  

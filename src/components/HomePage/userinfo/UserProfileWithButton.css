@@ -1,0 +1,128 @@
+/* Tổng quan của container */
+.container-user-info {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 24px;
+  color: #333;
+  margin: 0;
+}
+
+.header button {
+  background-color: #c97527;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.header button:hover {
+  background-color: #b06523;
+}
+
+/* Form content styling */
+.content .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.form-group input {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.form-group span {
+  font-size: 16px;
+  color: #444;
+  padding: 8px;
+  background-color: #efefef;
+  border-radius: 5px;
+}
+
+/* Nút chỉnh sửa */
+.set-button {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #2321c7;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.set-button:hover {
+  background-color: #b06523;
+}
+
+/* Nút hủy và lưu */
+.cancel_save {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancel, .save {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cancel {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.cancel:hover {
+  background-color: #c0392b;
+}
+
+.save {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.save:hover {
+  background-color: #27ae60;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
