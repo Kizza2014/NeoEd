@@ -5,3 +5,4 @@ from src.controller.assignment_controller import ASSIGNMENT_CONTROLLER
 from src.controller.auth_controller import *
 from src.controller.notification_controller import *
 from src.controller.attention_controller import ATTN_CONTROLLER
+from src.controller.comment_controller import COMMENT_CONTROLLER

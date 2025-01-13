@@ -19,6 +19,10 @@ BUCKET = 'assignments'
 TIMEZONE = timezone('Asia/Ho_Chi_Minh')
 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""                                        GENERAL ASSIGNMENT API                                                    """
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 @ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/all", response_model=List[AssignmentResponse])
 async def get_all_assignments(
         class_id: str,
@@ -34,9 +38,11 @@ async def get_all_assignments(
 
         # ensure user is a participant of the class
         if not await mongo_repo['classroom'].find_participant_in_class(user_id, class_id):
-            raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
+            raise HTTPException(status_code=403, detail='Unauthorized. You are not a participant of this class.')
 
         assignments = await mongo_repo['assignment'].get_all(class_id)
+        if assignments is None:
+            raise HTTPException(status_code=404, detail='Class not found.')
         return [AssignmentResponse(**assgn_dict) for assgn_dict in assignments]
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
@@ -251,9 +257,10 @@ async def delete_by_id(
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
 
-"""
-    ASSIGNMENT SUBMISSION
-"""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"""                                               SUBMISSION API                                                     """
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 @ASSIGNMENT_CONTROLLER.get("/classroom/{class_id}/assignment/{assgn_id}/submission/all", response_model=List[dict])
 async def get_all_submission(
         class_id: str,
@@ -275,6 +282,8 @@ async def get_all_submission(
             raise HTTPException(status_code=403, detail='Unauthorized. You must be teacher of this class.')
 
         submissions = await mongo_repo['assignment'].get_all_submission(class_id, assgn_id)
+        if submissions is None:
+            raise HTTPException(status_code=404, detail='Class or assignment not found.')
 
         # get url for attachments
         storage = SupabaseStorage()

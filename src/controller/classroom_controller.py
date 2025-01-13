@@ -9,6 +9,7 @@ import uuid
 from src.configs.connections import SupabaseStorage
 from src.service.authentication.utils import *
 from src.controller.utils import get_mysql_repo, handle_transaction, get_mongo_repo, role_in_classroom, MySQLRepo
+from src.service.models.exceptions import ClassroomNotFoundException
 
 
 CLASSROOM_CONTROLLER = APIRouter(tags=['Classroom'])
@@ -63,7 +64,8 @@ async def create_classroom(
 ) -> dict:
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
@@ -119,7 +121,6 @@ async def create_from_template(
             raise HTTPException(status_code=403, detail='Forbidden. You are not a teacher in this classroom')
 
         template_class = await mysql_repo['classroom'].get_by_id(template_class_id)
-
         if not template_class:
             raise HTTPException(status_code=404, detail='Template classroom not found')
 
@@ -159,6 +160,8 @@ async def get_all_participants(class_id: str, mongo_cnx=Depends(get_mongo_connec
         return await mongo_repo['classroom'].get_all_participants(class_id)
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @CLASSROOM_CONTROLLER.put('/classroom/join', response_model=dict)
@@ -173,12 +176,15 @@ async def join_classroom(
     """
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
 
         db_class = await mysql_repo['classroom'].get_by_invitation_code(invitation_code)
+        if not db_class:
+            raise HTTPException(status_code=404, detail='Classroom not found')
         class_id = db_class['id']
 
         # verify user is not already in classroom
@@ -238,6 +244,9 @@ async def leave_classroom(
     except PyMongoError as e:
         mysql_cnx.rollback()
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        mysql_cnx.rollback()
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -263,6 +272,8 @@ async def get_invitation_code(
         return await mysql_repo['classroom'].get_invitation_code(class_id)
     except MySQLError as e:
         raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @CLASSROOM_CONTROLLER.put("/classroom/{class_id}/update", response_model=dict)
@@ -277,7 +288,8 @@ async def update_classroom_by_id(
 ) -> dict:
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx)
 
@@ -307,6 +319,8 @@ async def update_classroom_by_id(
         }
     except MySQLError as e:
         raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @CLASSROOM_CONTROLLER.delete("/classroom/{class_id}/delete", response_model=dict)
@@ -343,6 +357,9 @@ async def delete_classroom_by_id(
     except PyMongoError as e:
         mysql_cnx.rollback()
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        mysql_cnx.rollback()
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @CLASSROOM_CONTROLLER.put('/classroom/{class_id}/participant/add-student/{username}', response_model=dict)
@@ -388,6 +405,9 @@ async def add_student(
     except PyMongoError as e:
         mysql_cnx.rollback()
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        mysql_cnx.rollback()
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @CLASSROOM_CONTROLLER.put('/classroom/{class_id}/participant/add-teacher/{username}', response_model=dict)
@@ -433,6 +453,9 @@ async def add_teacher(
     except PyMongoError as e:
         mysql_cnx.rollback()
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        mysql_cnx.rollback()
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @CLASSROOM_CONTROLLER.delete('/classroom/{class_id}/participant/remove-student/{username}', response_model=dict)
@@ -518,3 +541,6 @@ async def remove_teacher(
     except PyMongoError as e:
         mysql_cnx.rollback()
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        mysql_cnx.rollback()
+        raise HTTPException(status_code=404, detail=str(e))

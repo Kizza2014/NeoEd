@@ -5,6 +5,7 @@ from datetime import datetime
 from pytz import timezone
 from mysql.connector import Error as MySQLError
 from src.repository.utils import generate_invitation_code
+from src.service.models.exceptions import ClassroomNotFoundException
 
 TIMEZONE = timezone('Asia/Ho_Chi_Minh')
 
@@ -66,7 +67,9 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
         cursor = self.connection.cursor
         cursor.execute("SELECT invitation_code FROM classes WHERE id LIKE %s", (class_id,))
         res = cursor.fetchone()
-        return res['invitation_code'] if res else None
+        if res is None:
+            raise ClassroomNotFoundException
+        return res['invitation_code']
 
     async def get_owner(self, class_id: str) -> dict:
         cursor = self.connection.cursor
@@ -75,10 +78,10 @@ class MySQLClassroomRepository(MysqlRepositoryInterface):
                            WHERE c.id LIKE %s""", (class_id,))
         owner = cursor.fetchone()
         if not owner:
-            raise MySQLError('Classroom not found')
+            raise ClassroomNotFoundException
         return owner
 
-    async def get_user_role(self, user_id: str, class_id: str) -> str:
+    async def get_user_role(self, user_id: str, class_id: str) -> str | None:
         cursor = self.connection.cursor
         cursor.execute("""SELECT * FROM users_classes WHERE user_id LIKE %s AND class_id LIKE %s""",
                             (user_id, class_id)

@@ -14,8 +14,10 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         self.collection = self.connection.get_collection("classes")
 
 
-    async def get_all(self, class_id: str) -> List[dict]:
+    async def get_all(self, class_id: str) -> List[dict] | None:
         db_classroom = self.collection.find_one({'_id': class_id})
+        if not db_classroom:
+            return None
         return db_classroom['assignments']
 
 
@@ -33,6 +35,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         assgn_info['created_at'] = datetime.now(TIMEZONE)
         assgn_info['updated_at'] = datetime.now(TIMEZONE)
         assgn_info['submissions'] = []
+        assgn_info['comments'] = []
 
         filters = {'_id': class_id}
         updates = {
@@ -158,10 +161,13 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         response = self.collection.update_one(filters, updates, array_filters=array_filters)
         return response.modified_count > 0
 
-    async def get_all_submission(self, class_id: str, assgn_id: str):
+    async def get_all_submission(self, class_id: str, assgn_id: str) -> List[dict] | None:
         response = self.collection.find_one(
             {'_id': class_id, 'assignments.id': assgn_id}, {'participants': 1, 'assignments.submissions.$': 1}
         )
+        if not response:
+            return None
+
         participants = response.get('participants', [])
         submissions = response['assignments'][0].get('submissions', [])
 
@@ -186,7 +192,12 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         response = self.collection.find_one(
             {'_id': class_id, 'assignments.id': assgn_id, 'assignments.submissions.student_id': student_id},
             {'assignments.submissions.$': 1})
-        return response['assignments'][0]['submissions'][0] if response else None
+        if not response:
+            return None
+        for submission in response['assignments'][0]['submissions']:
+            if submission['student_id'] == student_id:
+                return submission
+        return None
 
     async def remove_submission(self, class_id: str, assgn_id: str, student_id: str) -> bool:
         filters = {'_id': class_id, 'assignments.id': assgn_id}

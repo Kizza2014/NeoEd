@@ -7,7 +7,7 @@ class ClassroomBase(BaseModel):
     id: str
     class_name: str
     subject_name: str
-    class_schedule: str
+    class_schedule: Optional[str] = None
     description: Optional[str] = None
     owner_id: str
     owner_username: str
