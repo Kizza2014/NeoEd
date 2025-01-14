@@ -14,7 +14,7 @@ COMMENT_CONTROLLER = APIRouter(tags=['Comment'])
 TIMEZONE = timezone('Asia/Ho_Chi_Minh')
 
 
-@COMMENT_CONTROLLER.get('/classroom/{class_id/post/{post_id}/comment/all}')
+@COMMENT_CONTROLLER.get('/classroom/{class_id/post/{post_id}/comment/all')
 async def get_comments_of_post(
         class_id: str,
         post_id: str,
@@ -40,7 +40,7 @@ async def get_comments_of_post(
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
 
-@COMMENT_CONTROLLER.get('/classroom/{class_id/assignment/{assgn_id}/comment/all}', response_model=List[Comment])
+@COMMENT_CONTROLLER.get('/classroom/{class_id/assignment/{assgn_id}/comment/all', response_model=List[Comment])
 async def get_comments_of_assignment(
         class_id: str,
         assgn_id: str,
