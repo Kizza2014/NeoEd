@@ -20,7 +20,7 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-def create_access_token(data, expires_in=1) -> str:
+def create_access_token(data, expires_in=15) -> str:
     payload = {
         'data': data,
         'exp': datetime.datetime.now(timezone('Asia/Ho_Chi_Minh')) + datetime.timedelta(minutes=expires_in)
@@ -28,7 +28,7 @@ def create_access_token(data, expires_in=1) -> str:
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 
-def create_refresh_token(data, exp=None, expires_in=15) -> str:
+def create_refresh_token(data, exp=None, expires_in=7) -> str:
     if exp:
         payload = {
             "data": data,
