@@ -27,4 +27,5 @@ app.include_router(POST_CONTROLLER)
 app.include_router(ASSIGNMENT_CONTROLLER)
 app.include_router(AUTH_CONTROLLER)
 app.include_router(NOTIFICATION_CONTROLLER)
-app.include_router(ATTN_CONTROLLER)
+app.include_router(ATTN_CONTROLLER
+                   )

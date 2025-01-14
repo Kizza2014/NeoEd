@@ -5,7 +5,6 @@ from src.repository.redis.redis_repository import RedisRepository
 from src.service.models.authentication import TokenResponse, UserLogin
 from src.service.models.user.user_model import RegisterResponse, UserCreate
 from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError
-from fastapi import HTTPException
 from src.service.authentication.utils import *
 from mysql.connector import Error as MySQLError
 

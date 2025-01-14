@@ -129,12 +129,6 @@ def end_session_(session_id: str, class_id: str):
     return {"msg": "Session ended successfully!"}
 
 
-@ATTN_CONTROLLER.get("/checkin/current")
-def get_current_ci_session(class_id: str):
-    session_id = CheckInRepository.get_current_session(class_id)
-    return session_id
-
-
 @ATTN_CONTROLLER.post("/checkin/student-checkin")
 def student_checkin_(student_id: str,
                      session_id: str):
@@ -146,3 +140,11 @@ def student_checkin_(student_id: str,
             status_code=500,
             detail=str(e)
         )
+
+@ATTN_CONTROLLER.get("/session/current")
+def get_ci_current_session_of_class(class_id: str = Query(...)):
+    session_id = CheckInRepository.get_current_session(class_id)
+    if session_id:
+        return {"session_id": session_id}
+    else:
+        return {"msg": "This class currently has no check in sessions."}

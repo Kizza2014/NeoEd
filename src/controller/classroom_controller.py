@@ -24,7 +24,8 @@ async def get_my_classrooms(
 ) -> dict:
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx=mysql_cnx)
         classrooms = await mysql_repo['classroom'].get_classroom_for_user(user_id)
@@ -47,7 +48,7 @@ async def get_by_id(class_id: str, mysql_cnx=Depends(get_mysql_connection)) -> C
 
 @CLASSROOM_CONTROLLER.post("/classroom/create", response_model=dict)
 async def create_classroom(
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         class_name: str = Form(...),
         subject_name: str = Form(...),
         class_schedule: str = Form(None),
@@ -59,7 +60,8 @@ async def create_classroom(
 ) -> dict:
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this '
+                                                        'resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
@@ -101,7 +103,7 @@ async def create_classroom(
 @CLASSROOM_CONTROLLER.put("/classroom/{class_id}/update", response_model=dict)
 async def update_classroom_by_id(
         class_id: str,
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         class_name: str = Form(None),
         subject_name: str = Form(None),
         class_schedule: str = Form(None),
@@ -112,7 +114,8 @@ async def update_classroom_by_id(
 ) -> dict:
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx)
 
@@ -129,7 +132,7 @@ async def update_classroom_by_id(
             'password': password if password else None,
             'require_password': require_password if require_password is not None else None
         }
-        information = {k:v for k, v in information.items() if v is not None}
+        information = {k: v for k, v in information.items() if v is not None}
         update_info = ClassroomUpdate(**information)
 
         if not await mysql_repo['classroom'].update_by_id(class_id, update_info):
@@ -149,7 +152,7 @@ async def update_classroom_by_id(
 @CLASSROOM_CONTROLLER.delete("/classroom/{class_id}/delete", response_model=dict)
 async def delete_classroom_by_id(
         class_id: str,
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
@@ -185,6 +188,8 @@ async def delete_classroom_by_id(
 """
     CLASSROOM PARTICIPANTS
 """
+
+
 @CLASSROOM_CONTROLLER.get('/classroom/{class_id}/participant/all')
 async def get_all_participants(class_id: str, mongo_cnx=Depends(get_mongo_connection)) -> dict:
     try:
@@ -198,7 +203,7 @@ async def get_all_participants(class_id: str, mongo_cnx=Depends(get_mongo_connec
 async def add_student(
         class_id: str,
         username: str,
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
@@ -207,7 +212,8 @@ async def add_student(
     """
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
@@ -219,7 +225,8 @@ async def add_student(
         # add participant
         db_user = await mysql_repo['user'].get_by_username(username)
         status1 = await mysql_repo['classroom'].add_participant(db_user['id'], class_id, role='student')
-        status2 = await mongo_repo['classroom'].add_participant(db_user['id'], db_user['username'], class_id, role='student')
+        status2 = await mongo_repo['classroom'].add_participant(db_user['id'], db_user['username'], class_id,
+                                                                role='student')
         await handle_transaction([status1, status2], mysql_cnx)
 
         return {
@@ -238,7 +245,7 @@ async def add_student(
 async def add_teacher(
         class_id: str,
         username: str,
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
@@ -247,7 +254,8 @@ async def add_teacher(
     """
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
@@ -259,7 +267,8 @@ async def add_teacher(
         # add participant
         db_user = await mysql_repo['user'].get_by_username(username)
         status1 = await mysql_repo['classroom'].add_participant(db_user['id'], class_id, role='teacher')
-        status2 = await mongo_repo['classroom'].add_participant(db_user['id'], db_user['username'], class_id, role='teacher')
+        status2 = await mongo_repo['classroom'].add_participant(db_user['id'], db_user['username'], class_id,
+                                                                role='teacher')
         await handle_transaction([status1, status2], mysql_cnx)
 
         return {
@@ -277,7 +286,7 @@ async def add_teacher(
 @CLASSROOM_CONTROLLER.put('/classroom/{class_id}/participant/join', response_model=dict)
 async def join_classroom(
         class_id: str,
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         password: str = Form(None),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
@@ -287,7 +296,8 @@ async def join_classroom(
     """
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
@@ -299,7 +309,8 @@ async def join_classroom(
         # add participant
         current_user = await mysql_repo['user'].get_by_id(user_id)
         status1 = await mysql_repo['classroom'].add_participant(current_user['id'], class_id, role='student')
-        status2 = await mongo_repo['classroom'].add_participant(current_user['id'], current_user['username'], class_id, role='student')
+        status2 = await mongo_repo['classroom'].add_participant(current_user['id'], current_user['username'], class_id,
+                                                                role='student')
         await handle_transaction([status1, status2], mysql_cnx)
 
         return {
@@ -313,11 +324,12 @@ async def join_classroom(
         mysql_cnx.rollback()
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
+
 @CLASSROOM_CONTROLLER.delete('/classroom/{class_id}/participant/remove-student/{username}', response_model=dict)
 async def remove_student(
         class_id: str,
         username: str,
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
@@ -326,7 +338,8 @@ async def remove_student(
     """
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
@@ -357,7 +370,7 @@ async def remove_student(
 async def remove_teacher(
         class_id: str,
         username: str,
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:
@@ -366,7 +379,8 @@ async def remove_teacher(
     """
     try:
         if not user_id:
-            raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
+            raise HTTPException(status_code=403,
+                                detail='Unauthorized. Try to login again before accessing this resource.')
 
         mysql_repo = await get_mysql_repo(mysql_cnx, auto_commit=False)
         mongo_repo = await get_mongo_repo(mongo_cnx)
@@ -396,7 +410,7 @@ async def remove_teacher(
 @CLASSROOM_CONTROLLER.delete('/classroom/{class_id}/participant/leave', response_model=dict)
 async def leave_classroom(
         class_id: str,
-        user_id: str=Depends(verify_token),
+        user_id: str = Depends(verify_token),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection)
 ) -> dict:

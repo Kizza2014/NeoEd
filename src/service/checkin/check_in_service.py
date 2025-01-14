@@ -25,7 +25,7 @@ class CheckInService:
     def _initialize_mysql(self):
         cnx: PooledMySQLConnection = get_mysql_cnx()
         check_in_query = """
-        INSERT INTO `neoed`.`check_in_session`
+        INSERT INTO `check_in_session`
         (`session_id`,
         `class_id`,
         `creator`,
