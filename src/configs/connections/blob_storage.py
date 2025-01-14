@@ -173,6 +173,8 @@ class SupabaseStorage:
         return self.client.storage.from_(bucket_name).create_signed_url(file_location, expires_in)
 
     async def get_file_urls(self, bucket_name: str, file_locations: List[str], expires_in: int = 86400) -> List[dict]:
+        if not file_locations:
+            return []
         return self.client.storage.from_(bucket_name).create_signed_urls(file_locations, expires_in)
 
     async def download_file(self, bucket_name: str, file_name: str, download_path: str):
