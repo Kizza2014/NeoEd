@@ -517,7 +517,7 @@ async def remove_teacher(
         mongo_repo = await get_mongo_repo(mongo_cnx)
 
         # ensure that user is classroom's owner
-        if not is_classroom_owner(user_id, class_id, mysql_repo):
+        if not await is_classroom_owner(user_id, class_id, mysql_repo):
             raise HTTPException(status_code=403, detail='Forbidden. You are not the owner of this classroom.')
 
         # ensure teacher is not class owner
@@ -544,3 +544,8 @@ async def remove_teacher(
     except ClassroomNotFoundException as e:
         mysql_cnx.rollback()
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@CLASSROOM_CONTROLLER.get('/verify_token')
+async def get_user_id(user_id: str=Depends(verify_token)):
+    return user_id
