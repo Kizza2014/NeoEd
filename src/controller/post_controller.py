@@ -1,3 +1,4 @@
+from src.service.models.exceptions import ClassroomNotFoundException
 from src.configs.connections.mysql import get_mysql_connection
 from src.service.notification.notification_service import NotificationService
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
@@ -33,9 +34,13 @@ async def get_all_posts(
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
         posts = await mongo_repo['post'].get_posts_in_class(class_id)
+        if posts is None:
+            raise HTTPException(status_code=404, detail='Class not found.')
         return [PostResponse(**post) for post in posts]
     except PyMongoError as e:
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
+    except ClassroomNotFoundException as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 
 @POST_CONTROLLER.get("/classroom/{class_id}/post/{post_id}/detail", response_model=PostResponse)
@@ -57,7 +62,7 @@ async def get_post_by_id(
             raise HTTPException(status_code=403, detail='Unauthorized. You must be a participant of the class.')
 
         db_post = await mongo_repo['post'].get_by_id(class_id, post_id)
-        if not db_post:
+        if db_post is None:
             raise HTTPException(status_code=404, detail="Post not found")
 
         # generate url for each attachment

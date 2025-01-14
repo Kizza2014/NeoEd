@@ -1,6 +1,5 @@
 from supabase import create_client
 from src.configs.utils import get_env_var
-import os
 from typing import List
 from fastapi import UploadFile
 
@@ -43,7 +42,7 @@ class SupabaseStorage:
             bucket_name: str,
             file: UploadFile,
             dest_folder=None,
-            upsert='true'):
+            upsert='true') -> dict:
         """
         Uploads a single file to the specified Supabase storage bucket.
 
@@ -78,8 +77,6 @@ class SupabaseStorage:
                 'status': 'success'
             }
         except Exception as e:
-            # Return failure status with error message
-            print(f"Error: {e}")
             return {
                 'file': file.filename,
                 'status': 'failed',
@@ -92,7 +89,7 @@ class SupabaseStorage:
             files: List[UploadFile],
             dest_folder: str = None,
             upsert: str = 'true'
-    ):
+    ) -> List[dict]:
         """
         Uploads multiple files to the specified Supabase storage bucket.
 
@@ -112,7 +109,7 @@ class SupabaseStorage:
 
         return upload_results
 
-    async def remove_files(self, bucket_name: str, file_locations: List[str]):
+    async def remove_files(self, bucket_name: str, file_locations: List[str]) -> List[dict]:
         """
         Removes multiple files from the specified Supabase storage bucket.
 
@@ -136,52 +133,47 @@ class SupabaseStorage:
                 remove_results.append({'file': file, 'status': 'failed', 'error': str(e)})
         return remove_results
 
-    async def remove_folder(self, bucket_name: str, folder_path: str):
-        """
-        Removes all files within a specified folder in a Supabase storage bucket.
+    async def copy_post_attachments(self, bucket_name: str, src_classroom: str, dest_classroom: str):
+        copy_results = []
+        list_dir = self.client.storage.from_(bucket_name).list(src_classroom)
+        post_folders = [p for p in list_dir if p['id'] is None]
+        for folder in post_folders:
+            src_folder = f"{src_classroom}/{folder['name']}"
+            dest_folder = f"{dest_classroom}/{folder['name']}"
+            attachments = self.client.storage.from_(bucket_name).list(src_folder)
+            for attachment in attachments:
+                src_file = f"{src_folder}/{attachment['name']}"
+                dest_file = f"{dest_folder}/{attachment['name']}"
+                try:
+                    self.client.storage.from_(bucket_name).copy(src_file, dest_file)
+                    copy_results.append({'src': src_file, 'dest': dest_file, 'status': 'success'})
+                except Exception as e:
+                    copy_results.append({'src': src_file, 'dest': dest_file, 'status': 'failed', 'error': str(e)})
+        return copy_results
 
-        Parameters:
-        - bucket_name (str): The name of the bucket containing the folder.
-        - folder_path (str): The path to the folder to be removed.
-
-        Returns:
-        - dict: A dictionary containing the status of the operation and the list of removed files.
-
-        Raises:
-        - Exception: If any file removal or folder processing fails, an error message is included in the returned dictionary.
-        """
-        try:
-            # List all files in the folder
-            response = self.client.storage.from_(bucket_name).list(folder_path, {'limit': None})
-            file_paths = [folder_path + '/' + file['name'] for file in response]
-
-            # Remove all files in the folder
-            if file_paths:
-                self.client.storage.from_(bucket_name).remove(file_paths)
-
-            return {'status': 'success', 'removed_files': file_paths}
-        except Exception as e:
-            return {'status': 'failed', 'error': str(e)}
-
+    async def copy_assignment_attachments(self, bucket_name: str, src_classroom: str, dest_classroom: str):
+        copy_results = []
+        list_dir = self.client.storage.from_(bucket_name).list(src_classroom)
+        assgn_folder = [p for p in list_dir if p['id'] is None]
+        for folder in assgn_folder:
+            src_folder = f"{src_classroom}/{folder['name']}"
+            dest_folder = f"{dest_classroom}/{folder['name']}"
+            attachments = self.client.storage.from_(bucket_name).list(src_folder)
+            for attachment in attachments:
+                src_file = f"{src_folder}/{attachment['name']}"
+                dest_file = f"{dest_folder}/{attachment['name']}"
+                try:
+                    self.client.storage.from_(bucket_name).copy(src_file, dest_file)
+                    copy_results.append({'src': src_file, 'dest': dest_file, 'status': 'success'})
+                except Exception as e:
+                    copy_results.append({'src': src_file, 'dest': dest_file, 'status': 'failed', 'error': str(e)})
+        return copy_results
 
     async def get_file_url(self, bucket_name: str, file_location: str, expires_in: int = 86400):
-        try:
-            filename = file_location.split('/')[-1]
-            response = self.client.storage.from_(bucket_name).create_signed_url(file_location, expires_in)
-            return {'filename': filename, 'url': response['signedURL']}
-        except Exception as e:
-            raise Exception(f"Error generating signed URL for file '{file_location}': {str(e)}")
+        return self.client.storage.from_(bucket_name).create_signed_url(file_location, expires_in)
 
-    async def get_file_urls(self, bucket_name: str, file_locations: List[str], expires_in: int = 86400):
-        urls = []
-        for file_location in file_locations:
-            filename = file_location.split('/')[-1]
-            try:
-                urls.append(await self.get_file_url(bucket_name, file_location, expires_in))
-            except Exception as e:
-                urls.append({'filename': filename, 'url': None, 'error': str(e)})
-        return urls
-
+    async def get_file_urls(self, bucket_name: str, file_locations: List[str], expires_in: int = 86400) -> List[dict]:
+        return self.client.storage.from_(bucket_name).create_signed_urls(file_locations, expires_in)
 
     async def download_file(self, bucket_name: str, file_name: str, download_path: str):
         try:

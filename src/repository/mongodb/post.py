@@ -1,9 +1,13 @@
-from pymongo.errors import PyMongoError
-
 from src.repository.mongodb import MongoDBRepositoryInterface
 from src.service.models.classroom import PostCreate, PostUpdate
 from typing import List
 from datetime import datetime
+from pytz import timezone
+from src.service.models.classroom import Comment
+from src.service.models.exceptions import ClassroomNotFoundException
+
+
+TIMEZONE = timezone('Asia/Ho_Chi_Minh')
 
 
 class PostRepository(MongoDBRepositoryInterface):
@@ -11,29 +15,23 @@ class PostRepository(MongoDBRepositoryInterface):
         super().__init__(connection)
         self.collection = self.connection.get_collection("classes")
 
-    async def get_posts_in_class(self, class_id: str) -> List[dict]:
+    async def get_posts_in_class(self, class_id: str) -> List[dict] | None:
         db_class = self.collection.find_one({'_id': class_id})
         if not db_class:
-            raise PyMongoError("Class not found.")
+            raise ClassroomNotFoundException
         return db_class['posts']
 
 
     async def get_by_id(self, class_id: str, post_id: str) -> dict | None:
-        db_class = self.collection.find_one({'_id': class_id})
-
-        if not db_class:
-            raise PyMongoError("Class not found.")
-
-        posts_list = db_class['posts']
-        for post in posts_list:
-            if post['id'] == post_id:
-                return post
-        return None
+        result = self.collection.find_one({'_id': class_id, 'posts.id': post_id}, {'posts.$': 1})
+        if not result:
+            return None
+        return result['posts'][0]
 
     async def create_post(self, class_id, new_post: PostCreate) -> bool:
         post_info = new_post.model_dump()
-        created_at = datetime.now()
-
+        created_at = datetime.now(TIMEZONE)
+        post_info['comments'] = []
         post_info['created_at'] = created_at
         post_info['updated_at'] = created_at
         if new_post.attachments is not None:
@@ -77,7 +75,7 @@ class PostRepository(MongoDBRepositoryInterface):
 
         # update other fields
         update_fields = {f'posts.$.{k}': v for k, v in update_data.items()}
-        update_fields['posts.$.updated_at'] = datetime.now()
+        update_fields['posts.$.updated_at'] = datetime.now(TIMEZONE)
         result = self.collection.update_one(
             filters,
             {'$set': update_fields}
@@ -89,4 +87,19 @@ class PostRepository(MongoDBRepositoryInterface):
             {'_id': class_id},
             {'$pull': {'posts': {'id': post_id}}}
         )
+        return result.modified_count > 0
+
+    async def create_comment(self, class_id: str, post_id: str, new_comment: Comment):
+        comment_info = new_comment.model_dump()
+        comment_info['created_at'] = datetime.now(TIMEZONE)
+        comment_info['updated_at'] = datetime.now(TIMEZONE)
+
+        filters = {'_id': class_id, 'posts.id': post_id}
+        updates = {
+            '$push': {
+                'posts.$.comments': comment_info
+            }
+        }
+
+        result = self.collection.update_one(filters, updates)
         return result.modified_count > 0

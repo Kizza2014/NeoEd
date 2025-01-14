@@ -24,8 +24,7 @@ create table if not exists classes (
     created_at datetime,
     updated_at datetime,
     owner_id varchar(255),
-    hashed_password varchar(255),
-    require_password bool,
+    invitation_code varchar(255) collate utf8mb4_bin unique,
     constraint fk_classes_to_users foreign key (owner_id) references users(id)
 );
 
