@@ -140,7 +140,7 @@ async def create_post(
         raise HTTPException(status_code=500, detail=f"Database MongoDB error: {str(e)}")
 
 
-@POST_CONTROLLER.patch("/classroom/{class_id}/post/{post_id}/update")
+@POST_CONTROLLER.put("/classroom/{class_id}/post/{post_id}/update")
 async def update_post(
         class_id: str,
         post_id: str,

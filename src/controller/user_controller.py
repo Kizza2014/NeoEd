@@ -8,6 +8,7 @@ from mysql.connector import Error as MySQLError
 from src.service.authentication.utils import *
 from src.controller.utils import get_mysql_repo
 from typing import List
+from src.service.models.exceptions.register_exception import EmailValidationError
 
 
 USER_CONTROLLER = APIRouter(tags=['User'])
@@ -51,6 +52,8 @@ async def update_user_info(
         }
     except MySQLError as e:
         raise HTTPException(status_code=500, detail=f"Database MySQL error: {str(e)}")
+    except EmailValidationError as e:
+        raise HTTPException(status_code=400, detail='Invalid email format')
 
 
 @USER_CONTROLLER.get("/user/{user_id}/detail", response_model=UserResponse)

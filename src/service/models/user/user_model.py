@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import date, datetime
 from enum import Enum
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 # Enums
@@ -23,7 +23,7 @@ class UserBase(BaseModel):
     fullname: str
     gender: Gender
     birthdate: Optional[date] = None
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     address: Optional[str] = None
 
 class UserCreate(UserBase):
@@ -39,7 +39,7 @@ class UserUpdate(BaseModel):
     fullname: Optional[str] = None
     gender: Optional[Gender] = None
     birthdate: Optional[date] = None
-    email: Optional[EmailStr] = None
+    email: Optional[str] = None
     address: Optional[str] = None
 
 

@@ -4,7 +4,7 @@ from src.configs.connections.mysql import get_mysql_connection
 from src.repository.redis.redis_repository import RedisRepository
 from src.service.models.authentication import TokenResponse, UserLogin
 from src.service.models.user.user_model import RegisterResponse, UserCreate
-from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError
+from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError, EmailValidationError
 from fastapi import HTTPException, Form
 from src.service.authentication.utils import *
 from mysql.connector import Error as MySQLError
@@ -61,6 +61,8 @@ async def register(
         raise HTTPException(status_code=400,
                             detail="Username must not exceed 50 characters and can only include alphanumeric "
                                    "characters.")
+    except EmailValidationError as e:
+        raise HTTPException(status_code=400, detail='Invalid email format')
 
 
 @AUTH_CONTROLLER.post("/login", response_model=TokenResponse)

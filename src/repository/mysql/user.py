@@ -1,10 +1,11 @@
-from src.service.models.exceptions import PasswordValidationError, UsernameValidationError
+from src.service.models.exceptions import PasswordValidationError, UsernameValidationError, EmailValidationError
 from src.service.authentication.utils import get_password_hash
 from src.repository.mysql import MysqlRepositoryInterface
 from typing import List
 from src.service.models.user import UserCreate, UserUpdate
 from pytz import timezone
 from datetime import datetime
+import validators
 
 
 class UserRepository(MysqlRepositoryInterface):
@@ -16,6 +17,9 @@ class UserRepository(MysqlRepositoryInterface):
         cursor.execute(query, (user_id, ))
         row = cursor.fetchone()
         return row
+
+    def _is_valid_email(self, email: str) -> bool:
+        return validators.email(email)
 
     async def get_all(self) -> List[dict]:
         cursor = self.connection.cursor
@@ -41,7 +45,11 @@ class UserRepository(MysqlRepositoryInterface):
 
         if len(new_user.password) < 8 or not any(char.isdigit() for char in new_user.password):
             raise PasswordValidationError
+
         password_hash = get_password_hash(new_user.password)
+
+        if new_user.email is not None and not self._is_valid_email(new_user.email):
+            raise EmailValidationError
 
         query = """
         INSERT INTO `neoed`.`users`
@@ -82,6 +90,8 @@ class UserRepository(MysqlRepositoryInterface):
             update_fields.append("birthdate = %s")
             update_values.append(new_info.birthdate)
         if new_info.email is not None and len(new_info.email) > 0:
+            if not self._is_valid_email(new_info.email):
+                raise EmailValidationError
             update_fields.append("email = %s")
             update_values.append(new_info.email)
         if new_info.address is not None and len(new_info.address) > 0:

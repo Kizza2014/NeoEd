@@ -3,3 +3,6 @@ class PasswordValidationError(Exception):
 
 class UsernameValidationError(Exception):
     pass
+
+class EmailValidationError(Exception):
+    pass

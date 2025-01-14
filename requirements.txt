@@ -43,6 +43,7 @@ mysql-connector-python==9.1.0
 orjson==3.10.10
 packaging==24.2
 passlib==1.7.4
+pillow==11.1.0
 postgrest==0.19.1
 propcache==0.2.1
 pyasn1==0.6.1
@@ -61,6 +62,7 @@ python-jose==3.3.0
 python-multipart==0.0.12
 pytz==2024.2
 PyYAML==6.0.2
+qrcode==8.0
 realtime==2.1.0
 redis==5.2.1
 rich==13.9.3
@@ -80,6 +82,7 @@ ujson==5.10.0
 uuid==1.30
 uvicorn==0.32.0
 uvloop==0.21.0
+validators==0.34.0
 watchfiles==0.24.0
 websockets==13.1
 yarl==1.18.3
