@@ -22,7 +22,7 @@ class AssignmentCreate(BaseModel):
     id: str
     title: str
     author: str
-    descriptions: str
+    descriptions: Optional[str] = None
     start_at: Optional[datetime] = None
     end_at: Optional[datetime] = None
     attachments: Optional[List[dict]] = None

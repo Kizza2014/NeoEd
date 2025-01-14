@@ -114,38 +114,37 @@ class AssignmentRepository(MongoDBRepositoryInterface):
         resubmission_info = resubmission.model_dump(exclude_unset=True)
         resubmission_info['submitted_at'] = datetime.now(TIMEZONE)
 
-        additional_attachments = resubmission_info.pop('additional_attachments', None)
-        removal_attachments = resubmission_info.pop('removal_attachments', None)
+        additional_attachments = resubmission_info.pop('additional_attachments', [])
+        removal_attachments = resubmission_info.pop('removal_attachments', [])
 
-        filters = {
-            '_id': class_id,
-            'assignments.id': assgn_id,
-            'assignments.submissions.student_id': resubmission_info['student_id']
+        filters = {'_id': class_id, 'assignments.id': assgn_id}
+        db_assgn = self.collection.find_one(filters, {'assignments.$': 1})
+        db_submission = None
+        for submission in db_assgn['assignments'][0]['submissions']:
+            if submission['student_id'] == resubmission.student_id:
+                db_submission = submission
+                break
+
+        if not db_submission:
+            return False
+
+        attachments = db_submission.get('attachments', [])
+        additional_filenames = set([att['filename'] for att in additional_attachments])
+        removal_filenames = set([att['filename'] for att in removal_attachments])
+        retain_filenames = set([att['filename'] for att in attachments if att['filename'] not in removal_filenames])
+
+        new_filenames = retain_filenames | additional_filenames
+        new_attachments = [{'filename': filename} for filename in new_filenames]
+
+        updates = {
+            '$set': {
+                'assignments.$.submissions.$[submission].attachments': new_attachments,
+                'assignments.$.submissions.$[submission].submitted_at': resubmission_info['submitted_at']
+            }
         }
+        response = self.collection.update_one(filters, updates, array_filters=[{'submission.student_id': resubmission.student_id}])
+        return response.modified_count > 0
 
-        # remove the specified attachments
-        ok = True
-        if removal_attachments and len(removal_attachments) > 0:
-            response = self.collection.update_one(
-                filters,
-                {'$pull': {'assignments.$.submissions.$[submission].attachments': {'$in': removal_attachments}}},
-                array_filters=[{'submission.student_id': resubmission_info['student_id']}]
-            )
-            if response.modified_count == 0:
-                ok = False
-
-        # add the new attachments
-        if additional_attachments and len(additional_attachments) > 0:
-            response = self.collection.update_one(
-                filters,
-                {'$addToSet': {
-                    'assignments.$.submissions.$[submission].attachments': {'$each': additional_attachments}}},
-                array_filters=[{'submission.student_id': resubmission_info['student_id']}]
-            )
-            if response.modified_count == 0:
-                ok = False
-
-        return ok
 
     async def grade(self, class_id: str, assgn_id: str, student_id: str, grade: float, graded_by: str):
         current_time = datetime.now(TIMEZONE)
@@ -190,7 +189,7 @@ class AssignmentRepository(MongoDBRepositoryInterface):
 
     async def get_submission(self, class_id: str, assgn_id: str, student_id: str) -> dict | None:
         response = self.collection.find_one(
-            {'_id': class_id, 'assignments.id': assgn_id, 'assignments.submissions.student_id': student_id},
+            {'_id': class_id, 'assignments.id': assgn_id},
             {'assignments.submissions.$': 1})
         if not response:
             return None

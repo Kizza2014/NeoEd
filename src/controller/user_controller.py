@@ -2,13 +2,14 @@ from src.service.models.user import UserResponse, UserUpdate
 from src.repository.mysql.user import UserRepository
 from fastapi import APIRouter, Depends
 from src.configs.connections.mysql import get_mysql_connection
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException, Depends, Form
 from src.configs.logging import get_logger
 from mysql.connector import Error as MySQLError
 from src.service.authentication.utils import *
 from src.controller.utils import get_mysql_repo
-from typing import List
 from src.service.models.exceptions.register_exception import EmailValidationError
+from typing import List
+from datetime import date
 
 
 USER_CONTROLLER = APIRouter(tags=['User'])
@@ -33,7 +34,11 @@ async def get_current_user_info(
 
 @USER_CONTROLLER.put("/me/update")
 async def update_user_info(
-    user_data: UserUpdate,
+    fullname: str=Form(None),
+    gender: str=Form(None),
+    birthdate: date=Form(None),
+    email: str=Form(None),
+    address: str=Form(None),
     user_id: str=Depends(verify_token),
     mysql_cnx=Depends(get_mysql_connection),
 ):
@@ -41,8 +46,16 @@ async def update_user_info(
         if not user_id:
             raise HTTPException(status_code=403, detail='Unauthorized. Try to login again before accessing this resource.')
 
+        info = {
+            'fullname': fullname if fullname else None,
+            'gender': gender if gender else None,
+            'birthdate': birthdate if birthdate else None,
+            'email': email if email else None,
+            'address': address if address else None,
+        }
+        info = {k:v for k,v in info.items() if v is not None}
+        user_data = UserUpdate(**info)
         mysql_repo = await get_mysql_repo(mysql_cnx)
-        current_user = await mysql_repo['user'].get_by_id(user_id)
         if not await mysql_repo['user'].update_by_id(user_id, user_data):
             raise HTTPException(status_code=500, detail="Unexpected error occurred. Update user failed")
 

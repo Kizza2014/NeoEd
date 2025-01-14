@@ -151,7 +151,7 @@ async def update_post(
         removal_attachments: List[str] = Form(None),
         mysql_cnx=Depends(get_mysql_connection),
         mongo_cnx=Depends(get_mongo_connection),
-) -> dict:
+):
     try:
         if not user_id:
             raise HTTPException(status_code=403,

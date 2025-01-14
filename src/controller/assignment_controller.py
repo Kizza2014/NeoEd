@@ -88,7 +88,7 @@ async def create_assignment(
         class_id: str,
         user_id: str=Depends(verify_token),
         title: str = Form(...),
-        descriptions: str = Form(...),
+        descriptions: str = Form(None),
         start_at: datetime = Form(None),
         end_at: datetime = Form(None),
         attachments: List[UploadFile] = File(None),

@@ -4,7 +4,6 @@ import datetime
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
-from pytz import timezone
 
 SECRET_KEY = "minhdeptrai"
 ALGORITHM = 'HS256'
@@ -23,7 +22,7 @@ def get_password_hash(password):
 def create_access_token(data, expires_in=15) -> str:
     payload = {
         'data': data,
-        'exp': datetime.datetime.now(timezone('Asia/Ho_Chi_Minh')) + datetime.timedelta(minutes=expires_in)
+        'exp': datetime.datetime.now() + datetime.timedelta(minutes=expires_in)
     }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -37,7 +36,7 @@ def create_refresh_token(data, exp=None, expires_in=7) -> str:
     else:
         payload = {
             "data": data,
-            "exp": datetime.datetime.now(timezone('Asia/Ho_Chi_Minh')) + datetime.timedelta(days=expires_in)
+            "exp": datetime.datetime.now() + datetime.timedelta(days=expires_in)
         }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
