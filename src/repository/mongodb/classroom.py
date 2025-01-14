@@ -33,20 +33,22 @@ class MongoClassroomRepository(MongoDBRepositoryInterface):
         teachers_username = [participant['username'] for participant in db_classroom['participants'] if participant['role'] == 'teacher']
         db_classroom['participants'] = [{'user_id': template['owner_id'], 'username': template['owner_username'], 'role': 'teacher'}]
 
-        # only keep posts from teachers
+        # only keep posts from teachers and empty comments
         posts = []
         for post in db_classroom['posts']:
             if post['author'] in teachers_username:
                 post['author'] = template['owner_username']
+                post['comments'] = []
                 post['created_at'] = current_time
                 post['updated_at'] = current_time
                 posts.append(post)
         db_classroom['posts'] = posts
-        # empty assignments submissions
+        # empty assignments submissions and comments
         for assignment in db_classroom['assignments']:
             assignment['author'] = template['owner_username']
             assignment['submissions'] = []
             assignment['created_at'] = current_time
+            assignment['comments'] = []
             assignment['updated_at'] = current_time
             assignment['start_at'] = None
             assignment['end_at'] = None

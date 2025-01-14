@@ -3,6 +3,8 @@ from src.service.authentication.utils import get_password_hash
 from src.repository.mysql import MysqlRepositoryInterface
 from typing import List
 from src.service.models.user import UserCreate, UserUpdate
+from pytz import timezone
+from datetime import datetime
 
 
 class UserRepository(MysqlRepositoryInterface):
@@ -53,12 +55,13 @@ class UserRepository(MysqlRepositoryInterface):
         `hashed_password`,
         `joined_at`)
         VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, NOW());
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
 
         cursor.execute(
             query,
-            (new_user.id,new_user.username,new_user.fullname,new_user.gender,new_user.birthdate,new_user.email,new_user.address,password_hash,)
+            (new_user.id,new_user.username,new_user.fullname,new_user.gender,new_user.birthdate,new_user.email,
+             new_user.address,password_hash, datetime.now(timezone('Asia/Ho_Chi_Minh')))
         )
         if self.auto_commit:
             self.connection.commit()
