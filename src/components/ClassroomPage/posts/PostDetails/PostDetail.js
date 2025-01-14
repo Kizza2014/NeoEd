@@ -33,6 +33,7 @@ function File_container({ file_name, file_url }) {
         const extension = fileName.split('.').pop().toLowerCase();
         return iconMap[extension] || iconMap['default'];
     };
+    
     const handleDownload = () => {
         saveAs(file_url, file_name);
     };

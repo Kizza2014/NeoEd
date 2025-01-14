@@ -66,3 +66,8 @@
     padding: 5px;
     border: 1px solid #000000;
 }
+
+.requests-table tbody tr.hoverable-row:hover {
+    background-color: #f9f9f9;
+    text-decoration: underline;
+}

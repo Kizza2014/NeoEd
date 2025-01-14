@@ -4,16 +4,12 @@ import { CourseCard } from "../../HomePage/courseCard/CourseCard";
 
 import useWindowSize from "./SizeContext";
 
-import UserMenu from "../../HomePage/userinfo/componentback/MenuUser";
-
 import image from './class_image.png'
 import TopBar from "../../Utilities/Top_bar";
 import { PacmanLoader } from "react-spinners";
 
 import AddButton from "../../Utilities/AddButton";
 import JoinButton from "../../Utilities/JoinButton";
-
-import { FaUserCheck, FaInfoCircle, FaBell, FaBook, FaClipboard, FaSignOutAlt } from "react-icons/fa";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 import HomeSideBar from "./HomeSideBar";

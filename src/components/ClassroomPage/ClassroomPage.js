@@ -41,7 +41,7 @@ function ClassroomPage() {
                 to={`/c/t/${classId}/r`}
                 className={({ isActive }) => (isActive ? "active_class_link" : "")}
               >
-                Gửi yêu cầu cho giáo viên
+                Attendance
               </NavLink>
               <NavLink
                 to="/c"

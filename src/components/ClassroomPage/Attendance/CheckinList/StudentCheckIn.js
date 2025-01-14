@@ -59,7 +59,7 @@ function Sended_requests({ checkInList }) {
     );
 }
 
-function CheckinList() {
+function StudentCheckInList() {
     const { classId } = useParams();
     const [checkList, setCheckList] = useState([]);
     const [error, setError] = useState(null);
@@ -126,4 +126,4 @@ function CheckinList() {
     );
 }
 
-export default CheckinList;
+export default StudentCheckInList;
