@@ -34,7 +34,6 @@ class UserRepository(MysqlRepositoryInterface):
 
     async def create_user(self, new_user: UserCreate) -> bool:
         cursor = self.connection.cursor
-
         if len(new_user.username) > 50 or not new_user.username.isalnum():
             raise UsernameValidationError
 
@@ -59,7 +58,7 @@ class UserRepository(MysqlRepositoryInterface):
 
         cursor.execute(
             query,
-            (new_user.user_id,new_user.username,new_user.fullname,new_user.gender,new_user.birthdate,new_user.email,new_user.address,password_hash,)
+            (new_user.id,new_user.username,new_user.fullname,new_user.gender,new_user.birthdate,new_user.email,new_user.address,password_hash,)
         )
         if self.auto_commit:
             self.connection.commit()

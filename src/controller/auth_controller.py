@@ -5,19 +5,34 @@ from src.repository.redis.redis_repository import RedisRepository
 from src.service.models.authentication import TokenResponse, UserLogin
 from src.service.models.user.user_model import RegisterResponse, UserCreate
 from src.service.models.exceptions.register_exception import PasswordValidationError, UsernameValidationError
-from fastapi import HTTPException
+from fastapi import HTTPException, Form
 from src.service.authentication.utils import *
 from mysql.connector import Error as MySQLError
+from datetime import date
+import uuid
 
 
 AUTH_CONTROLLER = APIRouter(tags=['Authentication'])
 
 
 @AUTH_CONTROLLER.post("/register", response_model=RegisterResponse)
-async def register(new_user: UserCreate, connection=Depends(get_mysql_connection)):
+async def register(
+        username: str=Form(...),
+        fullname: str=Form(...),
+        gender: str=Form(...),
+        birthdate: date=Form(None),
+        email: str=Form(None),
+        address: str=Form(None),
+        password: str=Form(...),
+        connection=Depends(get_mysql_connection)
+):
     try:
         user_repo = UserRepository(connection)
 
+        user_id = 'user-' + str(uuid.uuid4())
+        new_user = UserCreate(id=user_id, username=username, fullname=fullname, gender=gender, birthdate=birthdate,
+                                email=email, address=address, password=password
+        )
         existing_user = await user_repo.get_by_username(new_user.username)
         if existing_user is not None:
             raise HTTPException(
