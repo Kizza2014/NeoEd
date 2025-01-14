@@ -71,12 +71,12 @@ def decode_access_token(token: str):
     except ExpiredSignatureError:
         raise HTTPException(
             status_code=401,
-            detail="Refresh token has expired",
+            detail="Access token has expired",
         )
     except InvalidTokenError:
         raise HTTPException(
             status_code=401,
-            detail="Invalid refresh token",
+            detail="Invalid access token",
         )
     except Exception as e:
         # Bắt tất cả các lỗi khác
