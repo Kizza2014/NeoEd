@@ -24,7 +24,6 @@ export default function MyApp() {
           <Route path="r" element={<CheckinList />} />
       </Route>
       <Route path="/c/t/:classId" element={<ClassroomPage />}>
-        <Route path="n" element={<Notification_page />} />
         <Route path="p/:postId" element={<Post_description />}/>
         <Route path="a" element={<Exercise/>}>
             <Route path=":assignmentId" element={<Exercise_scoring />} />
@@ -32,7 +31,6 @@ export default function MyApp() {
         <Route path="r" element={<CheckinList />}/>
       </Route>
       <Route path="/c/:classId" element={<TeacherClassroomPage />}>
-        <Route path="n" element={<Notification_page />} />
         <Route path="p/:postId" element={<Post_description />}/>
         <Route path="a" element={<Exercise />}>
             <Route path=":assignmentId" element={<Exercise_description />} />

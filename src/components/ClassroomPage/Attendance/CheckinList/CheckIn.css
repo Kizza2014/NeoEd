@@ -71,3 +71,32 @@
     background-color: #f9f9f9;
     text-decoration: underline;
 }
+
+/* Styles for the Create checkin button */
+.create-checkin-button {
+    padding: 10px 20px;
+    background-color: #ADA6A6;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect */
+.create-checkin-button:hover {
+    background-color: #ADA6A6;
+    transform: scale(1.05);
+}
+
+/* Focus effect */
+.create-checkin-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px #ADA6A6(0, 123, 255, 0.5);
+}
+
+/* Disabled state */
+.create-checkin-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}

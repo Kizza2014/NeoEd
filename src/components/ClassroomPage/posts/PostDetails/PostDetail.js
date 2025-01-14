@@ -13,6 +13,8 @@ import FileUploader from "../../Attached_files/Attached_files";
 
 import { BsThreeDotsVertical } from "react-icons/bs";
 
+import Comments from "../../../Utilities/Comments";
+
 function File_container({ file_name, file_url }) {
     file_name = file_name.split('/').pop();
     const iconMap = {
@@ -82,6 +84,8 @@ function Post_description() {
         exercise_note: "",
         files: [],
     });
+
+    const [refreshKey, setRefreshKey] = useState(0);
 
     const [isEditing, setIsEditing] = useState(false);
     const handleEditClick = () => {
@@ -334,6 +338,11 @@ function Post_description() {
                     </div>
                 </div>
                 </div>
+                <Comments
+                key={refreshKey}
+                    component= 'post'
+                    api_parameters={{token: sessionStorage.getItem('access_token')}}
+                />
             </div>
             <div className="file-uploader-container">
                 <FileUploader files={files} setFiles={handleFileChange} sendHandle={handleUpdate} />

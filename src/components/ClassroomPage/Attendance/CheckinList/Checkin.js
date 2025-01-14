@@ -24,6 +24,11 @@ function Sended_requests({ checkInList }) {
 
     return (
         <div className="list-request-container">
+            <div>
+                <button className="create-checkin-button">
+                    Create checkin
+                </button>
+            </div>
             <table className="requests-table">
                 <thead>
                     <tr>

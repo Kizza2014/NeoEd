@@ -35,7 +35,14 @@ function LoginButton({userName,password}) {
             alert(`Login failed: Check your email or password`);
             setLoading(false);
         });
-    };
+
+        axios.get(
+            `http://127.0.0.1:8000/user/${localStorage.getItem('user_id')}/detail`, 
+        )
+        .then(response => {
+            localStorage.setItem('username', response.data.fullname);
+        });
+    };  
 
     if (loading) {
         return(

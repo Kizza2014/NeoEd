@@ -11,8 +11,12 @@ import { BsFiletypeXlsx, BsFiletypeXls } from "react-icons/bs";
 
 import FileUploader from "../../Attached_files/Attached_files";
 
+import Comments from "../../../Utilities/Comments";
+
 import { BsThreeDotsVertical } from "react-icons/bs";
+
 import ChildHeader from "../../ChildHeader";
+
 import ScoringInterface from "./ScoringInterface";
 
  function File_container({ file_name, file_url }) {
@@ -65,7 +69,7 @@ function Exercise_scoring() {
     const navigate = useNavigate(); 
     const { classId, assignmentId } = useParams();
     const [files, setFiles] = useState([]);
-
+    const [refreshKey, setRefreshKey] = useState(0);
     const handleFileChange = (newFiles) => {
         setFiles(newFiles); 
     };
@@ -336,6 +340,11 @@ function Exercise_scoring() {
                         </div>
                     </div>
                     </div>
+                    <Comments
+                        key={refreshKey}
+                            component= 'assignment'
+                            api_parameters={{token: sessionStorage.getItem('access_token')}}
+                        />
                 </div>
                 <div className="file-uploader-container">
                     <FileUploader files={files} setFiles={handleFileChange} sendHandle={handleUpdate} />
