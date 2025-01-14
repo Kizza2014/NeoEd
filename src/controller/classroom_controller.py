@@ -477,7 +477,7 @@ async def remove_student(
         mongo_repo = await get_mongo_repo(mongo_cnx)
 
         # ensure user is teacher
-        if not role_in_classroom(user_id, class_id, mysql_repo) != 'teacher':
+        if not await role_in_classroom(user_id, class_id, mysql_repo) != 'teacher':
             raise HTTPException(status_code=403, detail='Forbidden. You are not a teacher')
 
         # remove participant
@@ -545,7 +545,3 @@ async def remove_teacher(
         mysql_cnx.rollback()
         raise HTTPException(status_code=404, detail=str(e))
 
-
-@CLASSROOM_CONTROLLER.get('/verify_token')
-async def get_user_id(user_id: str=Depends(verify_token)):
-    return user_id
