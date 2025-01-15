@@ -13,7 +13,7 @@ function CheckInDetail({ sessionId, handleClose }) {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`/checkin/${sessionId}`);
+                const response = await axios.get(`http://localhost:8000/checkin/${sessionId}`);
                 const fetchedData = response.data;
 
                 // Append fake data for demonstration
@@ -80,7 +80,6 @@ function CheckInDetail({ sessionId, handleClose }) {
                                 <tr>
                                     <th>Student ID</th>
                                     <th>Status</th>
-                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -102,15 +101,6 @@ function CheckInDetail({ sessionId, handleClose }) {
                                             <td>{student.studentId}</td>
                                             <td style={{ color: student.status === "Absent" ? "red" : "green" }}>
                                                 {student.status}
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="checkin-button"
-                                                    onClick={() => handleCheckin(student.studentId)}
-                                                    disabled={student.isCheckedIn}
-                                                >
-                                                    {student.isCheckedIn ? "Already Checked In" : "Check In"}
-                                                </button>
                                             </td>
                                         </tr>
                                     ))}

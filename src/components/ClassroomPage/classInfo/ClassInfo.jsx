@@ -9,32 +9,77 @@ export function ClassInfo() {
   const { classId } = useParams();
   const [classDetails, setClassDetails] = useState([]);
   const [participants, setParticipants] = useState([]);
+  const [isTeacher, setIsTeacher] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [sessionId, setSessionId] = useState();
+  const [checked, setChecked] = useState(false);
+
+  const handleCheckIn = async () => {
+    try {
+      await axios.post(
+        `http://localhost:8000/checkin/student-checkin`,
+        null,
+        {
+          params: {
+            session_id: sessionId,
+            student_id: sessionStorage.getItem("user_id"),
+          },
+        }
+      );
+      setChecked(true);
+    } catch (err) {
+      console.error("Error during check-in:", err);
+      setError("Failed to perform check-in.");
+    }
+  };
 
   useEffect(() => {
     const fetchClassInfo = async () => {
       try {
-        const response = await axios.get(`http://localhost:8000/classroom/${classId}/detail`);
-        const participantsResponse = await axios.get(`http://localhost:8000/classroom/${classId}/participant/all`);
+        // Fetch participants in the background
+        axios
+          .get(`http://localhost:8000/classroom/${classId}/participant/all`)
+          .then((participantsResponse) => {
+            const students = participantsResponse.data.students || [];
+            const teacherIds = participantsResponse.data.teachers.map(teacher => teacher.user_id) || [];
+            sessionStorage.setItem("num_students", students.length);
+            setParticipants(students);
+            console.log("Teachers Id: ", teacherIds)
+            console.log("Is teacher?: ",teacherIds.includes(sessionStorage.getItem('user_id')));
+            setIsTeacher(teacherIds.includes(sessionStorage.getItem('user_id')));
+          })
+          .catch((err) => {
+            console.error("Error fetching participants:", err);
+            setError("Failed to fetch participants.");
+          });
+
+        // Fetch class details and session info
+        const response = await axios.get(
+          `http://localhost:8000/classroom/${classId}/detail`
+        );
+        const checkInResponse = await axios.get(
+          `http://localhost:8000/session/current`,
+          { params: { class_id: classId } }
+        );
+
         const data = response.data;
         const adaptedDetails = [
-          { label: "Tên lớp", value: data.class_name },    
-          { label: "Mã lớp", value: data.subject_name },  
-          { label: "Giáo viên", value: data.owner_fullname },     
-          { label: "Phòng học", value: "Chưa xác định" }
+          { label: "Tên lớp", value: data.class_name },
+          { label: "Mã lớp", value: data.subject_name },
+          { label: "Giáo viên", value: data.owner_fullname },
+          { label: "Phòng học", value: "Chưa xác định" },
         ];
-
         setClassDetails(adaptedDetails);
 
-        const students = participantsResponse.data.students || [];
-            setParticipants(students);
-
+        if (checkInResponse.data.session_id) {
+          setSessionId(checkInResponse.data.session_id);
+        }
       } catch (err) {
         console.error("Error fetching class information:", err);
-        setError("Failed to fetch class information");
+        setError("Failed to fetch class information.");
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -55,11 +100,12 @@ export function ClassInfo() {
     return (
       <div className={styles.container}>
         <div className={styles.infoCard}>
-          <PuffLoader color="#36d7b7"/>
+          <PuffLoader color="#36d7b7" />
         </div>
       </div>
     );
   }
+
   return (
     <div className={styles.container}>
       <div className={styles.infoCard}>
@@ -69,21 +115,29 @@ export function ClassInfo() {
         ))}
         <div className={styles.curriculum}>Giáo trình</div>
         <div className={styles.participants}>
-        <div className={styles.title}>Danh sách học viên</div>
+          <div className={styles.title}>Danh sách học viên</div>
           {participants.length > 0 ? (
             <ul className={styles.participantList}>
               {participants.map((participant, index) => (
                 <li key={index} className={styles.participant}>
-                  {participant.username} {/* Display the username */}
+                  {participant.username}
                 </li>
               ))}
             </ul>
           ) : (
             <p>Chưa có học viên.</p>
           )}
+          {sessionId && !isTeacher && (
+            <button
+              className={styles.checkInButton}
+              onClick={handleCheckIn}
+              disabled={checked}
+            >
+              {checked ? "Đã điểm danh" : "Điểm danh"}
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 }
-

@@ -124,13 +124,13 @@ function Post_description() {
                 (file) => !updatedData.files.some((updatedFile) => updatedFile === file)
             );
     
-            removalFiles.forEach((file, index) => {
-                formData.append(`removal_attachments`, file.path);
+            removalFiles.forEach((file) => {
+                const fileName = file.path.split('/').pop(); // Extract the file name from the path
+                formData.append('removal_attachments', fileName);
             });
 
             console.log("FormData Content:", Array.from(formData.entries()));
 
-            // Send the PATCH request
             const response = await axios.patch(
                 `http://localhost:8000/classroom/${classId}/post/${postId}/update`,
                 formData,
