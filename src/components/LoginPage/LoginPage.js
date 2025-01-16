@@ -27,7 +27,7 @@ function LoginButton({userName,password}) {
             sessionStorage.setItem('isTeaching', false);
             localStorage.setItem('user_id', info.user_id);
             sessionStorage.setItem('user_id', info.user_id);
-            localStorage.setItem('refresh_token', info.refresh_token);
+            document.cookie = `refresh_token=${info.refresh_token}; path=/;`;
             setLoading(false);
             navigate('/c');
         })
