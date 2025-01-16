@@ -13,10 +13,10 @@ import { FaFacebook, FaGoogle } from "react-icons/fa";
 function LoginButton({userName,password}) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const handleLogin = () => {
+    const handleLogin = async() => {
         setLoading(true);
         console.log({ username: userName, password: password });
-        axios.post(
+        await axios.post(
             'http://127.0.0.1:8000/login', 
             { username: userName, password: password },
         )
@@ -35,7 +35,6 @@ function LoginButton({userName,password}) {
             alert(`Login failed: Check your email or password`);
             setLoading(false);
         });
-
         axios.get(
             `http://127.0.0.1:8000/user/${localStorage.getItem('user_id')}/detail`, 
         )

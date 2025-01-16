@@ -5,14 +5,12 @@ import { PiDotsThreeOutlineLight } from "react-icons/pi";
 import axios from "axios";
 import { ClockLoader, FadeLoader } from "react-spinners";
 
-function UpdateForm({ courseId, showForm, setKey }) {
+function UpdateForm({ courseId, showForm, updateClasses }) {
   const [formData, setFormData] = useState({
     class_name: "",
     subject_name: "",
     description: "",
     class_schedule: "",
-    password: "",
-    require_password: false,
   });
 
   const handleInputChange = (e) => {
@@ -70,14 +68,26 @@ function UpdateForm({ courseId, showForm, setKey }) {
           },
         }
       );
-    // });
-      alert("Classroom updated successfully:", response.data);
+      console.log("Classroom updated successfully:", response.data);
+      console.log("Class update data: ", formData);
+      const updatedData = {
+        courseTitle: formData.class_name,
+          courseId: courseId,
+          class_schedule: formData.class_schedule,
+          subject_name: formData.subject_name,
+          instructorInfo: `Giáo viên: ${localStorage.getItem('username')}`,
+          locationInfo: "Phòng học: Chưa xác định",
+      }
+      updateClasses((prevClasses) =>
+        prevClasses.map((classItem) =>
+          classItem.courseId === courseId ? { ...classItem, ...updatedData } : classItem
+        )
+      );
     } catch (error) {
       alert(error);
     } finally {
       setLoading(false);
       showForm();
-      setKey();
     }
   };
 
@@ -140,17 +150,6 @@ function UpdateForm({ courseId, showForm, setKey }) {
             onChange={handleInputChange}
           ></textarea>
         </label>
-        <label>
-          Password
-          <textarea
-            name="password"
-            rows="1"
-            style={{ resize: "none" }}
-            placeholder="None"
-            value = {formData.password}
-            onChange={handleInputChange}
-          ></textarea>
-        </label>
       </div>
       <div className="buttonContainer">
         <button className="cancelButton" onClick={showForm}>
@@ -164,23 +163,21 @@ function UpdateForm({ courseId, showForm, setKey }) {
   );
 }
 
-export const CourseCard = ({ courseDetails, image, isTeaching, setKey }) => {
+export const CourseCard = ({ courseDetails, image, isTeaching, updateClasses }) => {
   const [loading, setLoading] = useState(false);
   const [showDiv, setShowDiv] = useState(false);
+  const [showOption, setShowOption] = useState(false);
+
+  const { courseTitle, courseId, instructorInfo } = courseDetails;
+  const navigate = useNavigate();
 
   const showUpdateForm = () => {
     setShowDiv(!showDiv);
   };
-  
-  const { courseTitle, courseId, instructorInfo } = courseDetails;
-
-  const navigate = useNavigate(); 
-
-  const [showOption, setShowOption] = useState(false);
 
   const handleShow = () => {
     setShowOption(!showOption);
-  }
+  };
 
   const handleClick = () => {
     navigate(`/${isTeaching}/${courseId}`);
@@ -189,100 +186,111 @@ export const CourseCard = ({ courseDetails, image, isTeaching, setKey }) => {
   const handleDelete = async () => {
     try {
       setLoading(true);
-      await axios.delete(`http://localhost:8000/classroom/${courseId}/delete`, 
-      {
+      console.log("Update function: ", updateClasses);
+      await axios.delete(`http://localhost:8000/classroom/${courseId}/delete`, {
         params: {
           class_id: courseId,
-          token: sessionStorage.getItem('access_token'),
+          token: sessionStorage.getItem("access_token"),
         },
       });
+
       console.log(`Deleted course with ID: ${courseId}`);
+      updateClasses((prevClasses) =>
+        prevClasses.filter((classItem) => classItem.courseId !== courseId)
+      );
     } catch (error) {
-      console.error("Error creating classroom:", error);
+      console.error("Error deleting classroom:", error);
       alert(error);
     } finally {
       setLoading(false);
-      setKey();
     }
   };
 
   const handleDuplicate = async () => {
     try {
       setLoading(true);
-      await axios.post(`http://localhost:8000/classroom/create-from-template`,
+      const response = await axios.post(
+        `http://localhost:8000/classroom/create-from-template`,
         null,
         {
           params: {
             template_class_id: courseId,
-            token: sessionStorage.getItem('access_token'),
+            token: sessionStorage.getItem("access_token"),
           },
         }
-       );
-       console.log(`Duplicated course with ID: ${courseId}`);
+      );
+
+      console.log(`Duplicated course: `, response.data);
+      const now = new Date();
+      const formattedDate = new Intl.DateTimeFormat('en-GB').format(now);
+      const formattedTime = now.toLocaleTimeString('en-GB', { hour12: false });
+      updateClasses((prevCourses) => [
+        ...prevCourses,
+        {
+          courseTitle: courseDetails.courseTitle + " (" + formattedTime + "-" + formattedDate + ")",
+          courseId: response.data.class_id,
+          class_schedule: courseDetails.class_schedule,
+          subject_name: courseDetails.subject_name,
+          instructorInfo: `Giáo viên: ${localStorage.getItem('username')}`,
+          locationInfo: "Phòng học: Chưa xác định",
+        },
+      ]);
     } catch (error) {
-      console.error("Error creating classroom:", error);
+      console.error("Error duplicating classroom:", error);
       alert(error);
     } finally {
       setLoading(false);
-      setKey();
     }
   };
+
   if (loading) {
-    return(
-        <>
-        <div className="login-loading">
-            <FadeLoader
-            color="#ffb800"
-            height={50}
-            margin={60}
-            radius={3}
-            width={15}
-            />
-        </div>
-        </>
-    )
+    return (
+      <div className="login-loading">
+        <FadeLoader color="#ffb800" height={50} margin={60} radius={3} width={15} />
+      </div>
+    );
   }
 
   return (
     <div className={styles.courseContainer}>
       <div className={styles.courseInfo}>
-      {showDiv && <UpdateForm courseId={courseId} showForm={showUpdateForm} setKey={setKey}/>}
+        {showDiv && <UpdateForm courseId={courseId} showForm={showUpdateForm} updateClasses={updateClasses}/>}
         <div className={styles.courseTitle}>
-          <div
-            style={{width:"80%"}}
-          >
+          <div style={{ width: "80%" }}>
             <button
               style={{
-                display: 'inline-block',
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                width: '100%',
-                background: 'none', 
-                border: 'none',
+                display: "inline-block",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                width: "100%",
+                background: "none",
+                border: "none",
                 padding: 0,
-                textAlign: 'left',
-                cursor: 'pointer',
-                fontSize: '1.2rem',
-                fontWeight: 'bold',
+                textAlign: "left",
+                cursor: "pointer",
+                fontSize: "1.2rem",
+                fontWeight: "bold",
               }}
               onClick={handleClick}
-              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+              onMouseEnter={(e) => (e.currentTarget.style.textDecoration = "underline")}
+              onMouseLeave={(e) => (e.currentTarget.style.textDecoration = "none")}
             >
               {courseTitle}
             </button>
-            <br/>
-            <span style={{
-                display: 'inline-block', 
-                whiteSpace: 'nowrap',   
-                overflow: 'hidden',     
-                textOverflow: 'ellipsis',
-                width: '100%',
-                fontSize: '0.7rem',
-                fontWeight: 'normal',
-              }}>
-                {instructorInfo}
+            <br />
+            <span
+              style={{
+                display: "inline-block",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                width: "100%",
+                fontSize: "0.7rem",
+                fontWeight: "normal",
+              }}
+            >
+              {instructorInfo}
             </span>
           </div>
           <div className={styles.course_option} onClick={handleShow}>
@@ -303,3 +311,4 @@ export const CourseCard = ({ courseDetails, image, isTeaching, setKey }) => {
     </div>
   );
 };
+
