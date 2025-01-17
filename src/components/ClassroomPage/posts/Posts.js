@@ -218,8 +218,14 @@ function Post() {
     }, [classId, setError]);
 
     const handleNotificationClick = async (postId) => {
-        navigate(`/c/${classId}/p/${postId}`);
+        const isTeaching = sessionStorage.getItem('isTeaching') === 'true';
+        if (isTeaching) {
+            navigate(`/c/t/${classId}/p/${postId}`);
+        } else {
+            navigate(`/c/${classId}/p/${postId}`);
+        }
     };
+    
 
     const handleBackClick = () => {
         setPosts(null);

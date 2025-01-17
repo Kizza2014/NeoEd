@@ -105,7 +105,7 @@ function Exercise_description() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState();
-    const isTeaching = sessionStorage.get('isTeaching') === 'true';
+
     const onBack = () => {
         navigate(`/c/${classId}/a`);
     };
