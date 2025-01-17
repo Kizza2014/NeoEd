@@ -477,7 +477,7 @@ async def remove_student(
         mongo_repo = await get_mongo_repo(mongo_cnx)
 
         # ensure user is teacher
-        if not await role_in_classroom(user_id, class_id, mysql_repo) != 'teacher':
+        if await role_in_classroom(user_id, class_id, mysql_repo) != 'teacher':
             raise HTTPException(status_code=403, detail='Forbidden. You are not a teacher')
 
         # remove participant
