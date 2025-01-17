@@ -113,20 +113,8 @@ export function ClassInfo() {
         {classDetails.map((detail, index) => (
           <ClassInfoRow key={index} label={detail.label} value={detail.value} />
         ))}
-        <div className={styles.curriculum}>Giáo trình</div>
+        {/* <div className={styles.curriculum}>Giáo trình</div> */}
         <div className={styles.participants}>
-          <div className={styles.title}>Danh sách học viên</div>
-          {participants.length > 0 ? (
-            <ul className={styles.participantList}>
-              {participants.map((participant, index) => (
-                <li key={index} className={styles.participant}>
-                  {participant.username}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>Chưa có học viên.</p>
-          )}
           {sessionId && !isTeacher && (
             <button
               className={styles.checkInButton}
@@ -137,6 +125,9 @@ export function ClassInfo() {
             </button>
           )}
         </div>
+
+
+
       </div>
     </div>
   );

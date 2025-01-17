@@ -1,0 +1,60 @@
+.add-button{
+    padding: 10px 20px;
+}
+.file-uploader{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-bottom: 20px;
+
+}
+
+.newClassDiv {
+    max-height: 80vh; /* Giới hạn chiều cao tối đa */
+    overflow-y: auto; /* Cho phép cuộn nếu nội dung vượt quá */
+    padding: 20px;
+    background-color: #fff;
+  }
+  .newClassDiv {
+    display: flex;
+    flex-direction: column; 
+
+  }
+  .buttonContainer-post {
+    display: flex; /* Đặt các nút trên một hàng */
+    justify-content: flex-end; /* Căn nút về bên phải */
+    gap: 10px; /* Khoảng cách giữa hai nút */
+    margin-top: 20px; /* Khoảng cách với phần trên */
+  }
+  
+  .cancelButton {
+    padding: 10px 20px; /* Kích thước nút */
+    background-color: #f44336; /* Màu đỏ nhạt */
+    color: white; /* Màu chữ */
+    border: none; /* Xóa đường viền */
+    border-radius: 4px; /* Bo góc */
+    font-size: 14px; /* Kích thước chữ */
+    cursor: pointer; /* Con trỏ chuột thành bàn tay */
+    transition: background-color 0.3s ease; /* Hiệu ứng mượt khi hover */
+  }
+  
+  .cancelButton:hover {
+    background-color: #d32f2f; /* Màu đỏ đậm hơn khi hover */
+  }
+  
+  .createButton {
+    padding: 10px 20px; /* Kích thước nút */
+    background-color: #4caf50; /* Màu xanh lá cây */
+    color: white; /* Màu chữ */
+    border: none; /* Xóa đường viền */
+    border-radius: 4px; /* Bo góc */
+    font-size: 14px; /* Kích thước chữ */
+    cursor: pointer; /* Con trỏ chuột thành bàn tay */
+    transition: background-color 0.3s ease; /* Hiệu ứng mượt khi hover */
+  }
+  
+  .createButton:hover {
+    background-color: #388e3c; /* Màu xanh đậm hơn khi hover */
+  }
+  

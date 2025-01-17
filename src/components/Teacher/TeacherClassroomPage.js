@@ -4,10 +4,19 @@ import TopBar from '../Utilities/Top_bar';
 import { NavLink, useParams, Outlet, useOutlet } from 'react-router-dom';
 import Post from "../ClassroomPage/posts/Posts";
 import { ClassInfo } from "../ClassroomPage/classInfo/ClassInfo";
-
+import './TeacherClassroomPage.css'
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 function ClassroomPage() {
   const { classId } = useParams();
   const outlet = useOutlet();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const access_token = sessionStorage.getItem('access_token');
+    if (!access_token) {
+      navigate('/'); 
+    }
+  }, [navigate]);
   return (
     <div className="container">
       <div className="slide">
@@ -39,10 +48,10 @@ function ClassroomPage() {
             Bài tập
           </NavLink>
           <NavLink
-            to={`/c/${classId}/r`}
+            to={`/c/${classId}/pa`}
             className={({ isActive }) => (isActive ? "active_class_link" : "")}
           >
-            Gửi yêu cầu cho giáo viên
+            Thành viên
           </NavLink>
           <NavLink
             to="/c"
@@ -54,7 +63,10 @@ function ClassroomPage() {
         </div>
       </div>
       <div className="content-div">
+          <div className="top-bar1">
           <TopBar />
+          </div>
+      
           <div>
               {!outlet && (
                   <>

@@ -2,7 +2,7 @@ import ChildHeader from "../ChildHeader";
 import FileUploader from "../Attached_files/Attached_files";
 
 import "../Exercise/Exercise.css"
-
+import './Posts.css'
 import React, { Suspense, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useOutlet, Outlet, useParams } from 'react-router-dom';
@@ -84,26 +84,26 @@ function PostForm({handleClick}) {
     return (
         <div className="newClassDiv">
           <div style={{ backgroundColor: "#F4A481", textAlign: "center" }}>
-            <h2 style={{ justifySelf: "center" }}>Create post</h2>
+            <h2 style={{ justifySelf: "center" }}>Tạo bài đăng</h2>
           </div>
           <div className="informationDiv">
-            <h2 className="informationTitle">Informations</h2>
+            <h2 className="informationTitle">Thông tin</h2>
           </div>
           <div className="informationForm">
             <label>
-              Post name
+              Tên bài đăng
               <textarea 
                name="title"
                rows="1" 
                style={{ resize: "none"}}
                onChange={handleChange}
-               placeholder="null"></textarea>
+               placeholder=""></textarea>
             </label>
             <label>
-              Post descriptions
+              Nội dung
               <textarea
                 name="descriptions"
-                placeholder="washedup n_g_a ngo"
+                placeholder=""
                 rows="5" 
                 onChange={handleChange}
                 style={{ resize: "vertical" }}
@@ -117,12 +117,12 @@ function PostForm({handleClick}) {
                 sendHandle={handleUpload}
             />
             </div>
-          <div className="buttonContainer">
+          <div className="buttonContainer-post">
             <button className="cancelButton" onClick={handleClick}>
-              Cancel
+              Huỷ
             </button>
             <button className="createButton" onClick={handleUpload}>
-              Upload post
+              Tạo 
             </button>
           </div>
         </div>
@@ -185,7 +185,7 @@ function Post() {
     const [selectedPost, setSelectedPost] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    const isTeaching = sessionStorage.getItem('isTeaching') === "true";
     useEffect(() => {
         const fetchNotifications = async () => {
             try {
@@ -244,23 +244,28 @@ function Post() {
     if (error) {
         return(
         <>        
-            <div>{error.message}</div>
             <AddPost/>
+            <div>{error.message}</div>
+           
         </>
         );
     }
 
     return (
         <div>
-            <ChildHeader nameHeader={"Posts"} />
-            <div>
+            
+            <ChildHeader nameHeader={"Bài Đăng"} />
+            <div>         
+                <div className="add-button">
+                {isTeaching?(<AddPost/>):(<></>) }
+                </div>
                 <Notifications
                     notifications={posts}
                     onNotificationClick={handleNotificationClick}
                 />
                 <Outlet />
             </div>
-            <AddPost/>
+
         </div>
     );
 }

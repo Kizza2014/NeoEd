@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  max-width: 435px;
+  max-width: 400px;
   margin: 20px;
   flex-direction: column;
   color: #000;
@@ -13,8 +13,8 @@
   width: 100%;
   flex-direction: column;
   align-items: start;
-  padding: 8px 33px 18px 14px;
-  border: 1px solid #000;
+  padding: 8px 20px 18px 14px;
+  border: 2px solid #000;
 }
 
 .title {
@@ -28,4 +28,23 @@
   width: 380px;
   max-width: 100%;
   padding: 9px 24px;
+}
+.checkInButton {
+  background-color: #d3923d; /* Màu nền nút (xanh lá cây) */
+  color: rgb(0, 0, 0); /* Màu chữ */
+  padding: 10px 20px; /* Khoảng cách bên trong nút */
+  font-size: 16px; /* Cỡ chữ */
+  border: none; /* Bỏ viền */
+  border-radius: 5px; /* Góc bo */
+  cursor: pointer; /* Con trỏ chuột */
+  transition: background-color 0.3s ease; /* Hiệu ứng hover */
+}
+
+.checkInButton:disabled {
+  background-color: #458b15; /* Màu nền khi bị disabled */
+  cursor: not-allowed; /* Con trỏ không được phép nhấn */
+}
+
+.checkInButton:hover:not(:disabled) {
+  background-color: #39b43f; /* Màu nền khi hover */
 }

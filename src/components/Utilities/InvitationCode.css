@@ -1,0 +1,17 @@
+.join-code {
+    display: flex;
+    flex-direction: row;  
+    justify-content: flex-start; 
+    padding: 0 20px;          
+     
+  }
+  
+
+  .code {
+   
+    font-weight: bold;       
+    color: #fc0000;       
+    text-align: center;    
+    padding: 0 10px;
+  }
+  

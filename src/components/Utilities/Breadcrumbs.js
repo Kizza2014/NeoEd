@@ -19,11 +19,12 @@ const Breadcrumbs = () => {
   const isTeaching = sessionStorage.getItem("isTeaching") === "true";
 
   const breadcrumbMapping = {
-    c: "Classroom",
-    a: "Assignments",
-    p: "Posts",
-    n: "Notifications",
-    r: "Requests",
+    c: "Lớp học",
+    a: "Bài tập",
+    p: "Bài Đăng",
+    n: "Thông báo",
+    r: "Điểm danh",
+    pa: "Thành viên",
   };
 
   useEffect(() => {
@@ -89,6 +90,10 @@ const Breadcrumbs = () => {
           const isLast = index === breadcrumbPathnames.length - 1;
 
           let displayValue = breadcrumbMapping[value] || value;
+
+          if (value === "pa") {
+            displayValue = "Thành viên"; 
+          }
 
           if (index === 1 && className) {
             displayValue = className;

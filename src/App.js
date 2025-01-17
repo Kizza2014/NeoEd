@@ -13,21 +13,25 @@ import Exercise_description from './components/ClassroomPage/Exercise/ExerciseDe
 import Exercise_scoring from './components/ClassroomPage/Exercise/ExerciseDetail/ExerciseScoring.js';
 import Post_description from './components/ClassroomPage/posts/PostDetails/PostDetail.js';
 import UserProfile from './components/HomePage/userinfo/UserProfileWithButton.js';
-
+import Register from './components/LoginPage/Register/Register'
+import Participants from './components/ClassroomPage/Participants/Participants.js'
+import Checkin from "./components/ClassroomPage/Attendance/AttendanceCheck/AttendanceCheck.js"
 export default function MyApp() {
   return (
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<LoginPage />} />
-      <Route path='/u' element ={<UserProfile/>}/>
+      <Route path ="/s" element = {<Register/>}/>
       <Route path="/c" element={<TeacherHomePage />}>
           <Route path="r" element={<CheckinList />} />
       </Route>
+      <Route path='/u' element ={<UserProfile/>}/>
       <Route path="/c/t/:classId" element={<ClassroomPage />}>
         <Route path="p/:postId" element={<Post_description />}/>
         <Route path="a" element={<Exercise/>}>
             <Route path=":assignmentId" element={<Exercise_scoring />} />
         </Route>
+        <Route path = "pa" element = {<Participants/>}/>
         <Route path="r" element={<CheckinList />}/>
       </Route>
       <Route path="/c/:classId" element={<TeacherClassroomPage />}>
@@ -35,6 +39,7 @@ export default function MyApp() {
         <Route path="a" element={<Exercise />}>
             <Route path=":assignmentId" element={<Exercise_description />} />
         </Route>
+        <Route path = "pa" element = {<Participants/>}/>
         <Route path="r" element={<CheckinList />}/>
       </Route>
     </Routes>

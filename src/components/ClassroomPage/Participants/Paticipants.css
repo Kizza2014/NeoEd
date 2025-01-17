@@ -1,0 +1,106 @@
+/* CSS cho phần hiển thị thành viên */
+.container-paricipants{
+  margin: 0 auto; 
+  padding: 20px; 
+  border: 1px solid #ccc; 
+  background-color: #f9f9f9; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  height: 100vh;
+}
+
+.participant-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .participant-list li {
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  
+  /* CSS cho các nút xóa */
+  .remove-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    border-radius: 5px;
+    margin-left: 10px;
+  }
+  
+  .remove-button:hover {
+    background-color: #d32f2f;
+  }
+  
+  /* CSS cho các thông báo */
+  .success-message {
+    color: green;
+    font-weight: bold;
+  }
+  
+  .error-message {
+    color: red;
+    font-weight: bold;
+  }
+  
+  /* CSS cho phần nhập thành viên */
+  .add-participant-form {
+    margin-bottom: 20px;
+  }
+  
+  .add-participant-form input, 
+  .add-participant-form select, 
+  .add-participant-form button {
+    padding: 8px 12px;
+    margin-right: 10px;
+  }
+  
+  .add-participant-form button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .add-participant-form button:hover {
+    background-color: #45a049;
+  }
+  
+  /* CSS cho các tiêu đề */
+  h3, h2 {
+    margin-bottom: 20px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: auto;
+  }
+  
+  table th, table td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 10px ;
+  }
+  table th:nth-child(2), table td:nth-child(2) {
+    text-align: center; 
+  }
+  table th {
+    background-color: #f2f2f2;
+  }
+  
+  .remove-button {
+    padding: 5px 10px;
+    background-color: #f44336;
+    align-content: center;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .remove-button:hover {
+    background-color: #d32f2f;
+  }
+  

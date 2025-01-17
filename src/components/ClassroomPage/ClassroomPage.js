@@ -2,23 +2,29 @@ import './ClassroomPage.css';
 import React from "react";
 import logo from '../Utilities/logined_logo.png';
 import TopBar from '../Utilities/Top_bar';
-import { NavLink, useParams, Outlet, useOutlet } from 'react-router-dom';
+import { NavLink, useParams, Outlet, useOutlet, useNavigate } from 'react-router-dom';
 import Post from './posts/Posts';
 import { ClassInfo } from './classInfo/ClassInfo';
 import InvitationCode from '../Utilities/InvitationCode';
 import UserMenu from '../HomePage/userinfo/componentback/MenuUser';
 import useWindowSize from '../Teacher/teacher_home/SizeContext';
 import { FaUserCheck, FaInfoCircle, FaBell, FaBook, FaClipboard, FaSignOutAlt } from "react-icons/fa";
-
+import { useEffect } from 'react';
 
 function ClassroomPage() {
+
   const { classId } = useParams();
   const outlet = useOutlet();
   const {width} = useWindowSize();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const access_token = sessionStorage.getItem('access_token');
+    if (!access_token) {
+      navigate('/'); 
+    }
+  }, [navigate]);
   return (
     <div>
-        {width >= 600? 
-        (
         <div className="container">
           <div className="slide">
             <img src={logo} className="logo" alt="Description" loading="lazy" />
@@ -41,7 +47,13 @@ function ClassroomPage() {
                 to={`/c/t/${classId}/r`}
                 className={({ isActive }) => (isActive ? "active_class_link" : "")}
               >
-                Attendance
+                Điểm danh
+              </NavLink>
+              <NavLink
+                to={`/c/t/${classId}/pa`}
+                className={({ isActive }) => (isActive ? "active_class_link" : "")}
+              >
+                Thành viên
               </NavLink>
               <NavLink
                 to="/c"
@@ -50,6 +62,7 @@ function ClassroomPage() {
               >
                 Thoát lớp học
               </NavLink>
+
             </div>
           </div>
           <div className="content-div">
@@ -66,64 +79,64 @@ function ClassroomPage() {
               </div>
           </div>
         </div>
-      ) : ( 
-        <div>
-          <div className="header_mobile">
-            <img src={logo} className="logo-m" alt="Description" loading="lazy" />
-            <div className="user-menu">
-              <UserMenu />
-            </div>
-          </div>
-          <div className="class">
-          Lớp học
-          </div>
-          <div className="line"> </div>
-          <div className="content">
-          <Outlet />
-          </div>
-          <div className="footer">
-            <NavLink
-              to={`/c/${classId}`}
-              className={({ isActive }) => (isActive ? "active_class_link" : "")}
-              end
-            >
-            <FaInfoCircle /> Thông tin lớp học
-            </NavLink>
-            <NavLink
-              to={`/c/${classId}/notifications`}
-              className={({ isActive }) => (isActive ? "active_class_link" : "")}
-            >
-            <FaBell /> Thông báo
-            </NavLink>
-            <NavLink
-              to={`/c/${classId}/posts`}
-              className={({ isActive }) => (isActive ? "active_class_link" : "")}
-            >
-            <FaBook /> Học liệu
-            </NavLink>
-            <NavLink
-              to={`/c/${classId}/assignment`}
-              className={({ isActive }) => (isActive ? "active_class_link" : "")}
-            >
-            <FaClipboard /> Bài tập
-            </NavLink>
-            <NavLink
-              to={`/c/${classId}/requests`}
-              className={({ isActive }) => (isActive ? "active_class_link" : "")}
-            >
-              <FaUserCheck /> Điểm danh
-            </NavLink>
-            <NavLink
-              to="/c"
-              className={({ isActive }) => (isActive ? "active_class_link" : "")}
-              end
-            >
-            <FaSignOutAlt /> Thoát lớp học
-            </NavLink>
-          </div>
-          </div>
-      )
-      }
+      {/* // ) : ( 
+      //   <div>
+      //     <div className="header_mobile">
+      //       <img src={logo} className="logo-m" alt="Description" loading="lazy" />
+      //       <div className="user-menu">
+      //         <UserMenu />
+      //       </div>
+      //     </div>
+      //     <div className="class">
+      //     Lớp học
+      //     </div>
+      //     <div className="line"> </div>
+      //     <div className="content">
+      //     <Outlet />
+      //     </div>
+      //     <div className="footer">
+      //       <NavLink
+      //         to={`/c/${classId}`}
+      //         className={({ isActive }) => (isActive ? "active_class_link" : "")}
+      //         end
+      //       >
+      //       <FaInfoCircle /> Thông tin lớp học
+      //       </NavLink>
+      //       <NavLink
+      //         to={`/c/${classId}/notifications`}
+      //         className={({ isActive }) => (isActive ? "active_class_link" : "")}
+      //       >
+      //       <FaBell /> Thông báo
+      //       </NavLink>
+      //       <NavLink
+      //         to={`/c/${classId}/posts`}
+      //         className={({ isActive }) => (isActive ? "active_class_link" : "")}
+      //       >
+      //       <FaBook /> Học liệu
+      //       </NavLink>
+      //       <NavLink
+      //         to={`/c/${classId}/assignment`}
+      //         className={({ isActive }) => (isActive ? "active_class_link" : "")}
+      //       >
+      //       <FaClipboard /> Bài tập
+      //       </NavLink>
+      //       <NavLink
+      //         to={`/c/${classId}/requests`}
+      //         className={({ isActive }) => (isActive ? "active_class_link" : "")}
+      //       >
+      //         <FaUserCheck /> Điểm danh
+      //       </NavLink>
+      //       <NavLink
+      //         to="/c"
+      //         className={({ isActive }) => (isActive ? "active_class_link" : "")}
+      //         end
+      //       >
+      //       <FaSignOutAlt /> Thoát lớp học
+      //       </NavLink>
+      //     </div>
+      //     </div>
+      // ) */}
+      
     </div>
   );
 }

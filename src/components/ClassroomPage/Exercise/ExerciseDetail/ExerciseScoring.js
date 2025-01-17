@@ -232,7 +232,7 @@ function Exercise_scoring() {
                         <div>
                             <div className="button-wrapper">
                                 <button className="return-button" onClick={onBack}>
-                                    Back to Assignments
+                                    Quay lại
                                 </button>
                             </div>
                             <div className="exercise-header">
@@ -256,7 +256,7 @@ function Exercise_scoring() {
                                 )}
                                 <pre>
                                     {assignmentData.date
-                                        ? `Due date: ${assignmentData.date.toLocaleDateString()} ${assignmentData.date.toLocaleTimeString()}`
+                                        ? `Date: ${assignmentData.date.toLocaleDateString()} ${assignmentData.date.toLocaleTimeString()}`
                                         : "Loading ..."}
                                 </pre>
                                 <div>
@@ -270,19 +270,14 @@ function Exercise_scoring() {
                                     <div className="option-buttons">
                                         <button 
                                             onClick={handleEditClick} 
-                                            style={{ 
-                                                cursor: "pointer"
-                                            }}
                                         >
-                                            Update
+                                            Thay đổi
                                         </button>
                                         <button 
                                             onClick={handleDelete} 
-                                            style={{ 
-                                                cursor: "pointer"
-                                            }}
+            
                                         >
-                                            Delete
+                                            Xoá
                                         </button>
                                     </div>
                                 )}

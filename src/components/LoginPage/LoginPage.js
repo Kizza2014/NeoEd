@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import styles from "./LoginPage.css";
+import "./LoginPage.css";
 import logo from './logo.png';
 import facebook from './facebook.png'
 import google from './google.png'
@@ -13,35 +13,41 @@ import { FaFacebook, FaGoogle } from "react-icons/fa";
 function LoginButton({userName,password}) {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const handleLogin = async() => {
+    const handleLogin = async () => {
         setLoading(true);
         console.log({ username: userName, password: password });
-        await axios.post(
-            'http://127.0.0.1:8000/login', 
-            { username: userName, password: password },
-        )
-        .then(response => {
-            var info = response.data;
-            console.log('Login successful:', response.data);
+    
+        try {
+
+            const loginResponse = await axios.post('http://127.0.0.1:8000/login', {
+                username: userName,
+                password: password,
+            });
+    
+            const info = loginResponse.data;
+            console.log('Login successful:', info);
+    
+
             sessionStorage.setItem('access_token', info.access_token);
             sessionStorage.setItem('isTeaching', false);
             localStorage.setItem('user_id', info.user_id);
             sessionStorage.setItem('user_id', info.user_id);
-            document.cookie = `refresh_token=${info.refresh_token}; path=/;`;
+            localStorage.setItem('refresh_token', info.refresh_token);
+    
+
+            const userDetailsResponse = await axios.get(`http://127.0.0.1:8000/user/${info.user_id}/detail`);
+            localStorage.setItem('username', userDetailsResponse.data.fullname);
+            console.log('User details fetched successfully:', userDetailsResponse.data);
+
             setLoading(false);
             navigate('/c');
-        })
-        .catch(error => {
-            alert(`Login failed: Check your email or password`);
+        } catch (error) {
+            console.error('Error during login or fetching user details:', error);
+            alert('Login failed: Check your email or password');
             setLoading(false);
-        });
-        axios.get(
-            `http://127.0.0.1:8000/user/${localStorage.getItem('user_id')}/detail`, 
-        )
-        .then(response => {
-            localStorage.setItem('username', response.data.fullname);
-        });
-    };  
+        }
+    };
+      
 
     if (loading) {
         return(
@@ -78,6 +84,7 @@ function LoginButton({userName,password}) {
 function LoginPage() {
     const [userName, setUserName] = useState("scottdavis");
     const [password, setPassword] = useState("1");
+    const navigate = useNavigate()
     const {width} = useWindowSize();
     const handleEmailChange = (event) => {
         setUserName(event.target.value);
@@ -135,8 +142,11 @@ function LoginPage() {
                 </div>
                 <div className="registerPrompt">
                     Chưa có tài khoản?
-                    <button type="button" className="registerLink">
-                        Đăng kí ngay
+                    <button
+                    className="registerLink"
+                    onClick={() => navigate('/s')} 
+                    >
+                    Đăng ký ngay
                     </button>
                 </div>
                 <div className="social-login">
@@ -144,23 +154,21 @@ function LoginPage() {
                         className="social-button google" 
                         onClick={() => window.open("https://accounts.google.com", "_blank")}
                     >
-                    <img 
-                        src={google}
-                        alt="Google logo" 
-                        className="social-logo" 
-                    />
+                    <FaGoogle size={25}/>
+                    <div>
                         Đăng nhập bằng Google
+                    </div>
+                        
                     </div>
                     <div 
                         className="social-button facebook" 
                         onClick={() => window.open("https://www.facebook.com", "_blank")}
                     >
-                    <img 
-                        src={facebook}
-                        alt="Facebook logo" 
-                        className="social-logo" 
-                    />
+                      <FaFacebook size={25}/>
+                      <div>
                         Đăng nhập bằng Facebook
+                      </div>
+
                     </div>
                 </div>
             </div>
@@ -249,11 +257,11 @@ function LoginPage() {
                     </button>
                 </div>
                 <LoginButton userName={userName} password={password} />
-                <div className="divider">
+                {/* <div className="divider">
                     <span className="line"></span>
                     <span className="dividerText">Hoặc</span>
                     <span className="line"></span>
-                </div>
+                </div> */}
                 <div className="registerPrompt">
                     Chưa có tài khoản?
                     <button type="button" className="registerLink">

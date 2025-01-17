@@ -1,5 +1,7 @@
-.child-header-container{
-    margin-left: 20px;
-    padding: 0;
-    border-bottom: 2px solid #000;
-}
+.header-container {
+    background-color: white;
+    padding-top: 15px;
+    padding-left: 20px;
+    border-bottom: 3px solid #000; /* Viền dưới */
+  }
+  

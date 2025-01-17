@@ -17,7 +17,7 @@ function FileUploader({files, setFiles,sendHandle}) {
 
     return (
         <div className="attach_container">
-            <p style={{fontWeight: "bold", textAlign: "center" }}>Attach files</p>
+            <p style={{fontWeight: "bold", textAlign: "center" }}>Đính kèm thư mục</p>
             <div className="file-list">
                 {files.map((file, index) => (
                     <div key={index} className="file-item">
@@ -32,10 +32,10 @@ function FileUploader({files, setFiles,sendHandle}) {
                     multiple
                     onChange={(e) => addFiles(Array.from(e.target.files))}
                 />
-                Choose Files
+                Tải thư mục lên
             </label>
             <button className="send-button" onClick={sendHandle}>
-                Send request
+                Gửi yêu cầu
             </button>
         </div>
     );

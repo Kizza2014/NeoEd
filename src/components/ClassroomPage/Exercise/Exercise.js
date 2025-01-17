@@ -265,15 +265,18 @@ function Exercise() {
 
     return (
         <div>
-            <ChildHeader nameHeader={"Assignments"} />
+            <ChildHeader nameHeader={"Bài tập"} />
             <div>
                 {!outlet && (
                     <>
+                <div className="add-button">
+                {isTeaching?(<AddPost/>):(<></>) }
+                </div>
                     <Notifications
                         notifications={notifications}
                         onNotificationClick={handleNotificationClick}
                     />
-                    <AddPost/>
+
                     </>
                 )}
                 <Outlet />

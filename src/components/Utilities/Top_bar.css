@@ -1,7 +1,7 @@
 .top-bar{
     display: flex;
     background-color: #D9D8D8;
-    height: 7%;
+    height:  45px;
     align-items: center;
     justify-content: space-between;
     padding-right: 25px;

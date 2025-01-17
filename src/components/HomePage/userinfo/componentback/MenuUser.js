@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import BackButton from './BackButton'
-import axios from "axios";
 
 const UserMenu = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -17,20 +16,6 @@ const UserMenu = () => {
     setIsDropdownOpen(false); // Đóng dropdown sau khi click
   };
 
-  const handleLogOut = () => {
-    axios.post("http://127.0.0.1:8000/logout", null,
-      {
-        params:{
-          access_token: sessionStorage.getItem('access_token'),
-        }
-      }
-    );
-    localStorage.clear();
-    sessionStorage.clear();
-    document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-    navigate('/');
-    setIsDropdownOpen(false); // Đóng dropdown sau khi click
-  };
   return (
     <div style={{ position: "relative", display: "inline-block" }}>
       {/* Nút hình tròn với biểu tượng người dùng */}
@@ -86,7 +71,11 @@ const UserMenu = () => {
             Thông tin cá nhân
           </button>
           <button
-            onClick={() => handleLogOut()}
+            onClick={() => {
+              localStorage.clear(); 
+              sessionStorage.clear();   
+              handleNavigate("/"); 
+            }}
             onMouseEnter={() => setHoveredButton("logout")}
             onMouseLeave={() => setHoveredButton(null)}
             style={{

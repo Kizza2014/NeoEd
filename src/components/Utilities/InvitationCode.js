@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from 'react-router-dom';
 import "./Breadcrumbs.css"
 import axios from "axios";
 import { BarLoader } from "react-spinners";
-
+import './InvitationCode.css'
 function InvitationCode () {
     const [inviteCode, setInviteCode] = useState("");
     const [loading, setLoading] = useState(false);
@@ -55,9 +55,9 @@ function InvitationCode () {
       }
 
       return (
-        <div>
-            <h3>Invitation code: </h3>
-            <p> {inviteCode}</p>
+        <div className="join-code">
+            <h3>Mã tham gia lớp học: </h3>
+            <h3 className="code"> {inviteCode}</h3>
         </div>
       );
 }

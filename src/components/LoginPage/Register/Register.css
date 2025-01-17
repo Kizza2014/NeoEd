@@ -1,0 +1,148 @@
+/* Styles for the register container */
+
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f9;
+    padding: 30px 50px;
+  }
+  
+  .register-image {
+    flex: 1;
+    max-width: 45%;  /* Make sure the image doesn't take more than 45% of the width */
+    padding-right: 20px;
+  }
+  
+  .register-image img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+  
+  .register-form {
+    flex: 1;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 50px 50px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px; 
+    background: linear-gradient(rgba(255, 255, 255, 0.904), rgba(255, 255, 255, 0.911)), 
+    url(../logo.png);
+    background-position: center;
+    background-size: auto;
+    gap: 20px; 
+  }
+  .register-form h1 {
+    margin: 5px auto;
+  }
+  .error {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 5px;
+  }
+  /* Styling for form fields */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+  }
+  .register-back{
+    width: 50%;
+    padding-top: 0;
+    padding: 1px;
+    padding-left: 60%;  
+    .register-back-{
+      background-color: #555;
+      width: 80%;
+      float: left;
+    }
+  }
+  .register-container label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: bold;
+  }
+  
+ .register-container input,
+  select {
+    width: 100%;
+    padding: 10px;
+    justify-content: center;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+ .register-container input:focus,
+  select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+ .register-container button {
+    width: 100%;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #ffffff;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+ .register-container button:hover {
+    background-color: #0056b3;
+  }
+  
+ .register-container button:active {
+    background-color: #003f7f;
+  }
+  
+  .message {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+    border-radius: 5px;
+  }
+  
+  /* Media Queries for responsive layout */
+  @media (max-width: 768px) {
+    .register-container {
+      flex-direction: column;
+      padding: 10px;
+    }
+  
+    .register-image {
+      max-width: 100%;
+      padding-right: 0;
+      padding-bottom: 20px;
+    }
+  
+    .register-image img {
+      width: 100%;
+    }
+  
+    .register-form {
+      display: block; /* Stack form fields in a single column on mobile */
+      max-width: 100%;
+    }
+  
+    .form-group {
+      margin-bottom: 15px;
+    }
+  }
+  

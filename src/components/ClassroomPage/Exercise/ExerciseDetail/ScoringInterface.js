@@ -335,10 +335,10 @@ function ScoringInterface({ title, end_at }) {
             >
                 <thead>
                     <tr style={{ borderBottom: "2px solid #ccc" }}>
-                        <th style={{ textAlign: "left", padding: "10px" }}>Student ID</th>
-                        <th style={{ textAlign: "left", padding: "10px" }}>Submitted At</th>
-                        <th style={{ textAlign: "left", padding: "10px" }}>Status</th>
-                        <th style={{ textAlign: "left", padding: "10px" }}>Grade</th>
+                        <th style={{ textAlign: "left", padding: "10px" }}>Tên thành viên</th>
+                        <th style={{ textAlign: "left", padding: "10px" }}>Thời gian nộp</th>
+                        <th style={{ textAlign: "left", padding: "10px" }}>Trạng thái </th>
+                        <th style={{ textAlign: "left", padding: "10px" }}>Điếm số</th>
                     </tr>
                 </thead>
                 <tbody>
