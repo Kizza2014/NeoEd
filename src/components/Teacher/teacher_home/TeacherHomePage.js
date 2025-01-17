@@ -91,6 +91,7 @@ function CheckClasses({handleChange}) {
           fontWeight: "bold", // Bold for both active and inactive
           border: "none", // No border
           cursor: "pointer",
+          fontSize: "16px",
           textDecoration: activeButton === "button1" ? "underline" : "none",
         }}
       >
@@ -105,6 +106,7 @@ function CheckClasses({handleChange}) {
           fontWeight: "bold", 
           border: "none", 
           cursor: "pointer",
+          fontSize: "16px",
           textDecoration: activeButton === "button2" ? "underline" : "none",
         }}
       >

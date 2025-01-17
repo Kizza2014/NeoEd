@@ -155,7 +155,7 @@ function AddButton({setKey}) {
             <div className="createClassContainer">
             <button className="buttonWrapper" onClick={handleClick}>
             <FontAwesomeIcon icon={faPlus} size="2x"/>
-            <span>Tạo lớp</span>
+            <span >Tạo lớp</span>
             </button>
             {showDiv && <ClassForm handleClick={handleClick} setKey={setKey} />}
           </div>

@@ -3,7 +3,7 @@ import axios from "axios";
 import logo from '../../Utilities/logined_logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHome, faBell, faEnvelope} from '@fortawesome/free-solid-svg-icons'
-
+import './HomeSideBar.css'
 import { PacmanLoader } from "react-spinners";
 
 function ExtendBlock({ name, icon, components }) {
