@@ -74,69 +74,69 @@ function ClassForm({ handleClick, setKey }) {
   return (
     <div className="newClassDiv">
       <div style={{ backgroundColor: "#F4A481", textAlign: "center" }}>
-        <h2 style={{ justifySelf: "center" }}>Create classroom</h2>
+        <h2 style={{ justifySelf: "center" }}>Tạo lớp học mới</h2>
       </div>
       <div className="informationDiv">
-        <h2 className="informationTitle">Informations</h2>
+        <h2 className="informationTitle">Thông tin</h2>
       </div>
       <div className="informationForm">
         <label>
-          Class Name
+          Tên lớp học
           <textarea
             name="class_name"
             rows="1"
             style={{ resize: "none" }}
-            placeholder="Cơ sở dữ liệu"
+            placeholder=""
             onChange={handleInputChange}
           ></textarea>
         </label>
         <label>
-          Subject Name
+          Mã học phần
           <textarea
             name="subject_name"
             rows="1"
             style={{ resize: "none" }}
-            placeholder="MAT9999"
+            placeholder=""
             onChange={handleInputChange}
           ></textarea>
         </label>
         <label>
-          Schedule
+          Thời khoá biểu
           <textarea
             name="class_schedule"
             rows="1"
             style={{ resize: "none" }}
-            placeholder="Ngày nghỉ"
+            placeholder=""
             onChange={handleInputChange}
           ></textarea>
         </label>
         <label>
-          Description
+          Mô tả lớp học
           <textarea
             name="description"
             rows="1"
             style={{ resize: "none" }}
-            placeholder="404 Unknown"
+            placeholder=""
             onChange={handleInputChange}
           ></textarea>
         </label>
         <label>
-          Password
+          Mật khẩu
           <textarea
             name="password"
             rows="1"
             style={{ resize: "none" }}
-            placeholder="None"
+            placeholder=""
             onChange={handleInputChange}
           ></textarea>
         </label>
       </div>
       <div className="buttonContainer">
         <button className="cancelButton" onClick={handleClick}>
-          Cancel
+          Huỷ
         </button>
         <button className="createButton" onClick={handleCreate}>
-          Create
+          Tạo
         </button>
       </div>
     </div>

@@ -130,7 +130,7 @@ function Sended_requests() {
                         onClick={() => manageCheckIn()}
                     >
                         <span className="button-content">
-                            Current checkin
+                            Đang điểm danh
                             <HashLoader size={20} />
                         </span>
                     </button>
@@ -139,7 +139,7 @@ function Sended_requests() {
                         className="create-checkin-button"
                         onClick={() => manageCheckIn()}
                     >
-                        Create checkin
+                        Tạo phiên điểm danh
                     </button>
                 )}
             </div>
@@ -178,7 +178,7 @@ function Sended_requests() {
 function CheckinList() {
     return (
         <div style={{ backgroundColor: "#FFFAFA"}}>
-            <ChildHeader nameHeader="Check in" />
+            <ChildHeader nameHeader="Điểm danh" />
             <Sended_requests/>
         </div>
     );

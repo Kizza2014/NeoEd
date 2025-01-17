@@ -87,26 +87,26 @@ function PostForm({handleClick}) {
     return (
         <div className="newClassDiv">
           <div style={{ backgroundColor: "#F4A481", textAlign: "center" }}>
-            <h2 style={{ justifySelf: "center" }}>Create post</h2>
+            <h2 style={{ justifySelf: "center" }}>Tạo bài tập mới</h2>
           </div>
           <div className="informationDiv">
-            <h2 className="informationTitle">Informations</h2>
+            <h2 className="informationTitle">Thông tin</h2>
           </div>
           <div className="informationForm">
             <label>
-              Post name
+              Tiêu đề
               <textarea 
                name="title"
                rows="1" 
                style={{ resize: "none"}}
                onChange={handleChange}
-               placeholder="null"></textarea>
+               placeholder=""></textarea>
             </label>
             <label>
-              Post descriptions
+              Nội dung
               <textarea
                 name="descriptions"
-                placeholder="washedup n_g_a ngo"
+                placeholder=""
                 rows="5" 
                 onChange={handleChange}
                 style={{ resize: "vertical" }}
@@ -122,10 +122,10 @@ function PostForm({handleClick}) {
             </div>
           <div className="buttonContainer">
             <button className="cancelButton" onClick={handleClick}>
-              Cancel
+              Huỷ
             </button>
             <button className="createButton" onClick={handleUpload}>
-              Upload post
+              Tạo bài tập
             </button>
           </div>
         </div>

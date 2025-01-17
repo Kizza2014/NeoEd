@@ -74,14 +74,14 @@ function ClassForm({ handleClick, setKey }) {
   return (
     <div className="newClassDiv">
       <div style={{ backgroundColor: "#F4A481", textAlign: "center" }}>
-        <h2 style={{ justifySelf: "center" }}>Join classroom</h2>
+        <h2 style={{ justifySelf: "center" }}>Tham gia lớp học</h2>
       </div>
       <div className="informationDiv">
-        <h2 className="informationTitle">Informations</h2>
+        <h2 className="informationTitle">Thông tin</h2>
       </div>
       <div className="informationForm">
         <label>
-          Class Encode
+          Nhập mã tham gia lớp học
           <textarea
             name="class_id"
             rows="1"
@@ -92,10 +92,10 @@ function ClassForm({ handleClick, setKey }) {
       </div>
       <div className="buttonContainer">
         <button className="cancelButton" onClick={handleClick}>
-          Cancel
+          Huỷ 
         </button>
         <button className="createButton" onClick={handleCreate}>
-          Create
+          Tạo
         </button>
       </div>
     </div>

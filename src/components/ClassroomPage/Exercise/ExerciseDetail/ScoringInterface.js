@@ -324,8 +324,8 @@ function ScoringInterface({ title, end_at }) {
 
     return (
         <div style={{ padding: "20px" }}>
-            <p>Number submitted: {submissionStats.submitted} / {submissionStats.total}</p>
-            <p>Submission Deadline: {end_at}</p>
+            <p>Số lượng bài nộp: {submissionStats.submitted} / {submissionStats.total}</p>
+            <p>Hạn nộp: {end_at}</p>
             <table
                 style={{
                     width: "100%",

@@ -161,8 +161,8 @@ function Comments({component, api_parameters}){
                                         </button>
                                         {showOptionsFor === comment.commentId && (
                                             <div className="update-delete-options">
-                                                <button onClick={() => setEditingCommentId(comment.commentId)}>Update</button>
-                                                <button onClick={() => handleDelete(comment.commentId)}>Delete</button>
+                                                <button onClick={() => setEditingCommentId(comment.commentId)}>Sửa</button>
+                                                <button onClick={() => handleDelete(comment.commentId)}>Xoá</button>
                                             </div>
                                         )}  
                                     </div>  
@@ -181,10 +181,10 @@ function Comments({component, api_parameters}){
                                     <button
                                         onClick={() => handleUpdate(comment.commentId)}
                                     >
-                                        Confirm
+                                        Xác nhận
                                     </button>
                                     <button onClick={() => handleToggleOptions()}>
-                                        Cancel
+                                        Huỷ
                                     </button>
                                 </div>
                             ) : (

@@ -127,7 +127,7 @@ const SearchBox = () => {
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search..."
+        placeholder="Tìm kiếm..."
         style={{
           paddingLeft: "10px",
           borderRadius: "25px 0px 0px 25px",
@@ -264,7 +264,7 @@ const TeacherHomePage = () => {
               fontSize: '24px', 
               fontWeight: 'bold',
             }}>
-              Classes
+              Lớp học
           </p>
           <div className = 'search-bar'>
             <SearchBox/>

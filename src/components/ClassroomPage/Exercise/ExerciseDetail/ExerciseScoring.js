@@ -345,7 +345,7 @@ function Exercise_scoring() {
                     <FileUploader files={files} setFiles={handleFileChange} sendHandle={handleUpdate} />
                 </div>
             </div>
-            <ChildHeader nameHeader={'Scoring'}/>
+            <ChildHeader nameHeader={'Điểm số'}/>
             <ScoringInterface title={assignmentData.exercise_name} end_at={"" + assignmentData.date.toLocaleTimeString() + "    "+ assignmentData.date.toLocaleDateString() }/>
         </div>
     );
