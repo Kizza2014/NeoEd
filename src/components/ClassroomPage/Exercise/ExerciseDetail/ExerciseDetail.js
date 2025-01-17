@@ -10,6 +10,7 @@ import { PiFileSql, PiFilePdf, PiFileZip, PiFileDoc, PiFileImage, PiFileText, Pi
 import { BsFiletypeXlsx, BsFiletypeXls } from "react-icons/bs";
 
 import FileUploader from "../../Attached_files/Attached_files";
+import Comments from "../../../Utilities/Comments";
 
  function File_container({ file_name, file_url }) {
     const iconMap = {
@@ -105,7 +106,7 @@ function Exercise_description() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState();
-
+    const [refreshKey, setRefreshKey] = useState(0);
     const onBack = () => {
         navigate(`/c/${classId}/a`);
     };
@@ -222,13 +223,20 @@ function Exercise_description() {
                         ))}
                     </div>
                 </div>
+                <Comments
+                        key={refreshKey}
+                            component= 'assignment'
+                            api_parameters={{token: sessionStorage.getItem('access_token')}}
+                        />
                 </div>
+
             </div>
             {submitData.grade !== null && <p>Score: {submitData.grade}</p>}
-
+ 
                     <div className="file-uploader-container">
                     <FileUploader files={files} setFiles={handleFileChange} sendHandle={handlesubmit} />  
                     </div>
+
 
         </div>
     );
