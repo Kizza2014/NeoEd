@@ -172,7 +172,7 @@ function Exercise_scoring() {
     const handleOption = () => {
         setOption(!isOption);
     }
-
+    const isTeaching = sessionStorage.getItem('isTeaching')
     const [loading, setLoading] = useState(true);
 
     const onBack = () => {
@@ -341,6 +341,7 @@ function Exercise_scoring() {
                             api_parameters={{token: sessionStorage.getItem('access_token')}}
                         />
                 </div>
+
                 <div className="file-uploader-container">
                     <FileUploader files={files} setFiles={handleFileChange} sendHandle={handleUpdate} />
                 </div>

@@ -105,7 +105,7 @@ function Exercise_description() {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState();
-
+    const isTeaching = sessionStorage.get('isTeaching') === 'true';
     const onBack = () => {
         navigate(`/c/${classId}/a`);
     };
@@ -225,9 +225,11 @@ function Exercise_description() {
                 </div>
             </div>
             {submitData.grade !== null && <p>Score: {submitData.grade}</p>}
-            <div className="file-uploader-container">
-                <FileUploader files={files} setFiles={handleFileChange} sendHandle={handlesubmit} />  
-            </div>
+
+                    <div className="file-uploader-container">
+                    <FileUploader files={files} setFiles={handleFileChange} sendHandle={handlesubmit} />  
+                    </div>
+
         </div>
     );
 }

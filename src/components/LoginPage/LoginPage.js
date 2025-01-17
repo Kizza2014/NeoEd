@@ -82,8 +82,8 @@ function LoginButton({userName,password}) {
 }
 
 function LoginPage() {
-    const [userName, setUserName] = useState("scottdavis");
-    const [password, setPassword] = useState("1");
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
     const navigate = useNavigate()
     const {width} = useWindowSize();
     const handleEmailChange = (event) => {
@@ -104,7 +104,7 @@ function LoginPage() {
                 <img src={logo} className="logo" alt="Description" loading="lazy"/>
                 <div className="form-container">
                     <div className="input-container">
-                        <label htmlFor="email">Địa chỉ email</label>
+                        <label htmlFor="email">Tên đăng nhập</label>
                         <input
                             value={userName}
                             onChange={handleEmailChange}
@@ -226,7 +226,7 @@ function LoginPage() {
                 <img src={logo} className="logo-m" alt="Description" loading="lazy"/>
                 <div className="form-container">
                     <div className="input-container">
-                        <label htmlFor="email">Địa chỉ email</label>
+                        <label htmlFor="email">Tên đăng nhập</label>
                         <input
                             value={userName}
                             onChange={handleEmailChange}
