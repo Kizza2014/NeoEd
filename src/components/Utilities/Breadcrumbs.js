@@ -88,7 +88,7 @@ const Breadcrumbs = () => {
           }
 
           const isLast = index === breadcrumbPathnames.length - 1;
-
+          
           let displayValue = breadcrumbMapping[value] || value;
 
           if (value === "pa") {

@@ -41,7 +41,15 @@ import Comments from "../../../Utilities/Comments";
                 {getFileIcon(file_name)}
             </div>
             <div className="file-name">
-                <a
+            style={{
+                        display: "block",           
+                        textAlign: "left",        
+                        maxWidth: "300px",          
+                        whiteSpace: "nowrap",       
+                        overflow: "hidden",         
+                        textOverflow: "ellipsis",   
+                    }}
+                                    <a
                     href={file_url} 
                     target="_blank" 
                     rel="noopener noreferrer" 
