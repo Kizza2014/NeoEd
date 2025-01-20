@@ -1,0 +1,108 @@
+.request-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 30px;
+    margin-bottom: 100px;
+    padding: 10px;
+    background-color: #FFFAFA;
+
+}
+
+.request-form-container{
+    display:flex;
+    flex-direction: column;
+    border: 2px solid black;
+    border-radius: 7px;
+    width: 713px;
+    height: 273px;
+    margin: 10px;
+    margin-right: 50px;
+    background-color: #ADA6A6;
+}
+
+.request-name{
+    background-color: inherit;
+    border-radius: 10px;
+    border: none;
+    border-bottom: 1px solid black;
+    border: none;
+    outline: none;
+    padding: 5px;
+    padding-left: 5px;
+}
+
+.request-content{
+    background-color: inherit;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    padding: 5px;
+    padding-left: 5px;
+}
+
+.separator {
+    height: 2px;
+    background-color: black;
+}
+
+.list-request-container{
+    margin: 20px;
+}
+
+.requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    margin-top: 10px;
+    border: 2px solid #000000;
+}
+
+.requests-table th {
+    background-color: #ADA6A6; 
+}
+
+.requests-table th, .requests-table td {
+    padding: 5px;
+    border: 1px solid #000000;
+}
+
+.requests-table tbody tr.hoverable-row:hover {
+    background-color: #f9f9f9;
+    text-decoration: underline;
+}
+
+/* Styles for the Create checkin button */
+.create-checkin-button {
+    padding: 10px 20px;
+    background-color: #ADA6A6;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover effect */
+.create-checkin-button:hover {
+    background-color: #ADA6A6;
+    transform: scale(1.05);
+}
+
+/* Focus effect */
+.create-checkin-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px #ADA6A6(0, 123, 255, 0.5);
+}
+
+/* Disabled state */
+.create-checkin-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.button-content {
+    display: flex;
+    align-items: center; 
+    gap: 8px; 
+}

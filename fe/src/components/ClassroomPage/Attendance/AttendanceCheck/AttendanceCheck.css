@@ -1,0 +1,122 @@
+/* Styles for the loading and error overlays */
+.overlay-container {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Styles for the error message */
+.error-message {
+    color: red;
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+/* Styles for the detail container */
+.detail-container {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
+    padding-left: 20px;
+    background-color: rgba(255, 255, 255, 1);
+    color: rgb(0, 0, 0);
+    border: 1px solid black;
+    min-width: 40vw;
+    min-height: 50vh;
+    z-index: 9999;
+}
+
+/* Styles for the close button */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 7px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: black;
+    cursor: pointer;
+}
+
+/* Styles for the detail container */
+.detail-container {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 1);
+    color: rgb(0, 0, 0);
+    border: 1px solid black;
+    min-width: 40vw; 
+    min-height: 50vh;
+    z-index: 9999;
+}
+
+/* Styles for the attendance table */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 1rem;
+}
+
+.attendance-table th, .attendance-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.attendance-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+.attendance-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.attendance-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Styles for the check-in button */
+.checkin-button {
+    padding: 5px 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.checkin-button:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+.table-wrapper {
+    max-height: 300px; /* Set a fixed height for the table */
+    overflow-y: auto; /* Allow scrolling when content overflows */
+    margin-top: 10px;
+}
+
+/* Optional: Adjust the table's width if needed */
+.attendance-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+}

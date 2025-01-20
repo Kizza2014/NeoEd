@@ -1,0 +1,53 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  color: rgba(0, 0, 0, 1);
+  font: 400 15px Inter, sans-serif;
+  margin-left: 20px;
+  margin-top: 20px;
+}
+
+.chapterHeader {
+  background-color: rgba(102, 102, 102, 1);
+  width: 100%;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 8px 0;
+  border: 1px solid rgba(0, 0, 0, 1);
+}
+
+.lessonItem {
+  background-color: rgba(217, 216, 216, 1);
+  width: 100%;
+  padding: 9px 18px;
+  border: 1px solid rgba(102, 102, 102, 1);
+}
+
+.materialItem {
+  background-color: rgba(217, 216, 216, 1);
+  width: 100%;
+  padding: 10px 18px;
+  border: 1px solid rgba(102, 102, 102, 1);
+}
+
+.chapterTwo {
+  margin-top: 49px;
+}
+
+.chapterThree {
+  margin-top: 40px;
+  padding: 11px 0 5px;
+}
+
+@media (max-width: 991px) {
+  .chapterHeader,
+  .lessonItem,
+  .materialItem {
+    max-width: 100%;
+    padding-right: 20px;
+  }
+
+  .chapterTwo {
+    margin-top: 40px;
+  }
+}

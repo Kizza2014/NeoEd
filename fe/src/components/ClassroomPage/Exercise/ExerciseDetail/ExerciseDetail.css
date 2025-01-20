@@ -1,0 +1,36 @@
+.option-buttons {
+    display: flex; /* Hiển thị các nút theo hàng ngang */
+    justify-content: flex-end; /* Đẩy các nút về bên phải */
+    gap: 10px; /* Tạo khoảng cách giữa các nút */
+    margin-top: 10px; /* Tạo khoảng cách với phần tử phía trên */
+  }
+  
+  .option-buttons button {
+    padding: 8px 16px; /* Kích thước nút (cao x rộng) */
+    font-size: 14px; /* Kích thước chữ */
+    border: none; /* Xóa đường viền */
+    border-radius: 4px; /* Bo góc nút */
+    cursor: pointer; /* Con trỏ chuột thành bàn tay */
+    transition: all 0.3s ease; /* Hiệu ứng mượt khi hover */
+  }
+  
+  /* Nút "Thay đổi" */
+  .option-buttons button:first-child {
+    background-color: #4caf50; /* Màu xanh lá */
+    color: white; /* Màu chữ */
+  }
+  
+  .option-buttons button:first-child:hover {
+    background-color: #388e3c; /* Màu xanh đậm hơn khi hover */
+  }
+  
+  /* Nút "Xoá" */
+  .option-buttons button:last-child {
+    background-color: #f44336; /* Màu đỏ */
+    color: white; /* Màu chữ */
+  }
+  
+  .option-buttons button:last-child:hover {
+    background-color: #d32f2f; /* Màu đỏ đậm hơn khi hover */
+  }
+  

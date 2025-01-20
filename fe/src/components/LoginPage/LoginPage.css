@@ -1,0 +1,324 @@
+.container {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+    font-family: sans-serif;
+}
+
+.left-div {
+    flex: 3.5; /* 75% width */
+    background-image: url('./study.png');
+    background-size: cover;
+}
+
+.right-div {
+    width: 100%;
+    flex: 2; 
+    background-color: #f5e3c4a1;
+    border: 4px solid rgb(198, 198, 198); 
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    margin: 1%;
+    border-radius: 20px;
+
+}
+
+.content-m{
+    width: 93%;
+    flex: 2; 
+    background-color: #f5e3c4a1;
+    border: 4px solid rgb(198, 198, 198); 
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    border-radius: 20px;
+    gap: 6px;
+    
+}
+
+.logo{
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+.form-container {
+    display: flex;
+    flex-direction: column;
+    width: 75%;
+    align-self: center;
+}
+
+.login-button {
+    display: flex;
+    border-radius: 7px;
+    width: 75%;
+    height: 5%;
+    margin: 3%;
+    justify-content: center;
+    align-items: center;
+    background-color: #ed9909a1;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.login-button:hover {
+    background-color: #e68900; /* Changes color on hover */
+}
+
+
+.social-login {
+    display: flex;
+    width: 75%;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.social-button {
+    padding: 10px 20px;
+    width: 100%;
+    color: white;
+    text-align: center;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-sizing: border-box;
+}
+
+.social-button:active {
+    transform: scale(0.95);
+}
+
+.social-logo {
+    width: 20px;                /* Adjust logo size */
+    height: 20px;
+}
+
+.social-button.facebook {
+    background-color: #3b5998; /* Facebook blue */
+}
+
+.social-button.facebook:hover {
+    background-color: #2d4373; /* Darker Facebook blue */
+}
+
+.social-button.google {
+    background-color: #db4437; /* Google red */
+}
+
+.social-button.google:hover {
+    background-color: #b33e2c; /* Darker Google red */
+}
+
+.input{
+    width: 100%;
+    padding: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    margin-bottom: 16px;
+    box-sizing: border-box;
+}
+
+.forgot-password {
+    border: none;
+    background: none;
+    color: #ed9909a1;
+    text-shadow: 0px 4px 4px #ed9909a1;;
+    font: 600 12px Inter, sans-serif;
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.remember-pass + label {
+    border-radius: 10px;
+    border: 3px solid rgba(0, 0, 0, 1);
+    background-color: rgb(122, 122, 122);
+}
+
+.divider {
+    margin-top: 2%;
+    width: 75%;
+    align-items: center;
+    justify-content: center; 
+    display: flex;
+    height: 20px;
+}
+
+.line {
+    flex-grow: 1;
+    height: 1px;
+    background: black;
+}
+
+.dividerText {
+    margin: 0 10px;
+    color: black;  
+    font: 400 15px 'Inter', sans-serif; 
+    white-space: nowrap;   
+}
+
+.registerPrompt {
+margin-top: 1%;
+text-align: center;
+justify-content: space-between;
+font: 500 12px Inter, sans-serif;
+color: rgba(0, 0, 0, 1);
+margin-bottom: 7%;
+}
+
+.registerLink {
+border: none;
+background: none;
+color: #ed9909a1;
+text-shadow: 0px 4px 4px #ed9909a1;
+font: 600 12px Inter, sans-serif;
+cursor: pointer;
+margin-left: 8px;
+}
+
+.check-box{
+    display: flex;
+    width: 75%;
+    justify-content: space-between;
+}
+
+.login-loading{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with fade effect */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 9999; /* Ensure it stays on top of other content */
+}
+/* Căn giữa logo */
+.logo-m {
+    display: block;
+    margin: 0 auto;
+    width: 200px; /* Thay đổi theo kích thước mong muốn */
+    height: auto;
+}
+/* Container chính của form */
+.content-m {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 75%; /* Để form chiếm toàn bộ chiều cao màn hình */
+    padding: 10px;
+    background-color: #f5f5f5;
+    height: 100vh;
+    margin: 0px 20px 20px 0px;
+
+}
+
+/* Logo */
+.logo-m {
+    display: block;
+    margin: 0 auto;
+    width: 150px; /* Kích thước logo tùy chỉnh */
+    margin-bottom: 20px;
+}
+
+/* Container của form */
+.form-container-m {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+/* Các input trong form */
+.input-container-m {
+    margin-bottom: 20px;
+}
+
+.input-container-m label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.input {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Checkbox và nút quên mật khẩu */
+.check-box-m {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.remember-pass-m {
+    margin-right: 10px;
+}
+
+/* Nút quên mật khẩu */
+.forgot-password-m {
+    background: none;
+    color: #007BFF;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.button-login-m {
+    width: 110%;
+    height: auto; 
+    padding: 20px 20px ; /* Tăng kích thước padding để làm nút lớn hơn */
+    font-size: 30px; 
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.login-button-m:hover {
+    background-color: #45a049;
+}
+
+/* Phần đăng ký */
+.registerPrompt-m {
+    text-align: center;
+}
+
+.registerLink {
+    background: none;
+    color: #007BFF;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.registerLink:hover {
+    text-decoration: underline;
+}
+
+  

@@ -1,0 +1,91 @@
+.button-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.button-list a {
+    text-decoration: none; 
+    color: black;     
+    font-weight: bold;  
+    transition: color 0.3s ease;
+  }
+  
+  .button-list a:hover {
+    text-decoration: underline;
+  }
+  
+  .button-list a.active_class_link {
+    color: #9A7331;
+  }
+.logo {
+    width: 180px;
+    height: auto;
+    align-self: center;
+    margin-bottom: 13%;
+    object-fit: contain;
+}
+
+.slide button {
+    font-size: 20px;
+}
+  
+.header_mobile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+
+.logo-m {
+  max-width: 40%; /* Hoặc sử dụng max-width theo phần trăm nếu muốn */
+  height: auto;
+}
+
+.user-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+}
+.class{
+  color: #000;
+  font-family: 'Inter', sans-serif; /* Chú ý: nếu "Inter" không có sẵn, sẽ sử dụng sans-serif */
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: normal;
+  padding: 10px 10px
+}
+.line {
+  width: 100%; /* Kích thước chiều rộng của đoạn thẳng */
+  height: 2px; /* Độ dày của đoạn thẳng */
+  background-color: black; /* Màu sắc của đoạn thẳng */
+  margin:0 0; /* Khoảng cách trên và dưới đoạn thẳng */
+}
+.content-mobile{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  
+}
+.footer {
+  display: flex;
+  justify-content: space-between; /* Đẩy hai nút ra hai bên */
+  padding: 20px; /* Khoảng cách xung quanh footer */
+  background-color: #f1f1f1; /* Màu nền của footer */
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+

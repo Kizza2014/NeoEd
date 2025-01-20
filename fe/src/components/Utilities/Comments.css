@@ -1,0 +1,146 @@
+.comment-input{
+    width: 40vw;
+    border-radius: 15px;
+    height: 30px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+.comment-input-section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.comment-input-edit {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    background: transparent;
+    border: none;
+    width: 100%;
+    outline: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 2px solid black;
+}
+
+.comment-input-edit:focus {
+    border-bottom: 2px solid black;
+}
+
+.comment-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.comment-item p {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.comment-date {
+    margin-left: 10px;
+    font-size: 0.9rem;
+    color: gray;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.update-delete-options {
+    position: absolute;
+    top: 100%;
+    right: 0; 
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 10;
+}
+
+.update-delete-options button {
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-align: left;
+}
+
+.update-delete-options button:hover {
+    background-color: #f1f1f1;
+}
+
+.comment-input-edit {
+    margin-top: 5px;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.comment-input-section {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.comment-date {
+    margin-left: 10px;
+    font-size: 0.9rem;
+    color: gray;
+    display: flex;
+    justify-content: space-between; /* Spread the content */
+    align-items: center;
+    width: 100%; /* Ensure it takes up full width */
+    position: relative; /* Necessary for absolute positioning of the dropdown */
+}
+
+.comment-item p {
+    display: flex;
+    justify-content: space-between; /* Spread the content */
+    align-items: center;
+    width: 100%; /* Ensure full width */
+    margin: 0;
+}
+
+.comment-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    width: 100%; /* Ensure full width */
+}
+
+.update-delete-options {
+    position: absolute;
+    top: 100%;
+    right: 0; 
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 10;
+}
+
+.comment-date .options-button {
+    margin-left: auto; /* Push the button to the right */
+    border: 1px solid black;
+    background: none;
+    padding: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+

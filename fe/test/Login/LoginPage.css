@@ -1,0 +1,113 @@
+.page{
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+gap: 36px;
+isolation: isolate;
+
+position: relative;
+width: 1403px;
+height: 852px;
+}
+
+
+.image-block{
+width: 878px;
+height: 813px;
+background-size: auto;
+background: url(study.png);
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+z-index: 0;
+}
+
+
+.login-block{
+box-sizing: border-box;
+
+width: 474px;
+height: 813px;
+
+background: #F9A114;
+opacity: 0.15;
+border: 5px solid #060606;
+border-radius: 10px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+
+}
+
+.login-button{
+position: absolute;
+width: 350px;
+height: 38px;
+left: 987px;
+top: 458px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 6;
+flex-grow: 0;
+z-index: 6;
+}
+
+
+.email-login{
+position: absolute;
+width: 91px;
+height: 18px;
+left: 987px;
+top: 269px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+
+color: #000000;
+
+
+/* Inside auto layout */
+flex: none;
+order: 7;
+flex-grow: 0;
+z-index: 7;
+}
+
+
+.password-login{
+position: absolute;
+width: 67px;
+height: 18px;
+left: 987px;
+top: 346px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 15px;
+line-height: 18px;
+display: flex;
+align-items: center;
+
+color: #000000;
+
+
+/* Inside auto layout */
+flex: none;
+order: 8;
+flex-grow: 0;
+z-index: 8;
+}
